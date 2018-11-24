@@ -1,5 +1,7 @@
 # **LAIG**
 
+[![video](https://i.imgur.com/dxewJDX.jpg)](https://streamable.com/s/1cc3h/mcytzg)
+
 
 # LogBook TODO
 
