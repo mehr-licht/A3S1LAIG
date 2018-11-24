@@ -12,6 +12,12 @@ uniform sampler2D uSampler2;
 
 uniform float normScale;
 
+uniform vec2 dims;
+uniform vec2 charCoords;
+
+
+
+
 void main() {
 	vec3 offset=vec3(0.0,0.0,0.0);
 	

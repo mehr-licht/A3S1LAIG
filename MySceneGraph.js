@@ -246,14 +246,10 @@ class MySceneGraph {
             var indexPerspective = views.indexOf("perspective");
             var perspectiveId = children[i].getAttribute("id");
 
-
             if (this.views[perspectiveId] != null)
                 return "ID must be unique for each perspective (conflict: ID = " + perspectiveId + ")";
 
             var newCamera = [0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0)];
-
-
-
 
             //ORTHO
             var indexOrtho = views.indexOf("ortho");
@@ -272,9 +268,8 @@ class MySceneGraph {
                 var orthoTop = 10;
                 var orthoBottom = 10;
 
-                newCamera = [perspectiveId, new CGFcameraOrtho(orthoLeft, orthoRight, orthoBottom, orthoTop, orthoNear, orthoFar, vec4.fromValues(0, 10, 10, 1), vec4.fromValues(0, 0, 0, 1), vec3.fromValues(0, 1, 0))];
+                newCamera = [perspectiveId, new CGFcameraOrtho(orthoLeft,orthoRight,orthoBottom,orthoTop,orthoNear,orthoFar,vec4.fromValues(0, 10, 10, 1),vec4.fromValues(0, 0, 0, 1),vec3.fromValues(0, 1, 0))];
                 this.views.push(newCamera);
-
 
                 if (perspectiveId = defaultView) {
                     this.defaultView = perspectiveId;
@@ -297,7 +292,7 @@ class MySceneGraph {
                 if (perspectiveAngle < 0 || perspectiveAngle == null || isNaN(perspectiveAngle)) {
                     this.onXMLMinorError("Missing angle value in the perspective");
                 }
-                newCamera = [perspectiveId, new CGFcamera(perspectiveAngle, perspectiveNear, perspectiveFar, vec3.fromValues(fromxxValue, fromyyValue, fromzzValue), vec3.fromValues(toxxValue, toyyValue, tozzValue))];
+                newCamera = [perspectiveId, new CGFcamera(perspectiveAngle,perspectiveNear,perspectiveFar,vec3.fromValues(fromxxValue, fromyyValue, fromzzValue),vec3.fromValues(toxxValue, toyyValue, tozzValue))];
 
                 this.views.push(newCamera);
 
@@ -308,7 +303,6 @@ class MySceneGraph {
             } else if (perspectiveId == null) {
                 this.onXMLMinorError("No Perspective ID defined");
             }
-
 
             if (children[i].nodeName == 'ortho') {
                 var fromNodes = children[i].children;
@@ -325,7 +319,7 @@ class MySceneGraph {
                 var toyyValue = this.reader.getFloat(fromNodes[1], 'y');
                 var tozzValue = this.reader.getFloat(fromNodes[1], 'z');
 
-                newCamera = [perspectiveId, new CGFcameraOrtho(orthoLeft, orthoRight, orthoBottom, orthoTop, orthoNear, orthoFar, vec4.fromValues(fromxxValue, fromyyValue, fromzzValue, 1), vec4.fromValues(toxxValue, toyyValue, tozzValue, 1), vec3.fromValues(0, 1, 0))];
+                newCamera = [perspectiveId, new CGFcameraOrtho(orthoLeft,orthoRight,orthoBottom,orthoTop,orthoNear,orthoFar,vec4.fromValues(fromxxValue, fromyyValue, fromzzValue, 1),vec4.fromValues(toxxValue, toyyValue, tozzValue, 1),vec3.fromValues(0, 1, 0))];
                 this.views.push(newCamera);
 
                 if (perspectiveId = defaultView) {
@@ -348,9 +342,8 @@ class MySceneGraph {
                     this.onXMLMinorError("Missing angle value in the perspective");
                 }
 
-                newCamera = [perspectiveId, new CGFcamera(perspectiveAngle, perspectiveNear, perspectiveFar, vec3.fromValues(fromxxValue, fromyyValue, fromzzValue), vec3.fromValues(toxxValue, toyyValue, tozzValue))];
+                newCamera = [perspectiveId, new CGFcamera(perspectiveAngle,perspectiveNear,perspectiveFar,vec3.fromValues(fromxxValue, fromyyValue, fromzzValue),vec3.fromValues(toxxValue, toyyValue, tozzValue))];
                 this.views.push(newCamera);
-
 
                 if (perspectiveId = defaultView) {
                     this.defaultView = perspectiveId;
@@ -367,7 +360,6 @@ class MySceneGraph {
 
             if (this.near >= this.far)
                 return "'near' must be smaller than 'far'";
-
 
         }
 
@@ -522,9 +514,8 @@ class MySceneGraph {
                 continue;
             }
 
-
-
-            if (children[os].nodeName == "omni") { //omni
+            if (children[os].nodeName == "omni") {
+                //omni
 
                 var lightId = this.reader.getString(children[os], 'id');
 
@@ -848,7 +839,6 @@ class MySceneGraph {
 
                 numLights++;
 
-
                 if (numLights == 0)
                     return "at least one light must be defined";
                 else if (numLights > 8)
@@ -893,7 +883,7 @@ class MySceneGraph {
                 if (filepath == null)
                     return "file path undefined for texture with ID = " + textureID;
 
-                var texture = new CGFtexture(this.scene, filepath);
+                var texture = new CGFtexture(this.scene,filepath);
 
                 this.textures[textureID] = texture;
                 oneTextureDefined = true;
@@ -926,7 +916,6 @@ class MySceneGraph {
         var oneMaterialDefined = false;
 
         for (var i = 0; i < children.length; i++) {
-
 
             if (children[i].nodeName != "material") {
                 this.onXMLMinorError("line 929 - unknown tag name <" + children[i].nodeName + ">");
@@ -1175,97 +1164,95 @@ class MySceneGraph {
 
             var transformationSpecs = children[i].children;
 
-
             // Retrieves possible transformations.
             for (var j = 0; j < transformationSpecs.length; j++) {
                 this.scene.loadIdentity(transformMatrix);
 
                 switch (transformationSpecs[j].nodeName) {
-                    case "translate":
+                case "translate":
 
-                        // Retrieves translation parameters.
-                        var x = Number(transformationSpecs[j].getAttribute("x"));
+                    // Retrieves translation parameters.
+                    var x = Number(transformationSpecs[j].getAttribute("x"));
 
-                        if (x == null) {
-                            this.onXMLMinorError("unable to parse x-coordinate of translation; discarding transform");
-                            break;
-                        } else if (isNaN(x))
-                            return "non-numeric value for x-coordinate of translation (node ID = " + nodeID + ")";
-                        var y = Number(transformationSpecs[j].getAttribute("y"));
-
-                        if (y == null) {
-                            this.onXMLMinorError("unable to parse y-coordinate of translation; discarding transform");
-                            break;
-                        } else if (isNaN(y))
-                            return "non-numeric value for y-coordinate of translation (node ID = " + nodeID + ")";
-                        var z = Number(transformationSpecs[j].getAttribute("z"));
-
-                        if (z == null) {
-                            this.onXMLMinorError("unable to parse z-coordinate of translation; discarding transform");
-                            break;
-                        } else if (isNaN(z))
-                            return "non-numeric value for z-coordinate of translation (node ID = " + nodeID + ")";
-
-                        mat4.translate(transformMatrix, transformMatrix, [x, y, z]);
-
+                    if (x == null) {
+                        this.onXMLMinorError("unable to parse x-coordinate of translation; discarding transform");
                         break;
-                    case "rotate":
+                    } else if (isNaN(x))
+                        return "non-numeric value for x-coordinate of translation (node ID = " + nodeID + ")";
+                    var y = Number(transformationSpecs[j].getAttribute("y"));
 
-                        // Retrieves rotation parameters.
-
-                        var axis = this.reader.getItem(transformationSpecs[j], 'axis', ['x', 'y', 'z']);
-
-                        if (axis == null) {
-                            this.onXMLMinorError("unable to parse rotation axis; discarding transform");
-                            break;
-                        }
-                        var angle = Number(transformationSpecs[j].getAttribute("angle"));
-
-                        if (angle == null) {
-                            this.onXMLMinorError("unable to parse rotation angle; discarding transform");
-                            break;
-                        } else if (isNaN(angle))
-                            return "non-numeric value for rotation angle (node ID = " + nodeID + ")";
-
-                        mat4.rotate(transformMatrix, transformMatrix, angle * DEGREE_TO_RAD, this.axisCoords[axis]);
-
+                    if (y == null) {
+                        this.onXMLMinorError("unable to parse y-coordinate of translation; discarding transform");
                         break;
-                    case "scale":
+                    } else if (isNaN(y))
+                        return "non-numeric value for y-coordinate of translation (node ID = " + nodeID + ")";
+                    var z = Number(transformationSpecs[j].getAttribute("z"));
 
-                        // Retrieves scale parameters.
-
-                        var sx = Number(transformationSpecs[j].getAttribute("x"));
-                        var sy = Number(transformationSpecs[j].getAttribute("y"));
-                        var sz = Number(transformationSpecs[j].getAttribute("z"));
-
-
-                        if (sx == null) {
-                            this.onXMLMinorError("unable to parse x component of scaling; discarding transform");
-                            break;
-                        } else if (isNaN(sx))
-                            return "non-numeric value for x component of scaling (node ID = " + nodeID + ")";
-
-                        if (sy == null) {
-                            this.onXMLMinorError("unable to parse y component of scaling; discarding transform");
-                            break;
-                        } else if (isNaN(sy))
-                            return "non-numeric value for y component of scaling (node ID = " + nodeID + ")";
-
-                        if (sz == null) {
-                            this.onXMLMinorError("unable to parse z component of scaling; discarding transform");
-                            break;
-                        } else if (isNaN(sz))
-                            return "non-numeric value for z component of scaling (node ID = " + nodeID + ")";
-
-                        mat4.scale(transformMatrix, transformMatrix, [sx, sy, sz]);
-
+                    if (z == null) {
+                        this.onXMLMinorError("unable to parse z-coordinate of translation; discarding transform");
                         break;
+                    } else if (isNaN(z))
+                        return "non-numeric value for z-coordinate of translation (node ID = " + nodeID + ")";
 
-                    default:
+                    mat4.translate(transformMatrix, transformMatrix, [x, y, z]);
+
+                    break;
+                case "rotate":
+
+                    // Retrieves rotation parameters.
+
+                    var axis = this.reader.getItem(transformationSpecs[j], 'axis', ['x', 'y', 'z']);
+
+                    if (axis == null) {
+                        this.onXMLMinorError("unable to parse rotation axis; discarding transform");
                         break;
+                    }
+                    var angle = Number(transformationSpecs[j].getAttribute("angle"));
+
+                    if (angle == null) {
+                        this.onXMLMinorError("unable to parse rotation angle; discarding transform");
+                        break;
+                    } else if (isNaN(angle))
+                        return "non-numeric value for rotation angle (node ID = " + nodeID + ")";
+
+                    mat4.rotate(transformMatrix, transformMatrix, angle * DEGREE_TO_RAD, this.axisCoords[axis]);
+
+                    break;
+                case "scale":
+
+                    // Retrieves scale parameters.
+
+                    var sx = Number(transformationSpecs[j].getAttribute("x"));
+                    var sy = Number(transformationSpecs[j].getAttribute("y"));
+                    var sz = Number(transformationSpecs[j].getAttribute("z"));
+
+                    if (sx == null) {
+                        this.onXMLMinorError("unable to parse x component of scaling; discarding transform");
+                        break;
+                    } else if (isNaN(sx))
+                        return "non-numeric value for x component of scaling (node ID = " + nodeID + ")";
+
+                    if (sy == null) {
+                        this.onXMLMinorError("unable to parse y component of scaling; discarding transform");
+                        break;
+                    } else if (isNaN(sy))
+                        return "non-numeric value for y component of scaling (node ID = " + nodeID + ")";
+
+                    if (sz == null) {
+                        this.onXMLMinorError("unable to parse z component of scaling; discarding transform");
+                        break;
+                    } else if (isNaN(sz))
+                        return "non-numeric value for z component of scaling (node ID = " + nodeID + ")";
+
+                    mat4.scale(transformMatrix, transformMatrix, [sx, sy, sz]);
+
+                    break;
+
+                default:
+                    break;
                 }
 
-                this.transformations[transformationID] = new MyComponentNode(this, transformationID);
+                this.transformations[transformationID] = new MyComponentNode(this,transformationID);
                 this.transformations[transformationID].transform = transformMatrix;
 
             }
@@ -1288,118 +1275,104 @@ class MySceneGraph {
         var nodeID;
         this.animations = [];
 
-
         for (var i = 0; i < children.length; i++) {
             switch (children[i].nodeName) {
-                case "linear":
-                    // Retrieves primitive ID.
-                    var args = [];
+            case "linear":
+                // Retrieves primitive ID.
+                var args = [];
 
-                    //values from xml
-                    var animationID = this.reader.getString(children[i], 'id');
-                    if (animationID == null)
-                        return "failed to parse animation ID";
+                //values from xml
+                var animationID = this.reader.getString(children[i], 'id');
+                if (animationID == null)
+                    return "failed to parse animation ID";
 
-                    var animationSpan = Number(this.reader.getString(children[i], 'span'));
-                    if (animationSpan <= 0)
-                        return "time span of the animation must be bigger than zero";
+                var animationSpan = Number(this.reader.getString(children[i], 'span'));
+                if (animationSpan <= 0)
+                    return "time span of the animation must be bigger than zero";
 
+                var animationSpecs = children[i].children;
+                // Checks if ID is valid.
+                if (this.animations[animationID] != null)
+                    return "animation ID must unique (conflict with ID = " + animationID + ")";
 
+                // Retrieves animation specifications.
+                for (var j = 0; j < animationSpecs.length; j++) {
+                    var name = animationSpecs[j].nodeName;
 
-                    var animationSpecs = children[i].children;
-                    // Checks if ID is valid.
-                    if (this.animations[animationID] != null)
-                        return "animation ID must unique (conflict with ID = " + animationID + ")";
-
-
-
-                    // Retrieves animation specifications.
-                    for (var j = 0; j < animationSpecs.length; j++) {
-                        var name = animationSpecs[j].nodeName;
-
-                        if (name == null) {
-                            this.onXMLError("invalid animation <" + animationID + ">");
-                            continue;
-                        }
-                        var controlPXX = Number(this.reader.getString(animationSpecs[j], 'xx'));
-                        if (isNaN(controlPXX))
-                            return "non-numeric value for controlPoint axis x  " + animationID + ")";
-
-                        var controlPYY = Number(this.reader.getString(animationSpecs[j], 'yy'));
-                        if (isNaN(controlPYY))
-                            return "non-numeric value for controlPoint axis y  " + animationID + ")";
-                        var controlPZZ = Number(this.reader.getString(animationSpecs[j], 'zz'));
-                        if (isNaN(controlPZZ))
-                            return "non-numeric value for controlPoint axis z " + animationID + ")";
-
-                        args.push([controlPXX, controlPYY, controlPZZ])
-
-                    }
-                    //pelo menos dois pontos de controlo
-                    if (args.length < 2) {
-                        this.onXMLError("Invalid control points for linear animation <" + animationID + ">");
+                    if (name == null) {
+                        this.onXMLError("invalid animation <" + animationID + ">");
                         continue;
                     }
-                    this.animations[animationID] = new LinearAnimation(this.scene, animationID,
-                            animationSpan, args)
-                        //[animationSpan, args]; scene, id, animTime, controlPoints
-                    break;
+                    var controlPXX = Number(this.reader.getString(animationSpecs[j], 'xx'));
+                    if (isNaN(controlPXX))
+                        return "non-numeric value for controlPoint axis x  " + animationID + ")";
 
-                case "circular":
-                    // Retrieves primitive ID.
-                    var args = [];
+                    var controlPYY = Number(this.reader.getString(animationSpecs[j], 'yy'));
+                    if (isNaN(controlPYY))
+                        return "non-numeric value for controlPoint axis y  " + animationID + ")";
+                    var controlPZZ = Number(this.reader.getString(animationSpecs[j], 'zz'));
+                    if (isNaN(controlPZZ))
+                        return "non-numeric value for controlPoint axis z " + animationID + ")";
 
-                    var animationID = this.reader.getString(children[i], 'id');
-                    if (animationID == null)
-                        return "failed to parse animation ID";
-                    // Checks if ID is valid.
-                    if (this.animations[animationID] != null)
-                        return "animation ID must unique (conflict with ID = " + animationID + ")";
+                    args.push([controlPXX, controlPYY, controlPZZ])
 
+                }
+                //pelo menos dois pontos de controlo
+                if (args.length < 2) {
+                    this.onXMLError("Invalid control points for linear animation <" + animationID + ">");
+                    continue;
+                }
+                this.animations[animationID] = new LinearAnimation(this.scene,animationID,animationSpan,args)
+                //[animationSpan, args]; scene, id, animTime, controlPoints
+                break;
 
-                    var animationSpan = Number(children[i].getAttribute('span'));
-                    if (isNaN(animationSpan))
-                        return "non-numeric value for span duration  " + animationID + ")";
+            case "circular":
+                // Retrieves primitive ID.
+                var args = [];
 
-                    var animationCenter = children[i].getAttribute('center');
-                    var animationCenterX = animationCenter.split(" ").map(Number);
-                    for (var j = 0; j < animationCenterX.length; j++) {
-                        if (isNaN(animationCenterX[j]))
-                            return "non-numeric value for center location  " + animationID + ")";
+                var animationID = this.reader.getString(children[i], 'id');
+                if (animationID == null)
+                    return "failed to parse animation ID";
+                // Checks if ID is valid.
+                if (this.animations[animationID] != null)
+                    return "animation ID must unique (conflict with ID = " + animationID + ")";
 
-                    }
+                var animationSpan = Number(children[i].getAttribute('span'));
+                if (isNaN(animationSpan))
+                    return "non-numeric value for span duration  " + animationID + ")";
 
-                    var animationRadius = Number(children[i].getAttribute('radius'));
-                    if (isNaN(animationRadius))
-                        return "non-numeric value for radius rotation  " + animationID + ")";
+                var animationCenter = children[i].getAttribute('center');
+                var animationCenterX = animationCenter.split(" ").map(Number);
+                for (var j = 0; j < animationCenterX.length; j++) {
+                    if (isNaN(animationCenterX[j]))
+                        return "non-numeric value for center location  " + animationID + ")";
 
-                    var animationStartang = Number(children[i].getAttribute('startang'));
-                    if (isNaN(animationStartang))
-                        return "non-numeric value for angle initial rotation  " + animationID + ")";
+                }
 
-                    var animationRotang = Number(children[i].getAttribute('rotang'));
-                    if (isNaN(animationRotang))
-                        return "non-numeric value for angle angle rotation rotang  " + animationID + ")";
+                var animationRadius = Number(children[i].getAttribute('radius'));
+                if (isNaN(animationRadius))
+                    return "non-numeric value for radius rotation  " + animationID + ")";
 
+                var animationStartang = Number(children[i].getAttribute('startang'));
+                if (isNaN(animationStartang))
+                    return "non-numeric value for angle initial rotation  " + animationID + ")";
 
+                var animationRotang = Number(children[i].getAttribute('rotang'));
+                if (isNaN(animationRotang))
+                    return "non-numeric value for angle angle rotation rotang  " + animationID + ")";
 
-                    this.animations[animationID] = new CircularAnimation(this.scene, animationID,
-                        animationSpan, animationCenterX, animationRadius,
-                        animationStartang, animationRotang);
-                    break;
-                default:
-                    this.onXMLMinorError("unknown tag name <" + nodeName + ">");
-                    break;
+                this.animations[animationID] = new CircularAnimation(this.scene,animationID,animationSpan,animationCenterX,animationRadius,animationStartang,animationRotang);
+                break;
+            default:
+                this.onXMLMinorError("unknown tag name <" + nodeName + ">");
+                break;
             }
-
 
         }
         //   alert(this.animations[animationID][1]);
         this.log("Parsed primitives");
         return null;
     }
-
-
 
     /**
      * Parses the <primitives> block.
@@ -1409,7 +1382,6 @@ class MySceneGraph {
 
         var children = primitivesNode.children;
         var onePrimitiveDefined = false;
-
 
         // Each transformation.
         var nodeID;
@@ -1440,7 +1412,8 @@ class MySceneGraph {
                 for (var j = 0; j < primitiveSpecs.length; j++) {
                     var name = primitiveSpecs[j].nodeName;
 
-                    if (name != null) { //if (name == 'rectangle' || name == 'cylinder' || name == 'cilinder' || name == 'sphere' || name == 'triangle' || name == 'thorus') {
+                    if (name != null) {
+                        //if (name == 'rectangle' || name == 'cylinder' || name == 'cilinder' || name == 'sphere' || name == 'triangle' || name == 'thorus') {
 
                         args.push(name);
                         primitive = name;
@@ -1475,22 +1448,20 @@ class MySceneGraph {
                         }
                     }
 
-
                     if (primitivavalida) {
                         switch (name) {
-                            case 'patch':
-                                args.push(arrayControlPointsPatch);
-                                this.primitives[primitiveID] = [primitive, args];
-                                break;
-                            default:
-                                this.primitives[primitiveID] = [primitive, args];
-                                break;
+                        case 'patch':
+                            args.push(arrayControlPointsPatch);
+                            this.primitives[primitiveID] = [primitive, args];
+                            break;
+                        default:
+                            this.primitives[primitiveID] = [primitive, args];
+                            break;
                         }
 
                         onePrimitiveDefined = true;
                     }
                 }
-
 
             } else
                 this.onXMLMinorError("unknown tag name <" + nodeName + ">");
@@ -1507,7 +1478,6 @@ class MySceneGraph {
      * @param {components block element} componentsNode
      */
     parseComponents(componentsNode) {
-
 
         // Traverses nodes.
         var children = componentsNode.children;
@@ -1540,7 +1510,7 @@ class MySceneGraph {
                 this.log("Processing node " + nodeID);
 
                 // Creates node.
-                this.nodes[nodeID] = new MyComponentNode(this, nodeID);
+                this.nodes[nodeID] = new MyComponentNode(this,nodeID);
                 var componentData = children[i].children;
                 var componentDataNames = [];
                 var possibleValues = ["materials", "texture", "transformation", "animations", "children"];
@@ -1564,7 +1534,6 @@ class MySceneGraph {
                 this.nodes[nodeID].nMaterials = 0;
                 for (var index = 0; index < componentData[materialIndex].children.length; index++) {
 
-
                     var materialID = this.reader.getString(componentData[materialIndex].children[index], 'id');
 
                     if (materialID == null)
@@ -1572,7 +1541,6 @@ class MySceneGraph {
 
                     if (materialID != "inherit" && this.materials[materialID] == null)
                         return "ID does not correspond to a valid material (node ID = " + nodeID + "\nmaterial ID = " + materialID + ")";
-
 
                     if (materialID == "none" || materialID == null) {
 
@@ -1594,7 +1562,6 @@ class MySceneGraph {
                 if (textureIndex == -1)
                     return "texture must be defined (node ID = " + nodeID + ")";
                 var textureID = this.reader.getString(componentData[textureIndex], 'id');
-
 
                 var textureS = Number(componentData[textureIndex].getAttribute("length_s"));
                 if (textureS == null) {
@@ -1620,7 +1587,6 @@ class MySceneGraph {
                 this.nodes[nodeID].length_s = textureS;
                 this.nodes[nodeID].length_t = textureT;
 
-
                 // Animation - campo opcional
 
                 var animationIndex = componentDataNames.indexOf("animations");
@@ -1642,11 +1608,6 @@ class MySceneGraph {
 
                 }
 
-
-
-
-
-
                 // Retrieves information about children.
                 var descendantsIndex = componentDataNames.indexOf("children");
                 if (descendantsIndex == -1)
@@ -1658,7 +1619,6 @@ class MySceneGraph {
                 var type;
                 var transformMatrix = mat4.create();
 
-
                 //retrieves possible transformations
                 for (var d = 0; d < componentData.length; d++) {
                     if (componentData[d].nodeName == "transformation") {
@@ -1667,116 +1627,108 @@ class MySceneGraph {
                         this.scene.loadIdentity(transformMatrix);
                         for (var t = 0; t < transformationSpecs.length; t++) {
 
-
-
                             switch (transformationSpecs[t].nodeName) {
-                                case "translate":
+                            case "translate":
 
-                                    // Retrieves translation parameters.
-                                    var x = Number(transformationSpecs[t].getAttribute("x"));
+                                // Retrieves translation parameters.
+                                var x = Number(transformationSpecs[t].getAttribute("x"));
 
-
-                                    if (x == null) {
-                                        this.onXMLMinorError("unable to parse x-coordinate of translation; discarding transform");
-                                        break;
-                                    } else if (isNaN(x))
-                                        return "non-numeric value for x-coordinate of translation (node ID = " + nodeID + ")";
-                                    var y = Number(transformationSpecs[t].getAttribute("y"));
-
-
-                                    if (y == null) {
-                                        this.onXMLMinorError("unable to parse y-coordinate of translation; discarding transform");
-                                        break;
-                                    } else if (isNaN(y))
-                                        return "non-numeric value for y-coordinate of translation (node ID = " + nodeID + ")";
-                                    var z = Number(transformationSpecs[t].getAttribute("z"));
-
-                                    if (z == null) {
-                                        this.onXMLMinorError("unable to parse z-coordinate of translation; discarding transform");
-                                        break;
-                                    } else if (isNaN(z))
-                                        return "non-numeric value for z-coordinate of translation (node ID = " + nodeID + ")";
-
-                                    mat4.translate(transformMatrix, transformMatrix, [x, y, z]);
-
+                                if (x == null) {
+                                    this.onXMLMinorError("unable to parse x-coordinate of translation; discarding transform");
                                     break;
-                                case "rotate":
+                                } else if (isNaN(x))
+                                    return "non-numeric value for x-coordinate of translation (node ID = " + nodeID + ")";
+                                var y = Number(transformationSpecs[t].getAttribute("y"));
 
-                                    // Retrieves rotation parameters.
-
-                                    var axis = this.reader.getItem(transformationSpecs[t], 'axis', ['x', 'y', 'z']);
-
-                                    if (axis == null) {
-                                        this.onXMLMinorError("unable to parse rotation axis; discarding transform");
-                                        break;
-                                    }
-                                    var angle = Number(transformationSpecs[t].getAttribute("angle"));
-
-                                    if (angle == null) {
-                                        this.onXMLMinorError("unable to parse rotation angle; discarding transform");
-                                        break;
-                                    } else if (isNaN(angle))
-                                        return "non-numeric value for rotation angle (node ID = " + nodeID + ")";
-
-                                    mat4.rotate(transformMatrix, transformMatrix, angle * DEGREE_TO_RAD, this.axisCoords[axis]);
-
+                                if (y == null) {
+                                    this.onXMLMinorError("unable to parse y-coordinate of translation; discarding transform");
                                     break;
-                                case "scale":
+                                } else if (isNaN(y))
+                                    return "non-numeric value for y-coordinate of translation (node ID = " + nodeID + ")";
+                                var z = Number(transformationSpecs[t].getAttribute("z"));
 
-                                    //Retrieves scaling parameters
-
-                                    var sx = Number(transformationSpecs[t].getAttribute("x"));
-                                    var sy = Number(transformationSpecs[t].getAttribute("y"));
-                                    var sz = Number(transformationSpecs[t].getAttribute("z"));
-
-                                    if (sx == null) {
-                                        this.onXMLMinorError("unable to parse x component of scaling; discarding transform");
-                                        break;
-                                    } else if (isNaN(sx))
-                                        return "non-numeric value for x component of scaling (node ID = " + nodeID + ")";
-
-                                    if (sy == null) {
-                                        this.onXMLMinorError("unable to parse y component of scaling; discarding transform");
-                                        break;
-                                    } else if (isNaN(sy))
-                                        return "non-numeric value for y component of scaling (node ID = " + nodeID + ")";
-
-                                    if (sz == null) {
-                                        this.onXMLMinorError("unable to parse z component of scaling; discarding transform");
-                                        break;
-                                    } else if (isNaN(sz))
-                                        return "non-numeric value for z component of scaling (node ID = " + nodeID + ")";
-
-                                    mat4.scale(transformMatrix, transformMatrix, [sx, sy, sz]);
-
+                                if (z == null) {
+                                    this.onXMLMinorError("unable to parse z-coordinate of translation; discarding transform");
                                     break;
+                                } else if (isNaN(z))
+                                    return "non-numeric value for z-coordinate of translation (node ID = " + nodeID + ")";
 
+                                mat4.translate(transformMatrix, transformMatrix, [x, y, z]);
 
-                                case "transformationref":
+                                break;
+                            case "rotate":
 
-                                    // Retrieves transformation ID.
-                                    var transformationID = transformationSpecs[t].getAttribute("id");
+                                // Retrieves rotation parameters.
 
-                                    if (transformationID == null)
-                                        return "unable to parse transformation ID (node ID = " + nodeID + ")";
+                                var axis = this.reader.getItem(transformationSpecs[t], 'axis', ['x', 'y', 'z']);
 
-                                    this.nodes[nodeID].transformationID = transformationID;
-
-                                    transformMatrix = this.transformations[transformationID].transform;
+                                if (axis == null) {
+                                    this.onXMLMinorError("unable to parse rotation axis; discarding transform");
                                     break;
+                                }
+                                var angle = Number(transformationSpecs[t].getAttribute("angle"));
 
-                                default:
+                                if (angle == null) {
+                                    this.onXMLMinorError("unable to parse rotation angle; discarding transform");
                                     break;
+                                } else if (isNaN(angle))
+                                    return "non-numeric value for rotation angle (node ID = " + nodeID + ")";
+
+                                mat4.rotate(transformMatrix, transformMatrix, angle * DEGREE_TO_RAD, this.axisCoords[axis]);
+
+                                break;
+                            case "scale":
+
+                                //Retrieves scaling parameters
+
+                                var sx = Number(transformationSpecs[t].getAttribute("x"));
+                                var sy = Number(transformationSpecs[t].getAttribute("y"));
+                                var sz = Number(transformationSpecs[t].getAttribute("z"));
+
+                                if (sx == null) {
+                                    this.onXMLMinorError("unable to parse x component of scaling; discarding transform");
+                                    break;
+                                } else if (isNaN(sx))
+                                    return "non-numeric value for x component of scaling (node ID = " + nodeID + ")";
+
+                                if (sy == null) {
+                                    this.onXMLMinorError("unable to parse y component of scaling; discarding transform");
+                                    break;
+                                } else if (isNaN(sy))
+                                    return "non-numeric value for y component of scaling (node ID = " + nodeID + ")";
+
+                                if (sz == null) {
+                                    this.onXMLMinorError("unable to parse z component of scaling; discarding transform");
+                                    break;
+                                } else if (isNaN(sz))
+                                    return "non-numeric value for z component of scaling (node ID = " + nodeID + ")";
+
+                                mat4.scale(transformMatrix, transformMatrix, [sx, sy, sz]);
+
+                                break;
+
+                            case "transformationref":
+
+                                // Retrieves transformation ID.
+                                var transformationID = transformationSpecs[t].getAttribute("id");
+
+                                if (transformationID == null)
+                                    return "unable to parse transformation ID (node ID = " + nodeID + ")";
+
+                                this.nodes[nodeID].transformationID = transformationID;
+
+                                transformMatrix = this.transformations[transformationID].transform;
+                                break;
+
+                            default:
+                                break;
                             }
-
-
 
                         }
                         this.nodes[nodeID].transform = transformMatrix;
                     }
 
                 }
-
 
                 for (var j = 0; j < descendants.length; j++) {
 
@@ -1816,7 +1768,7 @@ class MySceneGraph {
                         var leafType = descendants[j].attributes.getNamedItem('id').value;
                         this.nodes[nodeID].type = "primitive";
 
-                        this.nodes[nodeID].addLeaf(new MyPrimitiveNode(this, type, argss));
+                        this.nodes[nodeID].addLeaf(new MyPrimitiveNode(this,type,argss));
 
                         sizeChildren++;
                     } else
@@ -1858,8 +1810,6 @@ class MySceneGraph {
         console.log("   " + message);
     }
 
-
-
     /**
      * Displays the scene, processing each node, starting in the root node.
      */
@@ -1887,7 +1837,8 @@ class MySceneGraph {
         } else {
             this.nodes[node.nodeID].processed = true;
         }
-        var textura = this.textures["defaultTexture"]; //por oposição a = parTex;
+        var textura = this.textures["defaultTexture"];
+        //por oposição a = parTex;
         var material = parAsp;
         var ampS = parS;
         var ampT = parT;
@@ -1895,15 +1846,16 @@ class MySceneGraph {
         let flag = false;
 
         for (var m = 0; m < node.leaves.length; m++) {
-            
-        if(node.leaves[m].type == 'water'){
-   
-        this.scene.setActiveShader(this.scene.waterShader);
-        flag = true;
-         }else if(node.leaves[m].type == 'terrain'){
-            this.scene.setActiveShader(this.scene.terrainShader);
-            flag = true;
-         }
+
+            if (node.leaves[0].type == 'water') {
+
+               this.scene.setActiveShader(node.leaves[0].obj.waterShader);
+                flag = true;
+            } else if (node.leaves[0].type == 'terrain') {
+
+               // this.scene.setActiveShader(this.scene.terrainShader);
+                flag = true;
+            }
         }
 
         this.scene.pushMatrix();
@@ -1928,15 +1880,15 @@ class MySceneGraph {
             if (node.textureID != null) {
 
                 switch (node.textureID) {
-                    case 'inherit':
-                        textura = parTex;
-                        break;
-                    case 'none':
-                        //       textura.unbind();
-                        break;
-                    default:
-                        textura = this.textures[node.textureID];
-                        break;
+                case 'inherit':
+                    textura = parTex;
+                    break;
+                case 'none':
+                    //       textura.unbind();  
+                    break;
+                default:
+                    textura = this.textures[node.textureID];
+                    break;
                 }
 
             }
@@ -1977,12 +1929,13 @@ class MySceneGraph {
             for (var m = 0; m < node.leaves.length; m++) {
                 if (textura != null) {
 
-                    if (node.leaves[m].type == 'terrain' || node.leaves[m].type == 'water') {
-                        node.leaves[m].obj.updateTexCoords();
+                    if (node.leaves[0].type == 'terrain' || node.leaves[0].type == 'water') {
+                        node.leaves[0].obj.updateTexCoords();
                     }
+                    //else{
 
                     textura.bind();
-
+                    //}
                 }
             }
             for (var j = 0; j < node.leaves.length; j++) {

@@ -76,9 +76,9 @@ class MyCylinder2 extends CGFobject {
 
     };
     display() {
-        this.scene.gl.disable(this.scene.gl.CULL_FACE);
+     //   this.scene.gl.disable(this.scene.gl.CULL_FACE);
         this.obj.display();
-        this.scene.gl.enable(this.scene.gl.CULL_FACE);
+       // this.scene.gl.enable(this.scene.gl.CULL_FACE);
     };
     updateTexCoords() {};
 };

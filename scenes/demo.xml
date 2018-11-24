@@ -114,7 +114,7 @@ limites inf sup esq direito do plano
     <texture id="relva" file="images/grass2.jpg" />
     <texture id="tiles" file="images/pavimento.jpg" />
     <texture id="egg" file="images/eggshell.jpg" />
-    <texture id="waterid" file="images/water2.jpg" />
+    <texture id="waterid" file="images/water.jpg" />
     <texture id="terrainid" file="images/earth.jpg" />
     <texture id="heightmap" file="images/heightmap.png" />
     <texture id="wavemap" file="images/water2.jpg" />
@@ -395,8 +395,8 @@ limites inf sup esq direito do plano
 
 <component id="terreno">
       <transformation>
-       <translate x="0.0" y="-0.05" z="12.5" />
-        <scale x="45.0" y="30.0" z="20.0" />
+       <translate x="0.0" y="-0.55" z="0.0" />
+        <scale x="45.0" y="30.0" z="45.0" />
          <rotate axis="x" angle="-90" />
         
       </transformation>
@@ -411,9 +411,10 @@ limites inf sup esq direito do plano
 
 <component id="agua">
       <transformation>
-     <translate x="-8.0" y="0.002" z="0.0" />
-        <scale x="10.0" y="30.0" z="45.0" />
+     <translate x="0.0" y="-5.002" z="0.0" />
+        <scale x="45.0" y="30.0" z="45.0" />
          <rotate axis="x" angle="-90" />
+         
       </transformation>
       <materials>
         <material id="inherit"/>

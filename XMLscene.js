@@ -48,19 +48,21 @@ class XMLscene extends CGFscene {
         this.setUpdatePeriod(100);
         //msecs
 
-        this.terrainShader = new CGFshader(this.gl,"shaders/texture3.vert","shaders/texture3.frag");
-        this.waterShader = new CGFshader(this.gl,"shaders/uScale.vert","shaders/uScale.frag");
+        /*   this.terrainShader = new CGFshader(this.gl,"shaders/shaderOne.vert","shaders/shaderOne.frag");
+     
 
         this.terrainShader.setUniformsValues({
-            uSampler2: 1
+            uSampler2: 0 //referencia à unidade de textura
+
         });
         this.waterShader.setUniformsValues({
-            uSampler2: 1
+            uSampler: 0
         });
-
+*/
     }
 
     update(currTime) {
+        this.updateScaleFactor(currTime);
         //this.initCameras();   
         if (this.startTime == 0 || this.startTime == null)
             this.startTime = currTime;
@@ -81,10 +83,11 @@ class XMLscene extends CGFscene {
             this.lastTime = currTime;
         }
 
-        var factor = (Math.sin((currTime * 3.0) % 3141 * 0.0002) + 1.0) * 0.5;
+        //   var factor = (Math.sin((currTime * 3.0) % 3141 * 0.0002) + 1.0) * 0.5;
+        /*    var factor = (Math.sin(currTime) / 2) + 0.5;
         this.waterShader.setUniformsValues({
             timeFactor: this.time
-        });
+        });*/
 
     }
 
@@ -101,13 +104,16 @@ class XMLscene extends CGFscene {
         this.camera = new CGFcamera(0.4,0.1,500,vec3.fromValues(15, 15, 15),vec3.fromValues(0, 0, 0));
     }
 
-    updateScaleFactor(v) {// this.testShaders[1].setUniformsValues({ normScale: this.scaleFactor });
-    //this.testShaders[2].setUniformsValues({ normScale: this.scaleFactor });
-    //this.testShaders[5].setUniformsValues({ normScale: this.scaleFactor });
-
+    updateScaleFactor(currTime) {
+        // this.waterShader.setUniformsValues({timeFactor: v});
+     //    let factor = Math.sin(Date.now() / 2) * 0.5;
+        //let factor = (Math.sin((currTime * 3.0) % 3141 * 0.0002) + 1.0) * 0.5;
+       /* this.activeShader.setUniformsValues({
+            factor: factor,
+            colormap: 2
+        });*/
     }
-
-    /**
+    ;/**
      * Initializes the scene lights with the values read from the XML file.
      */
     initLights() {
