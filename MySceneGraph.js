@@ -1892,19 +1892,12 @@ class MySceneGraph {
         var ampS = parS;
         var ampT = parT;
 
-
-
         let flag = false;
 
-
-
-        //meter uma verificacao se eh o node...{
-        //this.scene.selectedExampleShader
         for (var m = 0; m < node.leaves.length; m++) {
-        console.log(node.leaves);
-        console.log("antes");
+            
         if(node.leaves[m].type == 'water'){
-            console.log("dentro");
+   
         this.scene.setActiveShader(this.scene.waterShader);
         flag = true;
          }else if(node.leaves[m].type == 'terrain'){
@@ -1984,7 +1977,7 @@ class MySceneGraph {
             for (var m = 0; m < node.leaves.length; m++) {
                 if (textura != null) {
 
-                    if (node.leaves[m].type == 'water') { //(node.leaves[m].type == 'terrain' || node.leaves[m].type == 'water') {
+                    if (node.leaves[m].type == 'terrain' || node.leaves[m].type == 'water') {
                         node.leaves[m].obj.updateTexCoords();
                     }
 

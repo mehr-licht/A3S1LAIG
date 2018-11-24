@@ -395,8 +395,10 @@ limites inf sup esq direito do plano
 
 <component id="terreno">
       <transformation>
-        <translate x="-22.4" y="14.5" z="-20" />
-        <scale x="5.0" y="30.0" z="45.0" />
+       <translate x="0.0" y="-0.05" z="12.5" />
+        <scale x="45.0" y="30.0" z="20.0" />
+         <rotate axis="x" angle="-90" />
+        
       </transformation>
       <materials>
         <material id="inherit"/>
@@ -409,8 +411,9 @@ limites inf sup esq direito do plano
 
 <component id="agua">
       <transformation>
-        <translate x="-22.4" y="14.5" z="-25" />
+     <translate x="-8.0" y="0.002" z="0.0" />
         <scale x="10.0" y="30.0" z="45.0" />
+         <rotate axis="x" angle="-90" />
       </transformation>
       <materials>
         <material id="inherit"/>

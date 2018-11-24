@@ -1,6 +1,5 @@
 var DEGREE_TO_RAD = Math.PI / 180;
 
-
 /**
  * XMLscene class, representing the scene that is to be rendered.
  */
@@ -20,7 +19,6 @@ class XMLscene extends CGFscene {
 
         this.interface = myinterface;
         this.lightValues = {};
-
 
         this.lastTime = 0;
         let currentDate = new Date();
@@ -47,24 +45,19 @@ class XMLscene extends CGFscene {
 
         this.axis = new CGFaxis(this);
 
+        this.setUpdatePeriod(100);
+        //msecs
 
-        this.setUpdatePeriod(100); //msecs
+        this.terrainShader = new CGFshader(this.gl,"shaders/texture3.vert","shaders/texture3.frag");
+        this.waterShader = new CGFshader(this.gl,"shaders/uScale.vert","shaders/uScale.frag");
 
+        this.terrainShader.setUniformsValues({
+            uSampler2: 1
+        });
+        this.waterShader.setUniformsValues({
+            uSampler2: 1
+        });
 
-        this.terrainShader =  new CGFshader(this.gl, "shaders/flat.vert", "shaders/flat.frag");
-        this.waterShader =  new CGFshader(this.gl, "shaders/uScale.vert", "shaders/uScale.frag");
-   
-
-
-     //   this.testShaders[4].setUniformsValues({ uSampler2: 1 });
-       // this.testShaders[5].setUniformsValues({ uSampler2: 1 });
-
-
-        // texture will have to be bound to unit 1 later, when using the shader, with "this.texture2.bind(1);"
-        /* meti na classe        
-        this.testShaders[4].setUniformsValues({ uSampler2: 1 });
-                this.testShaders[5].setUniformsValues({ uSampler2: 1 });
-        */
     }
 
     update(currTime) {
@@ -89,7 +82,9 @@ class XMLscene extends CGFscene {
         }
 
         var factor = (Math.sin((currTime * 3.0) % 3141 * 0.0002) + 1.0) * 0.5;
-        this.waterShader.setUniformsValues({timeFactor:this.time});
+        this.waterShader.setUniformsValues({
+            timeFactor: this.time
+        });
 
     }
 
@@ -98,20 +93,17 @@ class XMLscene extends CGFscene {
         this.setDiffuse(0.2, 0.4, 0.8, 1.0);
         this.setSpecular(0.2, 0.4, 0.8, 1.0);
         this.setShininess(10.0);
-    };
-
-    /**
+    }
+    ;/**
      * Initializes the scene cameras.
      */
     initCameras() {
-        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
+        this.camera = new CGFcamera(0.4,0.1,500,vec3.fromValues(15, 15, 15),vec3.fromValues(0, 0, 0));
     }
 
-
-    updateScaleFactor(v) {
-       // this.testShaders[1].setUniformsValues({ normScale: this.scaleFactor });
-        //this.testShaders[2].setUniformsValues({ normScale: this.scaleFactor });
-        //this.testShaders[5].setUniformsValues({ normScale: this.scaleFactor });
+    updateScaleFactor(v) {// this.testShaders[1].setUniformsValues({ normScale: this.scaleFactor });
+    //this.testShaders[2].setUniformsValues({ normScale: this.scaleFactor });
+    //this.testShaders[5].setUniformsValues({ normScale: this.scaleFactor });
 
     }
 
@@ -125,7 +117,8 @@ class XMLscene extends CGFscene {
         // Reads the lights from the scene graph.
         for (var key in this.graph.lights) {
             if (i >= 8)
-                break; // Only eight lights allowed by WebGL.
+                break;
+            // Only eight lights allowed by WebGL.
 
             if (this.graph.lights.hasOwnProperty(key)) {
                 var light = this.graph.lights[key];
@@ -149,7 +142,6 @@ class XMLscene extends CGFscene {
         }
     }
 
-
     /* Handler called when the graph is finally loaded. 
      * As loading is asynchronous, this may be called already after the application has started the run loop
      */
@@ -168,11 +160,10 @@ class XMLscene extends CGFscene {
 
         this.interface.setActiveCamera(this.camera);
 
-        this.axis = new CGFaxis(this, this.graph.axis_length);
+        this.axis = new CGFaxis(this,this.graph.axis_length);
 
         //ambient and background details according to parsed graph
-        this.setGlobalAmbientLight(this.graph.ambientIllumination[0], this.graph.ambientIllumination[1],
-            this.graph.ambientIllumination[2], this.graph.ambientIllumination[3]);
+        this.setGlobalAmbientLight(this.graph.ambientIllumination[0], this.graph.ambientIllumination[1], this.graph.ambientIllumination[2], this.graph.ambientIllumination[3]);
 
         this.gl.clearColor(this.graph.background[0], this.graph.background[1], this.graph.background[2], this.graph.background[3]);
 
@@ -185,7 +176,6 @@ class XMLscene extends CGFscene {
             this.viewsList.push(this.graph.views[v][0])
         }
 
-
         var views = this.interface.gui.add(this, 'currView', this.viewsList).name('views');
 
         // Adds lights group.
@@ -197,7 +187,6 @@ class XMLscene extends CGFscene {
         this.sceneInited = true;
         //alert(this.graph.animations['rotunda'].initialAngle);
     }
-
 
     /**
      * Displays the scene.
@@ -239,11 +228,9 @@ class XMLscene extends CGFscene {
                 }
             }
 
-
             this.setCameraUsed();
             // Displays the scene (MySceneGraph function).
             this.graph.displayScene();
-
 
         } else {
             // Draw axis
@@ -251,7 +238,6 @@ class XMLscene extends CGFscene {
         }
 
         this.popMatrix();
-
 
         //  
         // ---- END Background, camera and axis setup

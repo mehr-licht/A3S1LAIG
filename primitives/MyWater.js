@@ -7,12 +7,13 @@
 
 class MyWater extends MyPlane {
 
+
     constructor(scene, uParts, vParts, idtexture, idwavemap, heightscale, texscale) {
         super(scene, uParts, vParts);
         this.idtexture=idtexture;
         this.idwavemap=idwavemap;
         this.texture = new CGFtexture(scene, this.scene.graph.textures[this.idtexture]);
-        this.idwavemap = new CGFtexture(scene, this.scene.graph.textures[idwavemap]);
+        this.wavemap = new CGFtexture(scene, this.scene.graph.textures[this.idwavemap]);
 
         this.heightscale = heightscale;
         this.texscale = texscale;
@@ -33,7 +34,7 @@ this.shader = this.scene.waterShader;
 
        // alert(this.texture);
         this.texture.bind();
-        this.idwavemap.bind(1);
+        this.wavemap.bind(1);
 
         this.obj.display();
         this.scene.popMatrix();
