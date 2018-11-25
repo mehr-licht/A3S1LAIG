@@ -61,15 +61,12 @@ function MyPrimitiveNode(graph, type, args) {
             /*SHADERS*/
 
         case 'terrain':
-
             //<terrain idtexture="terrainid" idheightmap="1" parts="100" heightscale="0.1" />
             this.obj = new MyTerrain(this.graph.scene, Number(args[2]), Number(args[2]), args[0], args[1], Number(args[3]));
             break;
 
 
         case 'water':
-
-
             //<water idtexture="waterid" idwavemap="1" parts="100" heightscale="0.1" texscale="1" />
             this.obj = new MyWater(this.graph.scene, Number(args[2]), Number(args[2]), args[0], args[1], Number(args[3]), Number(args[4])); //[4]texscale nao passa
             break;

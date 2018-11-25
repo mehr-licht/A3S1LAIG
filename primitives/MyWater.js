@@ -26,31 +26,26 @@ class MyWater extends MyPlane {
         this.vParts = vParts;
 
         this.shader = this.scene.waterShader;
-        this.scene.updateScaleFactor();
+        // this.scene.updateScaleFactor();
     }
 
     display() {
-        //this.scene.gl.disable(this.scene.gl.CULL_FACE);
-        //aqui tinha o shader
+
         this.scene.setActiveShader(this.waterShader);
-       // let factor = Math.sin(Date.now() / 2) * 0.5;
-      let factor = (Math.sin((Date.now() / 3.0) % 3141 * 0.0002) + 1.0) * 0.25;
+        // let factor = Math.sin(Date.now() / 2) * 0.5;
+        let factor = (Math.sin((Date.now() / 3.0) % 3141 * 0.0002) + 1.0) * 0.25;
         this.scene.pushMatrix();
 
-       this.waterShader.setUniformsValues({
-          factor: factor,
-        colormap: 2
+        this.waterShader.setUniformsValues({
+            factor: factor,
+            colormap: 2
         });
-     
-        // alert(this.texture);
+
         this.texture.bind(2);
-        //this.wavemap.bind(1);
 
         this.obj.display();
         this.scene.popMatrix();
- this.scene.setActiveShader(this.scene.defaultShader);
-        // this.scene.setActiveShader(this.scene.defaultShader);
-        //  this.scene.gl.enable(this.scene.gl.CULL_FACE);
+        this.scene.setActiveShader(this.scene.defaultShader);
 
     }
 

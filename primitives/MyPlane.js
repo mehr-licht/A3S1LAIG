@@ -11,7 +11,6 @@ class MyPlane extends CGFobject {
         this.uParts = uParts;
         this.vParts = vParts;
 
-        //  alert(this.altimetry);
         this.nurbsSurface = new CGFnurbsSurface(1,
             1, [ // U = 0
                 [ // V = 0..1;

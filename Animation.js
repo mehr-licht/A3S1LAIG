@@ -20,9 +20,6 @@ class Animation {
      */
     update(node, currTime) { //se não existir override é este que é chamado! 
         //ENUNCIADO actualizar o seu estado em funcao do tempo
-        //  var nop = node;
-        //var tim = currTime;
-
         //  var caller = Animation.instanceof;
         //caller.update(node, currTime);
         // this.apply(nop, tim);
@@ -36,12 +33,5 @@ class Animation {
 
     };
 
-    /**
-     * Returns the current partial time in the animation storyboard
-     * @return Returns the current partial time
-     */
-    getPartialTime() {
-        return this.partialTime;
-    }
 
 }

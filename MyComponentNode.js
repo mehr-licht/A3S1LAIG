@@ -79,21 +79,12 @@ MyComponentNode.prototype.getChildren = function() {
  */
 MyComponentNode.prototype.updateAnim = function(dt) {
 
-    // dt /= 1000; //implica rapidez de updates
-
     for (var i = 0; i < this.animations.length; i++) { //POR CAUSA DESTE FOR FAZia UMA ANIMAÇÃO DE CADA VEZ
 
         var animation = this.graph.animations[this.animations[i]];
-        //alert("animation.animTime=" + animation.animTime + ">= dt=" + dt);
-        //if (animation.animTime < dt) {
-        // alert("cN=" + dt);
+       
         animation.update(this, dt); //este chama o "circular"/"linear"
-
-        // break;
-        // }
-        /*else {
-                   // alert("animation=" + this.animations[i] + "\ndt=" + dt + "\nanimDur=" + animation.animTime
-                   dt -= animation.animTime;
-               }*/
+        animation.apply(this);
+      
     }
 }

@@ -48,22 +48,11 @@ class XMLscene extends CGFscene {
         this.setUpdatePeriod(100);
         //msecs
 
-        /*   this.terrainShader = new CGFshader(this.gl,"shaders/shaderOne.vert","shaders/shaderOne.frag");
-     
-
-        this.terrainShader.setUniformsValues({
-            uSampler2: 0 //referencia à unidade de textura
-
-        });
-        this.waterShader.setUniformsValues({
-            uSampler: 0
-        });
-*/
     }
 
     update(currTime) {
-        this.updateScaleFactor(currTime);
-        //this.initCameras();   
+       // this.updateScaleFactor(currTime);
+      
         if (this.startTime == 0 || this.startTime == null)
             this.startTime = currTime;
 
@@ -74,20 +63,12 @@ class XMLscene extends CGFscene {
             for (var nodeID in this.graph.nodes) {
                 if (this.graph.nodes[nodeID].animations != null) {
                     for (var each in this.graph.nodes[nodeID].animations) {
-                        // var esta = this.graph.nodes[nodeID].animations[each];
-                        // this.graph.animations[esta].update(this.elapsedTime); // .update(this.totalTime);
                         this.graph.nodes[nodeID].updateAnim(this.elapsedTime);
                     }
                 }
             }
             this.lastTime = currTime;
         }
-
-        //   var factor = (Math.sin((currTime * 3.0) % 3141 * 0.0002) + 1.0) * 0.5;
-        /*    var factor = (Math.sin(currTime) / 2) + 0.5;
-        this.waterShader.setUniformsValues({
-            timeFactor: this.time
-        });*/
 
     }
 
@@ -97,23 +78,15 @@ class XMLscene extends CGFscene {
         this.setSpecular(0.2, 0.4, 0.8, 1.0);
         this.setShininess(10.0);
     }
-    ;/**
+    /**
      * Initializes the scene cameras.
      */
     initCameras() {
         this.camera = new CGFcamera(0.4,0.1,500,vec3.fromValues(15, 15, 15),vec3.fromValues(0, 0, 0));
     }
 
-    updateScaleFactor(currTime) {
-        // this.waterShader.setUniformsValues({timeFactor: v});
-     //    let factor = Math.sin(Date.now() / 2) * 0.5;
-        //let factor = (Math.sin((currTime * 3.0) % 3141 * 0.0002) + 1.0) * 0.5;
-       /* this.activeShader.setUniformsValues({
-            factor: factor,
-            colormap: 2
-        });*/
-    }
-    ;/**
+    
+    /**
      * Initializes the scene lights with the values read from the XML file.
      */
     initLights() {
@@ -190,8 +163,7 @@ class XMLscene extends CGFscene {
         this.animations = [];
         this.setUpdatePeriod(100 / 6);
 
-        this.sceneInited = true;
-        //alert(this.graph.animations['rotunda'].initialAngle);
+        this.sceneInited = true;    
     }
 
     /**

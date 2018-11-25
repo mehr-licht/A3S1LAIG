@@ -1303,18 +1303,24 @@ class MySceneGraph {
                         this.onXMLError("invalid animation <" + animationID + ">");
                         continue;
                     }
-                    var controlPXX = Number(this.reader.getString(animationSpecs[j], 'xx'));
+                    //   var controlPXX = parseFloat(animationSpecs[j].getAttribute("xx"));
+                    //    var controlPXX =  Number(animationSpecs[j].getAttribute('xx'))
+                    var controlPXX = parseFloat(this.reader.getString(animationSpecs[j], 'xx'));
                     if (isNaN(controlPXX))
                         return "non-numeric value for controlPoint axis x  " + animationID + ")";
-
-                    var controlPYY = Number(this.reader.getString(animationSpecs[j], 'yy'));
+                    //var controlPYY = parseFloat(animationSpecs[j].getAttribute("yy"));
+                    //  alert(controlPYY);// +": "+!isNaN(parseFloat(controlPYY )) && isFinite(controlPYY));
+                    // var controlPYY =  Number(animationSpecs[j].getAttribute('yy'))
+                    var controlPYY = parseFloat(this.reader.getString(animationSpecs[j], 'yy'));
                     if (isNaN(controlPYY))
                         return "non-numeric value for controlPoint axis y  " + animationID + ")";
-                    var controlPZZ = Number(this.reader.getString(animationSpecs[j], 'zz'));
+                    //    var controlPZZ =parseFloat(animationSpecs[j].getAttribute("zz"));
+                    //      var controlPZZ =  Number(animationSpecs[j].getAttribute('zz'))
+                    var controlPZZ = parseFloat(this.reader.getString(animationSpecs[j], 'zz'));
                     if (isNaN(controlPZZ))
                         return "non-numeric value for controlPoint axis z " + animationID + ")";
 
-                    args.push([controlPXX, controlPYY, controlPZZ])
+                    args.push([parseFloat(controlPXX), parseFloat(controlPYY), parseFloat(controlPZZ)])
 
                 }
                 //pelo menos dois pontos de controlo
@@ -1322,8 +1328,10 @@ class MySceneGraph {
                     this.onXMLError("Invalid control points for linear animation <" + animationID + ">");
                     continue;
                 }
-                this.animations[animationID] = new LinearAnimation(this.scene,animationID,animationSpan,args)
+
+                this.animations[animationID] = new newLinearAnimation(this.scene,animationID,animationSpan,args)
                 //[animationSpan, args]; scene, id, animTime, controlPoints
+
                 break;
 
             case "circular":
@@ -1405,7 +1413,7 @@ class MySceneGraph {
                     return "primitive ID must unique (conflict with ID = " + primitiveID + ")";
 
                 if (primitiveSpecs[0].nodeName == 'vehicle') {
-primitive = primitiveSpecs[0].nodeName;
+                    primitive = primitiveSpecs[0].nodeName;
                     primitivavalida = true;
 
                 }
@@ -1753,13 +1761,12 @@ primitive = primitiveSpecs[0].nodeName;
 
                         var nomePrim = this.reader.getString(descendants[j], 'id');
                         var type = this.primitives[nomePrim][1][0];
-                        
+
                         var argss = [];
 
                         for (var attr = 1; attr < this.primitives[nomePrim][1].length; attr++) {
                             argss.push(this.primitives[nomePrim][1][attr]);
 
-                        
                         }
                         if (type != null)
                             this.log("   Leaf: " + type);
@@ -1855,7 +1862,7 @@ primitive = primitiveSpecs[0].nodeName;
                 flag = true;
             } else if (node.leaves[0].type == 'terrain') {
 
-                // this.scene.setActiveShader(this.scene.terrainShader);
+                this.scene.setActiveShader(node.leaves[0].obj.terrainShader);
                 flag = true;
             }
         }
@@ -1934,12 +1941,11 @@ primitive = primitiveSpecs[0].nodeName;
                     if (node.leaves[0].type == 'terrain' || node.leaves[0].type == 'water') {
                         node.leaves[0].obj.updateTexCoords();
                     }
-                    //else{
 
-                    textura.bind();
-                    //}
                 }
             }
+
+            textura.bind();
             for (var j = 0; j < node.leaves.length; j++) {
 
                 node.leaves[j].updateTexCoords(ampS, ampT);
