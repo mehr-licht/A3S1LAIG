@@ -52,9 +52,8 @@ function MyPrimitiveNode(graph, type, args) {
             break;
 
         case 'vehicle':
-            alert("veh");
-            //<vehicle />
-            // inclui pelo menos 1 superficie nao plana gerada utilizando NURBs or js
+             // inclui pelo menos 1 superficie nao plana gerada utilizando NURBs or js
+             this.obj = new MyVehicle(this.graph.scene);
             break;
 
 

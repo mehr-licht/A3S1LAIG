@@ -1,7 +1,8 @@
 # **LAIG**
 
 [![video](https://i.imgur.com/dxewJDX.jpg)](https://streamable.com/s/1cc3h/mcytzg)
-
+![patch is spaceEgg](https://i.imgur.com/14LqKNH.jpg)
+![patch is boat and vehicle is spaceEgg](https://i.imgur.com/qnDiG2v.jpg)
 
 # LogBook TODO
 

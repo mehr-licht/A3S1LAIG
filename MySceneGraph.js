@@ -1405,6 +1405,7 @@ class MySceneGraph {
                     return "primitive ID must unique (conflict with ID = " + primitiveID + ")";
 
                 if (primitiveSpecs[0].nodeName == 'vehicle') {
+primitive = primitiveSpecs[0].nodeName;
                     primitivavalida = true;
 
                 }
@@ -1751,15 +1752,15 @@ class MySceneGraph {
                     } else if (descendants[j].nodeName == "primitiveref") {
 
                         var nomePrim = this.reader.getString(descendants[j], 'id');
-
                         var type = this.primitives[nomePrim][1][0];
+                        
                         var argss = [];
 
                         for (var attr = 1; attr < this.primitives[nomePrim][1].length; attr++) {
                             argss.push(this.primitives[nomePrim][1][attr]);
 
+                        
                         }
-
                         if (type != null)
                             this.log("   Leaf: " + type);
                         else
@@ -1832,6 +1833,7 @@ class MySceneGraph {
     }
 
     processNode(node, tg, parTex, parAsp, parS, parT) {
+
         if (this.nodes[node.nodeID].processed != null) {
             this.shown = true;
         } else {
@@ -1849,11 +1851,11 @@ class MySceneGraph {
 
             if (node.leaves[0].type == 'water') {
 
-               this.scene.setActiveShader(node.leaves[0].obj.waterShader);
+                this.scene.setActiveShader(node.leaves[0].obj.waterShader);
                 flag = true;
             } else if (node.leaves[0].type == 'terrain') {
 
-               // this.scene.setActiveShader(this.scene.terrainShader);
+                // this.scene.setActiveShader(this.scene.terrainShader);
                 flag = true;
             }
         }
