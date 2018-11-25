@@ -34,7 +34,7 @@ class MyWater extends MyPlane {
         //aqui tinha o shader
         this.scene.setActiveShader(this.waterShader);
        // let factor = Math.sin(Date.now() / 2) * 0.5;
-      let factor = (Math.sin((Date.now() * 3.0) % 3141 * 0.0002) + 1.0) * 0.5;
+      let factor = (Math.sin((Date.now() / 3.0) % 3141 * 0.0002) + 1.0) * 0.25;
         this.scene.pushMatrix();
 
        this.waterShader.setUniformsValues({

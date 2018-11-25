@@ -113,7 +113,9 @@ limites inf sup esq direito do plano
     <texture id="boia" file="images/buoy2.jpg" />
     <texture id="relva" file="images/grass2.jpg" />
     <texture id="tiles" file="images/pavimento.jpg" />
-    <texture id="egg" file="images/eggshell.jpg" />
+    <texture id="egg2" file="images/eggshell.jpg" />
+    <texture id="egg" file="images/egg.png" />
+    <texture id="red" file="images/red.jpg" />
     <texture id="waterid" file="images/water.jpg" />
     <texture id="terrainid" file="images/earth.jpg" />
     <texture id="heightmap" file="images/heightmap.png" />
@@ -147,6 +149,12 @@ limites inf sup esq direito do plano
       <emission r="0.0" g="0.0" b="0.0" a="1"/>
     </material>
 
+ <material id="redMaterial" shininess="1">
+      <specular r="1.0" g="0.012" b="0.05" a="1"/>
+      <diffuse r="1.0" g="0.09" b="0.005" a="1"/>
+      <ambient r="1.0" g="0.02" b="0.05" a="1"/>
+      <emission r="1.0" g="0.1" b="0.002" a="1"/>
+    </material>
 
     <material id="blacktMaterial" shininess="1">
       <specular r="0.0" g="0.0" b="0.0" a="1"/>
@@ -238,7 +246,8 @@ limites inf sup esq direito do plano
     <primitive id="planoo">
       <plane npartsU="5" npartsV="8" />
     </primitive >
-    <primitive id="patcho">
+
+  <primitive id="patcho">
       <!-- o numero de pontos de controlo dentro da primitiva patch eg npointsU*npointsV-->
       <patch npointsU="3" npointsV="3" npartsU="20" npartsV="20">
 
@@ -264,6 +273,25 @@ limites inf sup esq direito do plano
 
       </patch >
     </primitive >
+
+<primitive id="legPatcho">
+      <!-- o numero de pontos de controlo dentro da primitiva patch eg npointsU*npointsV-->
+      <patch npointsU="2" npointsV="1" npartsU="20" npartsV="20">
+
+        <controlpoint xx="-1.0" yy="0" zz="0" />
+        <controlpoint xx="-1.0" yy="2.0" zz="0" />
+      
+        <controlpoint xx="0" yy="0" zz="0" />
+        <controlpoint xx="0" yy="1.5" zz="0" />
+      
+        <controlpoint xx="1.0" yy="-2.0" zz="0" />
+        <controlpoint xx="1.0" yy="-2.0" zz="0" />
+
+      </patch >
+    </primitive >
+    
+
+
     <primitive id="vechicleo">
       <!-- inclui pelo menos 1 superficie nao plana gerada utilizando NURBs or js-->
       <vehicle />
@@ -307,16 +335,16 @@ limites inf sup esq direito do plano
       <texture id="chessboard" length_s="1.0" length_t="1.0" />
       <!-- so para ter uma -->
       <children>
-        <componentref id="arvore" />
+          <componentref id="arvore" />
         <componentref id="mesa" />
         <componentref id="boia" />
-        <componentref id="chao" />
-        <componentref id="relva" />
-        <componentref id="parede1" />
-        <componentref id="patchTeste" />
+       <!-- <componentref id="chao" />  DEBAIXO DO TERRENO-->
+       <!-- <componentref id="relva" />
+        <componentref id="parede1" /> -->
+        <componentref id="spaceEgg" />
         <componentref id="arvore2" />
         <componentref id="terreno" />
-          <componentref id="agua" />
+          <componentref id="agua" /> 
       </children>
     </component>
 
@@ -336,20 +364,126 @@ limites inf sup esq direito do plano
     </component>
 
 
-    <component id="patchTeste">
+<component id="spaceEgg">
       <transformation>
-        <translate x="10.0" y="5" z="5" />
+         <translate x="10.0" y="5" z="5" />
+      </transformation>
+      <materials>
+        <material id="brownMaterial"/>
+      </materials>
+      <texture id="none" length_s="1.0" length_t="1.0"/>
+      <children>
+        <componentref id="corpo" />
+       <componentref id="eggLegs" />
+      </children>
+    </component>
+
+<component id="corpo">
+      <transformation>
+      
         <scale x="1.0" y="1.0" z="1.0" />
-        <rotate axis="z" angle="-90"/>
+    
       </transformation>
       <materials>
         <material id="brownMaterial"/>
       </materials>
       <texture id="egg" length_s="1.0" length_t="1.0"/>
       <children>
+        <componentref id="halfEgg1" />
+        <componentref id="halfEgg2" />
+      </children>
+    </component>
+
+<component id="eggLegs">
+      <transformation>
+          <scale x="0.4" y="0.4" z="0.4" />
+      </transformation>
+      <materials>
+        <material id="defaultMaterial"/>
+      </materials>
+      <texture id="red" length_s="1.0" length_t="1.0"/>
+      <children>
+        <componentref id="legEgg1" />
+        <componentref id="legEgg2" />
+          <componentref id="legEgg3" />
+      </children>
+    </component>
+
+ <component id="halfEgg1">
+      <transformation>
+       <rotate axis="z" angle="180"/>
+      </transformation>
+      <materials>
+        <material id="inherit"/>
+      </materials>
+      <texture id="inherit" length_s="1.0" length_t="1.0"/>
+      <children>
         <primitiveref id="patcho" />
       </children>
     </component>
+
+
+
+
+<component id="halfEgg2">
+      <transformation>
+      <rotate axis="y" angle="180"/>
+      </transformation>
+      <materials>
+        <material id="inherit"/>
+      </materials>
+      <texture id="inherit" length_s="1.0" length_t="1.0"/>
+      <children>
+        <primitiveref id="patcho" />
+      </children>
+    </component>
+
+
+
+    <component id="legEgg1">
+      <transformation>
+        <translate x="-4" y="2.5" z="-0.25" />
+         <scale x="2" y="1" z="1"/>
+      </transformation>
+      <materials>
+        <material id="redMaterial"/>
+      </materials>
+      <texture id="inherit" length_s="1.0" length_t="1.0"/>
+      <children>
+        <primitiveref id="legPatcho" />
+      </children>
+    </component>
+
+    <component id="legEgg2">
+      <transformation>
+        <translate x="-4" y="-1" z="1" />
+         <scale x="2" y="1" z="1"/>
+        <rotate axis="x" angle="120"/>
+      </transformation>
+      <materials>
+        <material id="redMaterial"/>
+      </materials>
+      <texture id="inherit" length_s="1.0" length_t="1.0"/>
+      <children>
+        <primitiveref id="legPatcho" />
+      </children>
+    </component>
+
+        <component id="legEgg3">
+      <transformation>
+          <translate x="-4" y="-1" z="-1" />
+           <scale x="2" y="1" z="1"/>
+  <rotate axis="x" angle="-120"/>
+      </transformation>
+      <materials>
+        <material id="redMaterial"/>
+      </materials>
+      <texture id="inherit" length_s="1.0" length_t="1.0"/>
+      <children>
+        <primitiveref id="legPatcho" />
+      </children>
+    </component>
+
 
     <component id="arvore2">
       <transformation>
@@ -412,7 +546,7 @@ limites inf sup esq direito do plano
 <component id="agua">
       <transformation>
      <translate x="0.0" y="-5.002" z="0.0" />
-        <scale x="45.0" y="30.0" z="45.0" />
+        <scale x="45.0" y="27.0" z="45.0" />
          <rotate axis="x" angle="-90" />
          
       </transformation>

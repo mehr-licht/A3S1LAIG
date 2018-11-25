@@ -38,6 +38,25 @@ class LightingScene extends CGFscene
 		
 		this.surfaces = [];
 		
+this.makeSurface("leg", 2, // degree on U: 2 control vertexes U
+						 1, // degree on V: 2 control vertexes on V
+						[	// U = 0
+							[ // V = 0..1;
+								 [-1.0, 0.0, 0.0, 1 ],
+								 [-1.0,  2.0, 0.0, 1 ]	
+							],
+							// U = 1
+							[ // V = 0..1
+								 [ 0.0, 0.0, 0.0, 1 ],
+								  [0.0,  1.5, 0.0, 1 ]							 
+							],
+							// U = 2
+							[ // V = 0..1
+								 [ 1.0, -2.0, 0.0, 1 ],
+								  [1.0, -2.0, 0.0, 1 ]							 
+							]
+						], // translation of surface 
+						[12.5,0,0]);
 
 		this.makeSurface("0", 1, // degree on U: 2 control vertexes U
 						 1, // degree on V: 2 control vertexes on V
