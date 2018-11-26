@@ -32,13 +32,13 @@ class CircularAnimation extends Animation {
         this.dist = Math.sqrt(this.distx ** 2 + this.distz ** 2);
         this.animationEnd = false;
         this.omega = (this.dist / this.animTime) / this.radius;
-        this.angle=0;
+        this.angle = 0;
         this.segmentTimes.push(this.time);
     }
 
     update(node, dt) {
         if (dt <= this.tempo) {
-            this.angle = this.initialAngle + this.omega * dt*10;
+            this.angle = this.initialAngle + this.omega * dt * 10;
         } else {
             this.animationEnd = true;
         }
@@ -48,9 +48,11 @@ class CircularAnimation extends Animation {
         if (!this.animationEnd) {
             mat4.identity(node.animMatrix);
             mat4.translate(node.animMatrix, node.animMatrix, [this.centre[0], this.centre[1], this.centre[2]]);
-            mat4.rotate(node.animMatrix, node.animMatrix, this.angle, [0, 0, 1]);
+            mat4.rotate(node.animMatrix, node.animMatrix, this.angle, [0, 1, 0]);
             mat4.translate(node.animMatrix, node.animMatrix, [this.radius, 0, 0]);
-            mat4.rotate(node.animMatrix, node.animMatrix, Math.PI / 2, [0, 0, 1]);
+            if (this.angle > 0) {
+                mat4.rotate(node.animMatrix, node.animMatrix, Math.PI / 2, [0, 1, 0]);
+            }
         }
     }
 }

@@ -1939,13 +1939,14 @@ class MySceneGraph {
                 if (textura != null) {
 
                     if (node.leaves[0].type == 'terrain' || node.leaves[0].type == 'water') {
-                        node.leaves[0].obj.updateTexCoords();
+                      //  node.leaves[0].obj.updateTexCoords();
                     }
 
                 }
             }
 
             textura.bind();
+            
             for (var j = 0; j < node.leaves.length; j++) {
 
                 node.leaves[j].updateTexCoords(ampS, ampT);

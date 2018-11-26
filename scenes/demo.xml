@@ -206,7 +206,7 @@
         <controlpoint xx="3.0" yy="3.0" zz="3.0"/>
       </linear>
 
-      <linear id="percorreCantos" span="25">
+      <linear id="percorreCantos" span="59">
         <controlpoint xx="7.0" yy="0.1" zz="7.0"/>
         <!--posicao inicial da mesa-->
         <controlpoint xx="-5.0" yy="0.0" zz="5.0"/>
@@ -217,7 +217,7 @@
       <!-- center centro da animacao circcular-->
       <!-- radius raio rotacao-->
       <!-- startang and rotang angulo inicial(degrees) e angulo de rotacao(degrees)-->
-      <circular id="rotunda" span="5" center="0 0 0" radius="2" startang="2" rotang="180"/>
+      <circular id="rotunda" span="59" center="-2 0 -2" radius="2" startang="2" rotang="180"/>
 
     </animations>
 
