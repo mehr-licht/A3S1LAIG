@@ -18,7 +18,8 @@ class MyTerrain extends MyPlane {
         this.terrainShader = new CGFshader(this.scene.gl,"shaders/heightmap.vert","shaders/shaderOne.frag");
         this.terrainShader.setUniformsValues({
             heightmap: 1,
-            colormap: 2
+            colormap: 2,
+            heightscale: this.heightscale
         });
 
         this.heightscale = heightscale;
@@ -34,7 +35,8 @@ class MyTerrain extends MyPlane {
         this.scene.setActiveShader(this.terrainShader);
         this.terrainShader.setUniformsValues({
             heightmap: 1,
-            colormap: 2
+            colormap: 2,
+             heightscale: this.heightscale
         });
         
         this.scene.pushMatrix();

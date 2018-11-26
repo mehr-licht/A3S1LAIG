@@ -311,7 +311,7 @@
         <!-- id da textura vizualizada sobre o terreno potencia2 - mapa de alturas para formar terreno-->
         <!-- parts="100" plano com 100*100 divisoes-->
         <!-- textscale factor de escala das alturas-->
-        <terrain idtexture="terrainid" idheightmap="heightmap" parts="100" heightscale="0.1" />
+        <terrain idtexture="terrainid" idheightmap="heightmap" parts="100" heightscale="10" />
       </primitive>
       <primitive id="watero">
         <!-- baseada em shaders-->
@@ -319,7 +319,7 @@
         <!-- parts="100" plano com 100*100 divisoes-->
         <!-- factor de escala das alturas-->
         <!-- factor de escala das coordenadas de texura (para n de repeticoes no plano)-->
-        <water idtexture="waterid" idwavemap="wavemap" parts="100" heightscale="0.1" texscale="1" />
+        <water idtexture="waterid" idwavemap="wavemap" parts="100" heightscale="10" texscale="1.0" />
       </primitive>
 
     </primitives >

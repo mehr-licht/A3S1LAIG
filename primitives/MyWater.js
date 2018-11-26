@@ -17,7 +17,9 @@ class MyWater extends MyPlane {
         this.waterShader = new CGFshader(this.scene.gl,"shaders/shaderOne.vert","shaders/shaderOne.frag");
         this.waterShader.setUniformsValues({
             date: Date.now(),
-            colormap: 2
+            colormap: 2,
+            waterscale: this.heightscale,
+            texscale: this.texscale
         });
 
         this.heightscale = heightscale;
@@ -38,7 +40,9 @@ class MyWater extends MyPlane {
 
         this.waterShader.setUniformsValues({
             factor: factor,
-            colormap: 2
+            colormap: 2,
+            waterscale: this.heightscale,
+            texscale: this.texscale
         });
 
         this.texture.bind(2);
