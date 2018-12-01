@@ -20,7 +20,7 @@ void main() {
 
 	gl_Position = uPMatrix * uMVMatrix * vertex;
 
-	normal = vec4(aVertexNormal, 1.0);
+	normal = vec4(aVertexNormal, 1.0);//passa normal como vec4
 
-	coords=vertex/10.0;
+	coords=vertex/10.0;//passa coord do vertex/10
 }

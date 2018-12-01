@@ -11,3 +11,5 @@ uniform float normScale;
 void main() {
 	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition+aVertexNormal*normScale*0.1, 1.0);
 }
+//ultimo valor é escala - qto maior menor eh o objecto
+//penultimo é o passo da escala no slide

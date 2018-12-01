@@ -3,10 +3,10 @@ function LightingScene() {
     CGFscene.call(this);
     this.texture = null;
    	this.appearance = null;
-   	this.selectedExampleShader=0;
-   	this.wireframe=false;
+   	this.selectedExampleShader=0;//DropDown
+   	this.wireframe=false;//CheckBox
 	
-	this.scaleFactor=50.0;
+	this.scaleFactor=50.0;//Slide
 
 }
 
@@ -58,7 +58,7 @@ LightingScene.prototype.init = function (application) {
 
 	this.texture2 = new CGFtexture(this, "textures/FEUP.jpg");
 	
-	this.updateScaleFactor();
+	this.updateScaleFactor();//Slide
 
 	this.teapot=new Teapot(this);
 		
@@ -70,7 +70,7 @@ LightingScene.prototype.updateWireframe=function(v)
 		this.teapot.setLineMode();
 	else
 		this.teapot.setFillMode();
-		
+//controlo do CheckBox		
 }
 
 LightingScene.prototype.updateScaleFactor=function(v)
@@ -78,6 +78,7 @@ LightingScene.prototype.updateScaleFactor=function(v)
 	this.testShaders[1].setUniformsValues({normScale: this.scaleFactor});
 	this.testShaders[2].setUniformsValues({normScale: this.scaleFactor});
 	this.testShaders[5].setUniformsValues({normScale: this.scaleFactor});
+//controlo do Slide
 }
 
 LightingScene.prototype.initLights = function () {

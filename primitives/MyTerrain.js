@@ -16,12 +16,12 @@ class MyTerrain extends MyPlane {
         this.heightmap = this.scene.graph.textures[this.idheightmap];
 
         this.terrainShader = new CGFshader(this.scene.gl,"shaders/heightmap.vert","shaders/shaderOne.frag");
-        this.terrainShader.setUniformsValues({
+     /*   this.terrainShader.setUniformsValues({
             heightmap: 1,
             colormap: 2,
             heightscale: this.heightscale
         });
-
+*/
         this.heightscale = heightscale;
         this.uParts = uParts;
         this.vParts = vParts
@@ -40,6 +40,7 @@ class MyTerrain extends MyPlane {
         });
         
         this.scene.pushMatrix();
+        
         this.heightmap.bind(1);
         this.colormap.bind(2);
 

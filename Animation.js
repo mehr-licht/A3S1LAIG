@@ -28,7 +28,7 @@ class Animation {
     /**
      * Applies the animation 
      */
-    apply(node, currTime) {
+    apply(node) {
         // ENUNCIADO : aplicar as transformacoes sobre a matriz de transformacoes da cena aqui
 
     };

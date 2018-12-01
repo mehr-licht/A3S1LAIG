@@ -18,7 +18,7 @@ class newLinearAnimation extends Animation {
         super(scene, id, animtime, controlPoints);
         //structure to hold the given controlPoints array Strangely gets 0 as NaN...
         this.controlPoints = controlPoints;
-this.increment=[];
+        this.increment = [];
         this.tempo = animtime;
         this.segments = [];
         this.componentsSpeed = 0;
@@ -49,8 +49,8 @@ this.increment=[];
 
                 this.componentsTotalDistance += this.getComponentsDistance(this.controlPoints[i], this.controlPoints[i + 1]);
                 this.totalDistance += this.getDistance(this.controlPoints[i], this.controlPoints[i + 1]);
-                this.anglesOfSegments[i] = this.getAngle(this.controlPoints[i], this.controlPoints[i + 1]);
                 this.distancesOfSegments[i] = this.getDistance(this.controlPoints[i], this.controlPoints[i + 1]);
+                this.anglesOfSegments[i] = this.getAngle(this.controlPoints[i], this.controlPoints[i + 1], i);
             }
         }
 
@@ -73,61 +73,39 @@ this.increment=[];
         return [nextPoint[0] - currPoint[0], nextPoint[1] - currPoint[1], nextPoint[2] - currPoint[2]];
     }
 
-
-    getAngle(currPoint, nextPoint) {
-      
-        return Math.acos((nextPoint[0] - currPoint[0]) / (nextPoint[2] - currPoint[2]));
-
+    getAngle(currPoint, nextPoint, i) {
+        let cosAngle = (nextPoint[0] - currPoint[0]) / this.distancesOfSegments[i];
+        return Math.acos(cosAngle);
     }
 
     update(node, time) {
-       
-        this.time=time;
+
+        this.time = time;
         if (this.timeAnimationElapsed == 0) {
             this.starttime = this.time;
         }
         this.timeAnimationElapsed = this.time - this.starttime;
-        if (this.timeSegmentElapsed == 0) {
-            this.startSegtime = this.time;
-        }
-        this.timeSegmentElapsed = this.time - this.startSegtime;
+      
         this.elapsed = this.time - this.lasttime;
         this.lasttime = this.time;
 
         this.segmentoAngle = this.anglesOfSegments[this.segmentoActual];
+
         if (!this.animationEnd) {
-       //   alert(this.time + " < " + this.endsOfSegments[this.segmentoActual]);
             
-            //ver se segmento actual já acabou
-            if (this.time < this.endsOfSegments[this.segmentoActual]) {
-                 let nextSeg = this.segmentoActual+1;
-                    this.increment =  [(this.controlPoints[nextSeg][0] -this.controlPoints[this.segmentoActual][0])/this.durationsOfSegments[this.segmentoActual] * this.elapsed ,
-                     (this.controlPoints[nextSeg][1] -this.controlPoints[this.segmentoActual][1])/this.durationsOfSegments[this.segmentoActual] * this.elapsed ,
-                      (this.controlPoints[nextSeg][2] -this.controlPoints[this.segmentoActual][2])/this.durationsOfSegments[this.segmentoActual] * this.elapsed];
+            //ver se animacao acabou
+            if (this.time > this.tempo) {
 
-                //ainda nao acabou segmento actual  
-               // this.point[0] += this.speed * this.elapsed;
-               // this.point[1] += this.speed * this.elapsed;
-                //this.point[2] += this.speed * this.elapsed;
-              //alert(this.durationsOfSegments);
-            } else {
-             
-                //incremento em relacao ao control point de inicio do segmento
-                if (this.segmentoActual + 2 < this.segments.length) {
-                    this.segmentoActual++;
-                    let nextSeg = this.segmentoActual+1;
-                //    alert(this.controlPoints[nextSeg][2]);
-                    this.increment =  [(this.controlPoints[nextSeg][0] -this.controlPoints[this.segmentoActual][0])/this.durationsOfSegments[this.segmentoActual] * this.elapsed ,
-                     (this.controlPoints[nextSeg][1] -this.controlPoints[this.segmentoActual][1])/this.durationsOfSegments[this.segmentoActual] * this.elapsed ,
-                      (this.controlPoints[nextSeg][2] -this.controlPoints[this.segmentoActual][2])/this.durationsOfSegments[this.segmentoActual] * this.elapsed];
-      //console.log(this.point+"\n"+this.increment);
-              
-                } else {
-                    this.animationEnd = true;
+                this.animationEnd = true;
+                //ver se segmento actual já acabou
+            } else if (this.time > this.endsOfSegments[this.segmentoActual]) {
 
-                }
-
+                this.segmentoActual++;
             }
+
+            let nextSeg = this.segmentoActual + 1;
+            this.increment = [(this.controlPoints[nextSeg][0] - this.controlPoints[this.segmentoActual][0]) / this.durationsOfSegments[this.segmentoActual] * this.elapsed * 100, (this.controlPoints[nextSeg][1] - this.controlPoints[this.segmentoActual][1]) / this.durationsOfSegments[this.segmentoActual] * this.elapsed * 100, (this.controlPoints[nextSeg][2] - this.controlPoints[this.segmentoActual][2]) / this.durationsOfSegments[this.segmentoActual] * this.elapsed * 100];
+
         }
 
     }
@@ -136,13 +114,17 @@ this.increment=[];
         var node = node;
 
         mat4.identity(node.animMatrix);
-//console.log(node.animMatrix);
-  mat4.translate(node.animMatrix, node.animMatrix, this.controlPoints[this.segmentoActual]);
- //console.log(node.animMatrix);
-        mat4.translate(node.animMatrix, node.animMatrix, [this.increment[0],this.increment[1],this.increment[2]]);
-//console.log(node.animMatrix);
-      mat4.rotate(node.animMatrix, node.animMatrix, this.anglesOfSegments[this.segmentoActual], [0, 1, 0]);//aqui passa a NaN
-//console.log(node.animMatrix);
+        //    console.log(node.animMatrix);
+        
+        mat4.translate(node.animMatrix, node.animMatrix, this.controlPoints[this.segmentoActual]);
+        //inicio do segmento
+
+        mat4.translate(node.animMatrix, node.animMatrix, this.increment);
+        //incremento ao inicio do segmento 
+
+        mat4.rotate(node.animMatrix, node.animMatrix, this.anglesOfSegments[this.segmentoActual], [0, 1, 0]);
+        //rotacao para frente  
+        //  console.log(node.animMatrix);
     }
 
 }

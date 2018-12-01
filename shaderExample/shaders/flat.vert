@@ -11,3 +11,5 @@ void main() {
 	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 }
 
+//ultimo parametro do vec4(,,,,1) é a escala : quanto mais alto menor o objecto
+

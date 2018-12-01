@@ -10,8 +10,12 @@ varying vec2 vTextureCoord;
 
 void main() {
 
-	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);//texture3 tem offset acrescentado
 
-	vTextureCoord = aTextureCoord;
+	vTextureCoord = aTextureCoord;//passa para frag a textura recebida
 }
 
+
+
+//APENAS UMA TEXTURA EM CIMA DE OUTRA
+//PAR UMA DAS TEXTURAS COM OVOLUME VER texture3.vert

@@ -20,9 +20,11 @@ uniform mat4 uPMatrix;
 uniform mat4 uNMatrix;
 
 uniform sampler2D uSampler;
+uniform sampler2D colormap;
 
 uniform float waterscale;
 uniform float texscale;
+
 uniform float timeFactor;
 uniform float normScale;
 
@@ -31,10 +33,9 @@ varying vec4 coords;
 varying vec4 normal;
 varying vec2 vTextureCoord;
 
-uniform sampler2D colormap;
-
 uniform float factor;
 
+//ir buscar pixeis da textura de wavemap e fazer 4 vectores RGB com valores alterados
 vec4 getNoise(vec2 uv){
     vec2 uv0 = (uv/103.0)+vec2(factor/17.0, factor/29.0);
     vec2 uv1 = uv/107.0-vec2(factor/-19.0, factor/31.0);

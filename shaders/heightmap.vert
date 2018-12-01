@@ -9,8 +9,10 @@ uniform mat4 uNMatrix;
 uniform float heightscale;
 
 varying vec2 vTextureCoord;
+
 uniform sampler2D heightmap;
 uniform sampler2D colormap;
+
 uniform float normScale;
 
 void main() {

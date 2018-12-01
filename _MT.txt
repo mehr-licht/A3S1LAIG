@@ -1,0 +1,33 @@
+Luis Ricardo Marques Oliveira
+up201607946
+
+grupo:
+T1G05
+
+situação da resolução:[prob. completo, não considera o detalhe xpto", não resolvido, -...]
+
+mais info pertinente (ex: forma de identificar o ficheiro teste.xml)
+
+
+
+
+****************************************************
+
+
+//LAIGPROB1 inicio
+//LAIGPROB1 fim
+
+
+****************************************************
+
+resolver sempre sobre codigo original
+resolver numa pasta prob1, etc
+
+
+arquivar com nome:
+prob1.zip
+
+com
+ident.txt
+source code (incluindo index.html, texturas, xml)
+ 

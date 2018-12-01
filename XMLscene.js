@@ -10,7 +10,7 @@ class XMLscene extends CGFscene {
      */
     constructor(myinterface) {
         super();
-
+this.newGraph = this.graph;
         this.appearance = null;
 
         this.wireframe = false;
@@ -19,7 +19,7 @@ class XMLscene extends CGFscene {
 
         this.interface = myinterface;
         this.lightValues = {};
-
+this.scenesList=[];
         this.lastTime = 0;
         let currentDate = new Date();
         this.initialTime = currentDate.getTime();
@@ -51,25 +51,26 @@ class XMLscene extends CGFscene {
     }
 
     update(currTime) {
-       // this.updateScaleFactor(currTime);
-      
+        // this.updateScaleFactor(currTime);
+
         if (this.startTime == 0 || this.startTime == null)
             this.startTime = currTime;
 
         this.elapsedTime = (currTime - this.startTime) / 1000;
         this.checkKeys();
-
-        if (this.graph.shown == true) {
-            for (var nodeID in this.graph.nodes) {
-                if (this.graph.nodes[nodeID].animations != null) {
-                    for (var each in this.graph.nodes[nodeID].animations) {
-                        this.graph.nodes[nodeID].updateAnim(this.elapsedTime);
+        if (this.elapsedTime > 2) {
+            if (this.graph.shown == true) {
+                for (var nodeID in this.graph.nodes) {
+                    if (this.graph.nodes[nodeID].animations != null) {
+                        for (var each in this.graph.nodes[nodeID].animations) {
+                            this.graph.nodes[nodeID].updateAnim(this.elapsedTime);
+                        }
                     }
                 }
-            }
-            this.lastTime = currTime;
-        }
 
+                this.lastTime = currTime;
+            }
+        }
     }
 
     setDefaultAppearance() {
@@ -85,7 +86,6 @@ class XMLscene extends CGFscene {
         this.camera = new CGFcamera(0.4,0.1,500,vec3.fromValues(15, 15, 15),vec3.fromValues(0, 0, 0));
     }
 
-    
     /**
      * Initializes the scene lights with the values read from the XML file.
      */
@@ -157,13 +157,18 @@ class XMLscene extends CGFscene {
 
         var views = this.interface.gui.add(this, 'currView', this.viewsList).name('views');
 
+        this.currScene = "feup";
+        this.changeScene = this.currScene;
+        this.scenesList = ["feup", "naufragio"];
+        var scenes = this.interface.gui.add(this, 'currScene', this.scenesList).name('Scenes');
+
         // Adds lights group.
         this.interface.addLightsGroup(this.graph.lights);
 
         this.animations = [];
         this.setUpdatePeriod(100 / 6);
 
-        this.sceneInited = true;    
+        this.sceneInited = true;
     }
 
     /**
@@ -207,6 +212,7 @@ class XMLscene extends CGFscene {
             }
 
             this.setCameraUsed();
+            this.setScene();
             // Displays the scene (MySceneGraph function).
             this.graph.displayScene();
 
@@ -230,6 +236,30 @@ class XMLscene extends CGFscene {
             }
             this.changeCamera = this.currView;
             this.interface.setActiveCamera(this.camera);
+        }
+    }
+
+    setScene() {
+        if (this.currScene != this.changeScene) {
+            for (var v in this.scenesList) {
+                if (this.scenesList[v] == this.currScene) {
+                    this.scene = this.scenesList[v];
+                }
+            }
+            this.changeScene = this.currScene;
+switch(this.scene){
+    case "FEUP":
+var filename="FEUP.xml"
+    break;
+    case "naufragio":
+    var filename="stranded.xml"
+    break;
+    default:
+    break;
+}
+ //this.newGraph = new MySceneGraph(filename, this);
+
+        //   this.graph.reader.open('scenes/' + filename, this);
         }
     }
 

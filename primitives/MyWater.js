@@ -15,13 +15,13 @@ class MyWater extends MyPlane {
         this.texture = this.scene.graph.textures[this.idtexture];
         this.wavemap = this.scene.graph.textures[this.idwavemap];
         this.waterShader = new CGFshader(this.scene.gl,"shaders/shaderOne.vert","shaders/shaderOne.frag");
-        this.waterShader.setUniformsValues({
+  /*      this.waterShader.setUniformsValues({
             date: Date.now(),
             colormap: 2,
             waterscale: this.heightscale,
             texscale: this.texscale
         });
-
+*/
         this.heightscale = heightscale;
         this.texscale = texscale;
         this.uParts = uParts;

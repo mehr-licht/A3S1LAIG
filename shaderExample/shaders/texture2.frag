@@ -2,7 +2,7 @@
 precision highp float;
 #endif
 
-varying vec2 vTextureCoord;
+varying vec2 vTextureCoord; 
 
 uniform sampler2D uSampler;
 uniform sampler2D uSampler2;
@@ -16,3 +16,8 @@ void main() {
 	
 	gl_FragColor = color;
 }
+
+
+//TANTO PARA UMA TEXTURA EM CIMA DE OUTRA
+//COMO PARA UMA DAS TEXTURAS COM VOLUME 
+// IGUAL A texture3.frag

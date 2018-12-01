@@ -1939,14 +1939,19 @@ class MySceneGraph {
                 if (textura != null) {
 
                     if (node.leaves[0].type == 'terrain' || node.leaves[0].type == 'water') {
-                      //  node.leaves[0].obj.updateTexCoords();
+                        //  node.leaves[0].obj.updateTexCoords();
+                        console.log(node.leaves[0].args[0]);
+                       // var texturaW = this.textures[node.leaves[0].args[0]]
+                        var texturaT = this.textures[node.leaves[0].args[1]];
+                      //  texturaW.bind(1);
+                        texturaT.bind(2);
                     }
 
                 }
             }
 
             textura.bind();
-            
+
             for (var j = 0; j < node.leaves.length; j++) {
 
                 node.leaves[j].updateTexCoords(ampS, ampT);

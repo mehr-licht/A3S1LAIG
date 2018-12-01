@@ -44,16 +44,16 @@ MyInterface.prototype.init = function(application) {
 			'Sepia': 6,
 			'Convolution': 7
 			
-	}).name('Shader examples');
+	}).name('Shader examples');//DropDown
 
 	obj=this;
 	this.gui.add(this.scene, 'wireframe').onChange(function(v)
-		{ obj.scene.updateWireframe(v)	});
+		{ obj.scene.updateWireframe(v)	});//checkBox
 
 	this.gui.add(this.scene, 'scaleFactor',-50,50).onChange(function(v)
 	{
 		obj.scene.updateScaleFactor(v);
-	});
+	});//Slide
 
 	return true;
 };
