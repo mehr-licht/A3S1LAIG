@@ -10,7 +10,7 @@ class XMLscene extends CGFscene {
      */
     constructor(myinterface) {
         super();
-this.newGraph = this.graph;
+        this.newGraph = this.graph;
         this.appearance = null;
 
         this.wireframe = false;
@@ -19,7 +19,7 @@ this.newGraph = this.graph;
 
         this.interface = myinterface;
         this.lightValues = {};
-this.scenesList=[];
+        this.scenesList = [];
         this.lastTime = 0;
         let currentDate = new Date();
         this.initialTime = currentDate.getTime();
@@ -47,6 +47,8 @@ this.scenesList=[];
 
         this.setUpdatePeriod(100);
         //msecs
+
+        this.setPickEnabled(true);
 
     }
 
@@ -175,6 +177,9 @@ this.scenesList=[];
      * Displays the scene.
      */
     display() {
+
+        this.logPicking();
+        this.clearPickRegistration();
         // ---- BEGIN Background, camera and axis setup
 
         // Clear image and depth buffer everytime we update the scene
@@ -212,9 +217,21 @@ this.scenesList=[];
             }
 
             this.setCameraUsed();
-            this.setScene();
+            this.setScene('feup');
             // Displays the scene (MySceneGraph function).
             this.graph.displayScene();
+
+            // gegistar para picking
+            // por cada elemento que queiramos pickar (pecas)
+            //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
+
+            /*       for (i = 0; i < this.graph.pecas.length; i++) {
+                //this.pushMatrix();
+                //this.translate(i * 2, 0, 0);
+                this.registerForPick(i + 1, this.graph.pecas[i]);
+                //this.objects[i].display();
+                //this.popMatrix();
+            }*/
 
         } else {
             // Draw axis
@@ -225,6 +242,7 @@ this.scenesList=[];
 
         //  
         // ---- END Background, camera and axis setup
+
     }
 
     setCameraUsed() {
@@ -239,7 +257,7 @@ this.scenesList=[];
         }
     }
 
-    setScene() {
+    setScene(scene) {
         if (this.currScene != this.changeScene) {
             for (var v in this.scenesList) {
                 if (this.scenesList[v] == this.currScene) {
@@ -247,19 +265,19 @@ this.scenesList=[];
                 }
             }
             this.changeScene = this.currScene;
-switch(this.scene){
-    case "FEUP":
-var filename="FEUP.xml"
-    break;
-    case "naufragio":
-    var filename="stranded.xml"
-    break;
-    default:
-    break;
-}
- //this.newGraph = new MySceneGraph(filename, this);
 
-        //   this.graph.reader.open('scenes/' + filename, this);
+            if (scene == 'feup') {
+                let filename = getUrlVars()['file'] || "FEUP.xml";
+                this.cameras = [];
+                this.graph = new MySceneGraph(filename,this);
+            } else {
+                let filename = getUrlVars()['file'] || "stranded.xml";
+                this.cameras = [];
+                this.graph = new MySceneGraph(filename,this);
+            }
+
+            //this.newGraph = new MySceneGraph(filename, this);
+            //this.graph.reader.open('scenes/' + filename, this);
         }
     }
 
@@ -271,6 +289,22 @@ var filename="FEUP.xml"
                 // this.graph.displayScene();
             }
 
+        }
+    }
+
+    //apagar - serve de teste para saber se estamos a seleccionar os objectos
+    logPicking() {
+        if (this.pickMode == false) {
+            if (this.pickResults != null && this.pickResults.length > 0) {
+                for (var i = 0; i < this.pickResults.length; i++) {
+                    var obj = this.pickResults[i][0];
+                    if (obj) {
+                        var customId = this.pickResults[i][1];
+                        console.log("Picked object: " + obj + ", with pick id " + customId);
+                    }
+                }
+                this.pickResults.splice(0, this.pickResults.length);
+            }
         }
     }
 }

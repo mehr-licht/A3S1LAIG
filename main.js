@@ -69,10 +69,12 @@ serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 'MyInterface.j
 
         myInterface.setActiveCamera(myScene.camera);
 
-        // get file name provided in URL, e.g. http://localhost/myproj/?file=myfile.xml 
+        // get file name provided in URL, 
+//e.g. http://localhost:8080/?file=stranded.xml
+//or http://localhost:8080/?file=FEUP.xml
         // or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor) 
 
-        var filename = getUrlVars()['file'] || "demo.xml";
+        var filename = getUrlVars()['file'] || "FEUP.xml";
 
         // create and load graph, and associate it to scene. 
         // Check console for loading errors

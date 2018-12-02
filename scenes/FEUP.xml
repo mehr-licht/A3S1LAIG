@@ -564,7 +564,7 @@
         <texture id="none" length_s="1.0" length_t="1.0"/>
         <children>
           <componentref id="caule2" />
-          <componentref id="copa2" />
+          <componentref id="copa2" /> 
         </children>
       </component>
 
@@ -723,9 +723,6 @@
         <transformation>
           <transformationref id="mesaDesdeCentro"/>
         </transformation>
-        <animations>
-          <animationref id="percorreCantos"/>
-        </animations>
         <materials>
           <material id="inherit"/>
         </materials>
@@ -733,8 +730,75 @@
         <children>
           <componentref id="tampo" />
           <componentref id="pernas" />
+          <componentref id="boardgame"/>
         </children>
       </component>
+
+    
+       <component id="boardgame">
+        <transformation>
+          <!--<rotate axis="x" angle="180" />-->
+          <scale x="0.08" y="4" z="0.2" />
+           <translate x="0" y="-1.55" z="0" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="inherit" length_s="2" length_t="2" />
+        <children>
+     <!--     <componentref id="pecas" /> -->
+            <componentref id="tabuleiro" />
+        </children>
+      </component>
+
+       <component id="tabuleiro">
+        <transformation>
+          <rotate axis="x" angle="180" />
+          <scale x="5.0" y="0.3" z="3.0" />
+          <translate x="0" y="-12.1" z="0" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="inherit" length_s="2" length_t="2" />
+        <children>
+          <componentref id="superficie" />
+            <componentref id="boardBase" />
+        </children>
+      </component>
+
+
+ <component id="superficie">
+        <transformation>
+          <rotate axis="x" angle="90" />
+            <rotate axis="z" angle="90" />
+          <scale x="3.0" y="5.0" z="3.0" />
+          <translate x="0" y="0.0" z="-1.1575" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="chessboard" length_s="2" length_t="2" />
+        <children>
+          <primitiveref id="planoo" />
+        </children>
+      </component>
+
+      <component id="boardBase">
+        <transformation>
+          <rotate axis="x" angle="180" />
+          <scale x="5.0" y="0.3" z="3.0" />
+          <translate x="0" y="-12.1" z="0" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="none" length_s="2" length_t="2" />
+        <children>
+          <componentref id="cubo" />
+        </children>
+      </component>
+
 
       <component id="tampo">
         <transformation>
@@ -834,7 +898,6 @@
 
       <component id="cubo">
         <transformation>
-
         </transformation>
         <materials>
           <material id="inherit"/>

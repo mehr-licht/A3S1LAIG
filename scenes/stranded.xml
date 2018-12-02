@@ -719,9 +719,7 @@
         <transformation>
           <transformationref id="mesaDesdeCentro"/>
         </transformation>
-        <animations>
-          <animationref id="percorreCantos"/>
-        </animations>
+      
         <materials>
           <material id="inherit"/>
         </materials>

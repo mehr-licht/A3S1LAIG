@@ -33,6 +33,8 @@ class MySceneGraph {
 
         this.axisCoords = [];
 
+
+
         // File reading 
         this.reader = new CGFXMLreader();
 
@@ -1760,6 +1762,7 @@ class MySceneGraph {
                     } else if (descendants[j].nodeName == "primitiveref") {
 
                         var nomePrim = this.reader.getString(descendants[j], 'id');
+                    
                         var type = this.primitives[nomePrim][1][0];
 
                         var argss = [];
