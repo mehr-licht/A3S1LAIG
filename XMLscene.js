@@ -1,4 +1,9 @@
 var DEGREE_TO_RAD = Math.PI / 180;
+var offsetX = 0.73;
+var offsetY = 4.185;
+var offsetZ = 0.605;
+var incX = 0.292;
+var incZ = 0.3025;
 
 /**
  * XMLscene class, representing the scene that is to be rendered.
@@ -32,10 +37,40 @@ class XMLscene extends CGFscene {
     init(application) {
         super.init(application);
 
+        this.materialWhites = new CGFappearance(this);
+        this.materialWhites.setAmbient(0.3, 0.2, 0.3, 1);
+        this.materialWhites.setDiffuse(0.4, 0.3, 0.1, 1);
+        this.materialWhites.setSpecular(0.5, 0.4, 0.6, 1);
+        this.materialWhites.setShininess(120);
+
+        this.materialBlacks = new CGFappearance(this);
+        this.materialBlacks.setAmbient(0.1, 0.1, 0.1, 1);
+        this.materialBlacks.setDiffuse(0.1, 0.1, 0.1, 1);
+        this.materialBlacks.setSpecular(0.5, 0.5, 0.5, 1);
+        this.materialBlacks.setShininess(120);
+
+        this.materialDefault = new CGFappearance(this);
+
         this.sceneInited = false;
         this.keysPressed = false;
         this.initCameras();
+        this.piece = new CGFOBJModel(this, 'clobber.obj');
 
+        this.pieces = [];
+        this.piecesCoords = [];
+        for (var i = 0; i < 30; i++) {
+            this.pieces.push(this.piece);
+            var tmp = new Piece();
+            tmp.id = i;
+            tmp.colour = (i % 2 == 0 ? this.materialWhites : this.materialBlacks);
+            tmp.x = offsetX - incX * parseInt(i / 5);
+            tmp.y = offsetY;
+            tmp.z = offsetZ - incZ * parseInt(i % 5);
+            tmp.scale = 0.2;
+            tmp.active = true;
+            this.piecesCoords.push(tmp);
+
+        }
         this.enableTextures(true);
 
         this.gl.clearDepth(100.0);
@@ -47,6 +82,9 @@ class XMLscene extends CGFscene {
 
         this.setUpdatePeriod(100);
         //msecs
+
+        //this.feup = new MySceneGraph('FEUP.xml',this);
+        //this.naufragio = new MySceneGraph('stranded.xml', this);
 
         this.setPickEnabled(true);
 
@@ -76,16 +114,16 @@ class XMLscene extends CGFscene {
     }
 
     setDefaultAppearance() {
-        this.setAmbient(0.2, 0.4, 0.8, 1.0);
-        this.setDiffuse(0.2, 0.4, 0.8, 1.0);
-        this.setSpecular(0.2, 0.4, 0.8, 1.0);
-        this.setShininess(10.0);
-    }
-    /**
-     * Initializes the scene cameras.
-     */
+            this.setAmbient(0.2, 0.4, 0.8, 1.0);
+            this.setDiffuse(0.2, 0.4, 0.8, 1.0);
+            this.setSpecular(0.2, 0.4, 0.8, 1.0);
+            this.setShininess(10.0);
+        }
+        /**
+         * Initializes the scene cameras.
+         */
     initCameras() {
-        this.camera = new CGFcamera(0.4,0.1,500,vec3.fromValues(15, 15, 15),vec3.fromValues(0, 0, 0));
+        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
     }
 
     /**
@@ -141,7 +179,7 @@ class XMLscene extends CGFscene {
 
         this.interface.setActiveCamera(this.camera);
 
-        this.axis = new CGFaxis(this,this.graph.axis_length);
+        this.axis = new CGFaxis(this, this.graph.axis_length);
 
         //ambient and background details according to parsed graph
         this.setGlobalAmbientLight(this.graph.ambientIllumination[0], this.graph.ambientIllumination[1], this.graph.ambientIllumination[2], this.graph.ambientIllumination[3]);
@@ -195,7 +233,18 @@ class XMLscene extends CGFscene {
 
         //  
 
+        /*
+                this.pushMatrix();
+
+                // this.materialBlacks.apply();
+                this.materialDefault.apply();
+                this.testPiece.display();
+
+                this.popMatrix();*/
+
+
         this.pushMatrix();
+
 
         if (this.sceneInited) {
             // Draw axis
@@ -221,17 +270,26 @@ class XMLscene extends CGFscene {
             // Displays the scene (MySceneGraph function).
             this.graph.displayScene();
 
-            // gegistar para picking
+            // registar para picking
             // por cada elemento que queiramos pickar (pecas)
             //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
 
-            /*       for (i = 0; i < this.graph.pecas.length; i++) {
-                //this.pushMatrix();
-                //this.translate(i * 2, 0, 0);
-                this.registerForPick(i + 1, this.graph.pecas[i]);
-                //this.objects[i].display();
-                //this.popMatrix();
-            }*/
+            // draw objects
+            for (i = 0; i < this.pieces.length; i++) {
+                this.pushMatrix();
+                this.translate(7, 0, 7);
+                this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
+                //    this.scale(this.piecesCoords[i].scale, this.piecesCoords[i].scale, this.piecesCoords[i].scale);
+                this.translate(this.piecesCoords[i].x, this.piecesCoords[i].y, this.piecesCoords[i].z);
+                // this.translate(-0.73, 4.185, 0.605);
+                this.scale(0.10, 0.10, 0.10);
+                this.registerForPick(i + 1, this.pieces[i]);
+
+                this.piecesCoords[i].colour.apply();
+
+                this.pieces[i].display();
+                this.popMatrix();
+            }
 
         } else {
             // Draw axis
@@ -269,11 +327,11 @@ class XMLscene extends CGFscene {
             if (scene == 'feup') {
                 let filename = getUrlVars()['file'] || "FEUP.xml";
                 this.cameras = [];
-                this.graph = new MySceneGraph(filename,this);
+                this.graph = this.feup;
             } else {
                 let filename = getUrlVars()['file'] || "stranded.xml";
                 this.cameras = [];
-                this.graph = new MySceneGraph(filename,this);
+                this.graph = this.naufragio;
             }
 
             //this.newGraph = new MySceneGraph(filename, this);

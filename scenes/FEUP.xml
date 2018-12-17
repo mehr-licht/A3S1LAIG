@@ -10,7 +10,7 @@
     <!-- ##################################   scene-0 ###################################-->
     <scene root="jardim" axis_length="1" />
     <!-- ##################################   views-1 ####################################-->
-    <views default="vista0">
+    <views default="player1">
       <!-- qto maior a distancia entre near e far menor a distincao entre profundidade dos objectos na cena
     angle  angulo de abertura da camara (field of view) metade near  para ca de near nao eh desenhado
     far   para la de far  nao eh desenhado from  posicao da camara
@@ -340,14 +340,14 @@
         <texture id="chessboard" length_s="1.0" length_t="1.0" />
         <!-- so para ter uma -->
         <children>
-            <componentref id="arvore" />
+          <!--   <componentref id="arvore" /> -->
            <componentref id="mesa" /> 
          <componentref id="boia" /> 
         <componentref id="chao" /> 
           <componentref id="relva" /> 
           <componentref id="parede1" /> 
          <!-- <componentref id="spaceEgg" /> passou para codigo-->
-           <componentref id="spaceEgg2"/>
+      <!--     <componentref id="spaceEgg2"/> -->
         <!-- <componentref id="boat" /> -->
           <componentref id="arvore2" />
         <!--  <componentref id="terreno" />
@@ -721,7 +721,7 @@
 
       <component id="mesa">
         <transformation>
-          <transformationref id="mesaDesdeCentro"/>
+         <transformationref id="mesaDesdeCentro"/> 
         </transformation>
         <materials>
           <material id="inherit"/>

@@ -49,12 +49,13 @@ function getUrlVars() {
     return vars;
 }
 //Include additional files here
-serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 'MyInterface.js',
+serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
+    'CGFOBJModel.js', 'XMLscene.js', 'MySceneGraph.js', 'MyInterface.js',
     'primitives/MyQuad.js', 'primitives/MySphere.js', 'primitives/MyTorus.js',
     'primitives/MyCilinder.js', 'primitives/MyCircle.js', 'primitives/MyTriangle.js',
     'MyComponentNode.js', 'MyPrimitiveNode.js', 'Animation.js', 'CircularAnimation.js', 'LinearAnimation.js', 'newLinearAnimation.js',
     'primitives/MyPlane.js', 'primitives/MyPatch.js', 'primitives/MyCylinder2.js',
-    'primitives/MyTerrain.js', 'primitives/MyWater.js', 'primitives/MyVehicle.js', 
+    'primitives/MyTerrain.js', 'primitives/MyWater.js', 'primitives/MyVehicle.js', 'Game/Game.js', 'Game/piece.js',
 
     main = function() {
         // Standard application, scene and interface setup
@@ -70,8 +71,8 @@ serialInclude(['../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 'MyInterface.j
         myInterface.setActiveCamera(myScene.camera);
 
         // get file name provided in URL, 
-//e.g. http://localhost:8080/?file=stranded.xml
-//or http://localhost:8080/?file=FEUP.xml
+        //e.g. http://localhost:8080/?file=stranded.xml
+        //or http://localhost:8080/?file=FEUP.xml
         // or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor) 
 
         var filename = getUrlVars()['file'] || "FEUP.xml";
