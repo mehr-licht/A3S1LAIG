@@ -4,14 +4,50 @@
 ![patch is spaceEgg](https://i.imgur.com/14LqKNH.jpg)
 ![patch is boat and vehicle is spaceEgg](https://i.imgur.com/qnDiG2v.jpg)
 
-# LogBook TODO
+# LogBook 3 Entrega
 
 
-[TODO] Confirmar com o Luis o parsar das animacoes nos parseComponentes - line 1590
-this.animations > variavel com as animacaoes 
-[1.1] Done
 
 
+
+
+
+
+
+ ## Instructions
+ 
+ Dois terminais na mesma pasta, ao mesmo tempo
+
+__Run Prolog on Port 8081:__
+
+$ rlwap sicstus
+?- reconsult(server).
+?- server.
+
+
+__Run server on Port 8080:__ 
+
+python -m SimpleHTTPServer 8080\
+ 
+For testing purposes only:
+
+![http://localhost:8080/Sicstus-WebCGF/][http://localhost:8080/Sicstus-WebCGF/]
+
+
+More:\
+python version: python -V\
+
+### Folders
+
+__Game__ Onde decorre as interligacoes entre o js e prolog
+
+__prolog__ Onde esta o jogo e o server
+
+__cfgonjreader__ Exemplo do prof para objectos (blender)
+
+__Sicstus_WebCGF__ Exemplo do prof para interligacao com a linguagem prolog
+ 
+### Demo
 
 ![demo em modo CGRA][demo]
 
@@ -20,17 +56,7 @@ this.animations > variavel com as animacaoes
 
 
 
- # Instructions
- Abrir no terminal\
- Correr o comando\
-                   » python -V\
- Correr o seguinte comando - na pasta especifica que querems usar\
-                   » python -m SimpleHTTPServer 8080\
- Abrir o chrome\
- Copypaste a sequinte info\
-                   » http://localhost:8080/nomedapasta/
- 
-# Personal webpage
+### Personal webpage
  Caso a àrea do estudante seja posta online\
   » http://paginas.fe.up.pt/~eiXXXX/mytest \
   Usar a área web de estudante da FEUP:​ colocar o projeto uma pasta dentro da
@@ -42,7 +68,7 @@ implicar a edição/atualização dos ficheiros no servidor da FEUP, e obrigar a
 ligação à rede da FEUP para poder editar/carregar a aplicação
  
  
-# Shortcuts
+### Shortcuts
 
 Google Chrome - Dev tools Ctrl-Shift-I\
 Botao direito -  deslocar lateralmente a camera\
@@ -50,7 +76,7 @@ Botao esquerdo - roda a cena   ou CTRL +\
 Botao central - aproximar e afastar
 
 
-#  Estrutura biblioteca ‘WebCGF’
+###  Estrutura biblioteca ‘WebCGF’
 
 A biblioteca WebCGF​ (Web Computer Graphics @ FEUP) - tem como classes principais as seguintes:\
 ● CGFapplication ​(+) ​- Gere as questões genéricas de inicialização da aplicação e bibliotecas de
@@ -67,7 +93,8 @@ objetos a serem criados devem ser sub-classes de CGFObject\
 estendida por sub-classes para implementar características adicionais)\
 ● CGFcamera ​(+) ​- Armazena a informação associada a uma câmara
 
-# Remember functions\
+### Remember functions\
+
 init()\
 »  É aqui que tipicamente se inicializam variáveis, criam objetos ou são feitos cálculos
 intensivos cujos resultados podem ser armazenados para posterior consulta
@@ -79,9 +106,10 @@ dividido em três secções:\
         %Inicialização do fundo, câmara e eixos\
         % Transformações geométricas\
         % Desenho de primitivas\ ​
+
+
         
-        
-# Remember Criar OBJECTO 3D \
+### Remember Criar OBJECTO 3D \
 Dessa forma, para criar um determinado objeto 3D, podemos simplesmente:\
 » criar uma sub-classe da CGFobject​, p.ex. MyObject\
 » implementar o método initBuffers​, onde\
@@ -103,3 +131,25 @@ Graphical Interface Applications Laboratory - MIEIC FEUP
 
 Projects done in colaboration with [TejInaco](https://github.com/TejInaco)
 
+## Other notations
+
+## Sending Data
+
+var myObj = {name: "John", age: 31, city: "New York"};
+
+var myJSON = JSON.stringify(myObj);
+
+window.location = "demo_json.php?x=" + myJSON;
+
+
+## Receiving Data
+
+var myJSON = '{"name":"John", "age":31, "city":"New York"}';
+
+var myObj = JSON.parse(myJSON);
+
+document.getElementById("demo").innerHTML = myObj.name;
+
+## Storing Data
+
+When storing data, the data has to be a certain format, and regardless of where you choose to store it
