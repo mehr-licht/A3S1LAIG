@@ -1,7 +1,12 @@
+//convert from degrees to rad
 var DEGREE_TO_RAD = Math.PI / 180;
+
+//position of the piece further away from the origin
 var offsetX = 0.73;
 var offsetY = 4.185;
 var offsetZ = 0.605;
+
+//distance from each board cell to its neighbours
 var incX = 0.292;
 var incZ = 0.3025;
 
