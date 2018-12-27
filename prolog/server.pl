@@ -125,9 +125,8 @@ test(A,[A|Bs],N) :- N1 is N-1, test(A,Bs,N1).
 :-include('json.pl').
 
 
-parse_input(move,TabuleiroFinal):-
-	initialBoard(B),
-	move(B, 1,1,2,2, Final, white)
+parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Colour),TabuleiroFinal):- %FUNCIONA!!!!
+	move(InitialBoard, RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Final, Colour),
 	matrix_to_json(Final,TabuleiroFinal).
 
 parse_input(initialBoard,Board):- %FUNCIONA!!!!
@@ -183,7 +182,7 @@ parse_input(isGameOver(Board,P1,P2),Over):-
 
 %------------------------------------global functions
 executeCommand(handshake, handshake).
-executeCommand(reconsult, 'reconsulted'):-reconsult('feup-laig/LYNGK/Prolog/server.pl').
+executeCommand(reconsult, 'reconsulted'):-reconsult('server.pl').
 executeCommand(quit, goodbye).
 executeCommand(clear, 'done'):-clear.
 executeCommand(displayBoard, 'done'):-displayBoard.
