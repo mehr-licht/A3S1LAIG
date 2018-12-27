@@ -124,7 +124,8 @@ test(A,[A|Bs],N) :- N1 is N-1, test(A,Bs,N1).
 :-include('src/clobberInit.pl').
 :-include('json.pl').
 
-
+%test this function with:
+%http://localhost:8081/move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],2,1,2,2,white)
 parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Colour),TabuleiroFinal):- %FUNCIONA!!!!
 	move(InitialBoard, RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Final, Colour),
 	matrix_to_json(Final,TabuleiroFinal).
