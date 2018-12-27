@@ -15,7 +15,7 @@ class XMLscene extends CGFscene {
      */
     constructor(myinterface) {
         super();
-        this.newGraph = this.graph;
+
         this.appearance = null;
 
         this.wireframe = false;
@@ -25,9 +25,15 @@ class XMLscene extends CGFscene {
         this.interface = myinterface;
         this.lightValues = {};
         this.scenesList = [];
+        this.scenes = [];
+        this.gameEnvironments = [];
+
         this.lastTime = 0;
         let currentDate = new Date();
         this.initialTime = currentDate.getTime();
+        this.currScene = "FEUP";
+        this.gameMode = "Player vs Player";
+        this.gameLevel = "Easy";
     }
 
     /**
@@ -83,8 +89,9 @@ class XMLscene extends CGFscene {
         this.setUpdatePeriod(100);
         //msecs
 
-        //this.feup = new MySceneGraph('FEUP.xml',this);
-        //this.naufragio = new MySceneGraph('stranded.xml', this);
+        this.scenes.push(new MySceneGraph('FEUP.xml', this));
+        this.scenes.push(new MySceneGraph('stranded.xml', this));
+
 
         this.setPickEnabled(true);
 
@@ -197,10 +204,9 @@ class XMLscene extends CGFscene {
 
         var views = this.interface.gui.add(this, 'currView', this.viewsList).name('views');
 
-        this.currScene = "feup";
-        this.changeScene = this.currScene;
-        this.scenesList = ["feup", "naufragio"];
-        var scenes = this.interface.gui.add(this, 'currScene', this.scenesList).name('Scenes');
+        this.interface.addScenePicker();
+        this.interface.addSettingsGroup(this.game);
+        this.interface.addOptionsGroup();
 
         // Adds lights group.
         this.interface.addLightsGroup(this.graph.lights);
@@ -248,6 +254,7 @@ class XMLscene extends CGFscene {
 
         if (this.sceneInited) {
             // Draw axis
+
             this.axis.display();
             this.setDefaultAppearance();
             var i = 0;
@@ -266,9 +273,10 @@ class XMLscene extends CGFscene {
             }
 
             this.setCameraUsed();
-            this.setScene('feup');
-            // Displays the scene (MySceneGraph function).
-            this.graph.displayScene();
+
+            this.scenes[this.currScene].displayScene();
+            console.log(this.currScene); //TIRAR ISTO - FAZ COm que funcione e repete guis
+
 
             // registar para picking
             // por cada elemento que queiramos pickar (pecas)
@@ -315,29 +323,7 @@ class XMLscene extends CGFscene {
         }
     }
 
-    setScene(scene) {
-        if (this.currScene != this.changeScene) {
-            for (var v in this.scenesList) {
-                if (this.scenesList[v] == this.currScene) {
-                    this.scene = this.scenesList[v];
-                }
-            }
-            this.changeScene = this.currScene;
 
-            if (scene == 'feup') {
-                let filename = getUrlVars()['file'] || "FEUP.xml";
-                this.cameras = [];
-                this.graph = this.feup;
-            } else {
-                let filename = getUrlVars()['file'] || "stranded.xml";
-                this.cameras = [];
-                this.graph = this.naufragio;
-            }
-
-            //this.newGraph = new MySceneGraph(filename, this);
-            //this.graph.reader.open('scenes/' + filename, this);
-        }
-    }
 
     checkKeys() {
         if (this.gui.isKeyPressed("KeyM")) {
@@ -365,4 +351,22 @@ class XMLscene extends CGFscene {
             }
         }
     }
+
+
+    startGame() {
+        this.game.start(this.gameMode, this.gameLevel);
+    }
+
+    quitGame() {
+        this.game.quit();
+    }
+
+    undo() {
+        this.game.undo();
+    }
+
+    movie() {
+        this.game.movie();
+    }
+
 }

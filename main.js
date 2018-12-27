@@ -79,7 +79,16 @@ serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
 
         // create and load graph, and associate it to scene. 
         // Check console for loading errors
-        var myGraph = new MySceneGraph(filename, myScene);
+        //var myGraph = new MySceneGraph(filename, myScene);
+
+        myScene.scenes["FEUP"] = new MySceneGraph(filename, myScene);
+        myScene.scenes.length++;
+
+
+        var filename = getUrlVars()['file'] || "stranded.xml";
+
+        myScene.scenes["naufragio"] = new MySceneGraph(filename, myScene);
+        myScene.scenes.length++;
 
         // start
         app.run();
