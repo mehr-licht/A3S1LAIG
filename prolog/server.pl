@@ -103,9 +103,9 @@ print_header_line(_).
 
 % Require your Prolog Files here
 
-%parse_input(handshake, handshake).
-%parse_input(test(C,N), Res) :- test(C,Res,N).
-%parse_input(quit, goodbye).
+parse_input(handshake, handshake).
+parse_input(test(C,N), Res) :- test(C,Res,N).
+parse_input(quit, goodbye).
 
 %returns list with N values with each value set to C
 test(_,[],N) :- N =< 0.
@@ -124,37 +124,56 @@ test(A,[A|Bs],N) :- N1 is N-1, test(A,Bs,N1).
 :-include('src/clobberInit.pl').
 :-include('json.pl').
 
-%test this function with:
-%http://localhost:8081/move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],2,1,2,2,white)
-%devolve TabuleiroFinal
-parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Colour),TabuleiroFinal):- %FUNCIONA!!!!
+
+% TESTE http://localhost:8081/move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],2,1,2,2,white)
+% Devolve TabuleiroFinal após movimentacao da peca
+%
+parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Colour),TabuleiroFinal):-
 	move(InitialBoard, RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Final, Colour),
 	matrix_to_json(Final,TabuleiroFinal).
 
-parse_input(initialBoard,Board):- %FUNCIONA!!!!
+/**
+* TESTE http://localhost:8081/initialBoard
+* Devolve o tabuleiro inicial
+*/
+parse_input(initialBoard,Board):-
 	initialBoard(B),
 	matrix_to_json(B,Board).
 
+/**
+ * IDEIA: Quando clica numa peca saber se a peca eh valida - Se for valida aparece um indicador de selecao
+ * TESTE http://localhost:8081/getValueFromMatrixV2([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],1,1,Value)
+ * Precisa de um index linha e coluna e devolve a cor
+*/
+parse_input(getValueFromMatrixV2([H|T], Row, Column, Value), Value):-
+	getValueFromMatrixV2([H|T], Row, Column, Value).
+	%Nao precisei de converter porque black ja eh string
+	%json(Value, ColorPecaSelec).
 
-parse_input(initialize,Board):-
-	initialize(B),
-	matrix_to_json(B,Board).
 
+/**
+ * Verificar se o destino do move eh valido/ eh uma peca vizinha
+ * O ideal seria funcionar em conjugacao com o getValueFromMatrixV2
+ * TESTE http://localhost:8081/checkDifferenceIndexs(1,1,1,2)
+ * return 0 se for um move valido -2 se nao for valido
+*/
+parse_input(checkDifferenceIndexs(RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex), JSON):-
+	checkDifferenceIndexs(RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex),
+	!,
+	Value is 0,      % Se zero a jogada eh valida
+	json(Value,JSON).
+parse_input(checkDifferenceIndexs(RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex), JSON):-
+	Value is 1, % Se 1 a jogada NAO eh valida
+	json(Value,JSON).
 
-%%%%%%%%%%%%%%%%%%%%%%
-%%%  FAZER TAMBEM  %%%
-%%%%%%%%%%%%%%%%%%%%%% 
+/**
+ * 
+*/
 %para verificar se se pode seleccionar a peca
 %validMoves(Tabuleiro,Line,Column,Colour):-
 
-%para verificar se o destino do move é válido
-%checkDifferenceIndexes(PieceL,PieceC,DestinationL,DestinationC):-
-
 %devolve par NumeroWhites-NumeroBlacks
 %numeroJogadasValidasParaTodasAsPecasDasDuasCores(Tabuleiro,NumeroWhites-NumeroBlacks):-
-
-
-
 
 
 parse_input(claim(Color,Colors,Player),JSON):-
