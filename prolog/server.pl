@@ -103,9 +103,9 @@ print_header_line(_).
 
 % Require your Prolog Files here
 
-parse_input(handshake, handshake).
-parse_input(test(C,N), Res) :- test(C,Res,N).
-parse_input(quit, goodbye).
+%parse_input(handshake, handshake).
+%parse_input(test(C,N), Res) :- test(C,Res,N).
+%parse_input(quit, goodbye).
 
 %returns list with N values with each value set to C
 test(_,[],N) :- N =< 0.
@@ -194,7 +194,7 @@ parse_input(isGameOver(Board,P1,P2),Over):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%    another example     %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-:- include('main.pl').
+%:- include('main.pl').
 
 
 %define the actions that can be triggered
