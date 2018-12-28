@@ -31,8 +31,8 @@ class XMLscene extends CGFscene {
         this.lightValues = {};
         this.scenesList = [];
         this.scenes = [];
-        this.gameEnvironments = [];
 
+        this.shaderObjects = [];
         this.lastTime = 0;
         let currentDate = new Date();
         this.initialTime = currentDate.getTime();
@@ -99,11 +99,20 @@ class XMLscene extends CGFscene {
 
 
         this.setPickEnabled(true);
-
+        this.shader = new CGFshader(this.gl, "shaders/MyShader.vert", "shaders/MyShader.frag");
     }
 
     update(currTime) {
         // this.updateScaleFactor(currTime);
+        /*
+                if (this.prevTime == -1) {
+                    this.animateCamera(0);
+                    this.graph.update(0);
+                } else {
+                    this.animateCamera(currTime - this.prevTime);
+                    this.graph.update(currTime - this.prevTime);
+                }*/
+
 
         if (this.startTime == 0 || this.startTime == null)
             this.startTime = currTime;
@@ -123,6 +132,14 @@ class XMLscene extends CGFscene {
                 this.lastTime = currTime;
             }
         }
+        this.time = (Math.cos(currTime / 200)) / 2 + 0.5;
+
+        this.shader.setUniformsValues({ timeFactor: this.time });
+
+        if (typeof this.game != "undefined" && !this.game.over)
+            this.updateTime(currTime);
+
+        this.prevTime = currTime;
     }
 
     setDefaultAppearance() {
@@ -278,9 +295,9 @@ class XMLscene extends CGFscene {
             }
 
             this.setCameraUsed();
-
+   console.log(this.currScene); //TIRAR ISTO - isto FAZ COm que funcione (mesmo assim repete guis - meter flag?)
             this.scenes[this.currScene].displayScene();
-            console.log(this.currScene); //TIRAR ISTO - FAZ COm que funcione e repete guis
+         
 
 
             // registar para picking
@@ -357,6 +374,71 @@ class XMLscene extends CGFscene {
         }
     }
 
+    handlePicking() {
+        if (this.pickMode == false) {
+            if (this.pickResults != null && this.pickResults.length > 0) {
+                for (var i = 0; i < this.pickResults.length; i++) {
+                    var obj = this.pickResults[i][0];
+
+                    if (obj != null)
+
+                        if (obj) {
+                        var customId = this.pickResults[i][1];
+
+                        if (!this.game.over)
+                            if (this.game.running) {
+                                obj.pickedShader = 1;
+                                this.game.picked(obj);
+                            }
+
+                    }
+                }
+                this.pickResults.splice(0, this.pickResults.length);
+            }
+        }
+    }
+
+    animateCamera(deltaTime) {
+        if (!this.changingCamera)
+            return;
+
+        // *0.95 is to avoid flickering when the animation surpasses the expected camera position
+        if (this.timeElapsed > this.CAMERA_ANIMATION_TIME * 0.7) {
+            this.changingCamera = false;
+            this.currentCamera = (this.currentCamera + 1) % this.cameras.length;
+            return;
+        }
+
+        let currCamera = this.cameras[this.currentCamera];
+        let nextCamera = this.cameras[(this.currentCamera + 1) % this.cameras.length];
+
+        let targetCenter = midPoint(currCamera.target, nextCamera.target);
+        let positionCenter = midPoint(currCamera.position, nextCamera.position);
+
+        let targetRadius = distance(targetCenter, nextCamera.target);
+        let positionRadius = distance(positionCenter, nextCamera.position);
+
+        this.timeElapsed += deltaTime / 2000;
+        let cameraAngle = Math.PI * this.timeElapsed / this.CAMERA_ANIMATION_TIME;
+        let multiplier = this.currentCamera ? 1 : -1;
+
+        let targetPosition = [
+            targetCenter[0] + multiplier * targetRadius * Math.sin(cameraAngle),
+            targetCenter[1],
+            targetCenter[2] + multiplier * targetRadius * Math.cos(cameraAngle),
+            1
+        ];
+
+        let positionPosition = [
+            positionCenter[0] + multiplier * positionRadius * Math.sin(cameraAngle),
+            positionCenter[1],
+            positionCenter[2] + multiplier * positionRadius * Math.cos(cameraAngle),
+            1
+        ];
+
+        this.camera = new CGFcamera(currCamera.fov, currCamera.near, currCamera.far,
+            positionPosition, targetPosition);
+    };
 
     startGame() {
         this.game.start(this.gameMode, this.gameLevel);

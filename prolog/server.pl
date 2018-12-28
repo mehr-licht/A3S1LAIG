@@ -126,6 +126,7 @@ test(A,[A|Bs],N) :- N1 is N-1, test(A,Bs,N1).
 
 %test this function with:
 %http://localhost:8081/move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],2,1,2,2,white)
+%devolve TabuleiroFinal
 parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Colour),TabuleiroFinal):- %FUNCIONA!!!!
 	move(InitialBoard, RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Final, Colour),
 	matrix_to_json(Final,TabuleiroFinal).
@@ -138,6 +139,23 @@ parse_input(initialBoard,Board):- %FUNCIONA!!!!
 parse_input(initialize,Board):-
 	initialize(B),
 	matrix_to_json(B,Board).
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%%  FAZER TAMBEM  %%%
+%%%%%%%%%%%%%%%%%%%%%% 
+%para verificar se se pode seleccionar a peca
+%validMoves(Tabuleiro,Line,Column,Colour):-
+
+%para verificar se o destino do move é válido
+%checkDifferenceIndexes(PieceL,PieceC,DestinationL,DestinationC):-
+
+%devolve par NumeroWhites-NumeroBlacks
+%numeroJogadasValidasParaTodasAsPecasDasDuasCores(Tabuleiro,NumeroWhites-NumeroBlacks):-
+
+
+
+
 
 parse_input(claim(Color,Colors,Player),JSON):-
 	claim(Color,Colors,Player,NewColors,NewPlayer),
