@@ -164,7 +164,8 @@ parse_input(checkDifferenceIndexs(_RowIndex,_ColumnIndex,_PP_RowIndex, _PP_Colum
 /**
  * Certificacao do gameOver
  * A cada jogada verifica se existe gameOver
- * TESTE http://localhost:8081/gameOver([[empty,empty,empty,empty,empty],[empty,empty,black,black,empty],[empty,white,empty,empty,black],[white,white,empty,black,empty],[empty,white,empty,empty,empty],[empty,empty,empty,empty,empty]],Looser)
+ * TESTE http://localhost:8081/gameOver([[empty,empty,empty,empty,empty],[empty,empty,black,black,empty],[empty,white,empty,empty,black],[white,white,empty,black,empty],[empty,white,empty,empty,empty],[empty,empty,empty,empty,empty]],white)
+ * A chamada tem que ser feita com o Board e Looser com white ou black
 */
 parse_input(gameOver(Board, Looser),JSON):-
 	gameOver(Board,Looser),
@@ -176,17 +177,19 @@ parse_input(gameOver(Board,Looser),JSON):-
 
 
 /**
- * 
-*/
-%para verificar se se pode seleccionar a peca
+ * Verificar se se pode seleccionar a peca
+*/ 
 %validMoves(Tabuleiro,Line,Column,Colour):-
-
 %devolve par NumeroWhites-NumeroBlacks
 %numeroJogadasValidasParaTodasAsPecasDasDuasCores(Tabuleiro,NumeroWhites-NumeroBlacks):-
 
-
-
-
+/** BOT PLAY esta predefenido com a cor black
+ * TESTE http://localhost:8081/choose_move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],TabuleiroFinal,black,1)
+ * Devolve o novo tabuleiro em Board após jogada bot 
+*/
+parse_input(choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel),Board):-
+	choose_move(Tabuleiro, TabuleiroF,_Color, _Nivel),
+	matrix_to_json(TabuleiroF,Board).
 
 
 
