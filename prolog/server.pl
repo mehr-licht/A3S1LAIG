@@ -100,30 +100,24 @@ print_header_line(_).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%                                       Commands                                                  %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%								 		OUR NEW  COMMANDS 											 %%%%
+%%% test with url http://localhost:8081/handshake [substitute handshake with function(param,param) ] %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 % Require your Prolog Files here
-
-parse_input(handshake, handshake).
-parse_input(test(C,N), Res) :- test(C,Res,N).
-parse_input(quit, goodbye).
+:-include('src/clobberInit.pl').
+:-include('json.pl').
 
 %returns list with N values with each value set to C
 test(_,[],N) :- N =< 0.
 test(A,[A|Bs],N) :- N1 is N-1, test(A,Bs,N1).
 
 
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%								 		OUR NEW  COMMANDS 											 %%%%
-%%% test with url http://localhost:8081/handshake [substitute handshake with function(param,param) ] %%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-:-include('src/clobberInit.pl').
-:-include('json.pl').
-
+parse_input(handshake, handshake).
+parse_input(test(C,N), Res) :- test(C,Res,N).
+parse_input(quit, goodbye).
 
 % TESTE http://localhost:8081/move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],2,1,2,2,white)
 % Devolve TabuleiroFinal após movimentacao da peca
@@ -147,7 +141,7 @@ parse_input(initialBoard,Board):-
 */
 parse_input(getValueFromMatrixV2([H|T], Row, Column, Value), Value):-
 	getValueFromMatrixV2([H|T], Row, Column, Value).
-	%Nao precisei de converter porque black ja eh string
+	%Nao precisei de converter porque Value ja eh string
 	%json(Value, ColorPecaSelec).
 
 
@@ -162,9 +156,24 @@ parse_input(checkDifferenceIndexs(RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnInde
 	!,
 	Value is 0,      % Se zero a jogada eh valida
 	json(Value,JSON).
-parse_input(checkDifferenceIndexs(RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex), JSON):-
+% TESTE http://localhost:8081/checkDifferenceIndexs(1,1,3,2)
+parse_input(checkDifferenceIndexs(_RowIndex,_ColumnIndex,_PP_RowIndex, _PP_ColumnIndex), JSON):-
 	Value is 1, % Se 1 a jogada NAO eh valida
 	json(Value,JSON).
+
+/**
+ * Certificacao do gameOver
+ * A cada jogada verifica se existe gameOver
+ * TESTE http://localhost:8081/gameOver([[empty,empty,empty,empty,empty],[empty,empty,black,black,empty],[empty,white,empty,empty,black],[white,white,empty,black,empty],[empty,white,empty,empty,empty],[empty,empty,empty,empty,empty]],Looser)
+*/
+parse_input(gameOver(Board, Looser),JSON):-
+	gameOver(Board,Looser),
+	!,
+	json(Looser,JSON).
+parse_input(gameOver(Board,Looser),JSON):-
+	Value is 1, % Se 1 NAO ha gameOver
+	json(Value,JSON).
+
 
 /**
  * 
@@ -176,29 +185,36 @@ parse_input(checkDifferenceIndexs(RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnInde
 %numeroJogadasValidasParaTodasAsPecasDasDuasCores(Tabuleiro,NumeroWhites-NumeroBlacks):-
 
 
+
+
+
+
+
+
+
 parse_input(claim(Color,Colors,Player),JSON):-
 	claim(Color,Colors,Player,NewColors,NewPlayer),
 	json([1,NewColors,NewPlayer],JSON).
 
-parse_input(claim(Color,Colors,Player),JSON):-
+parse_input(claim(_Color,_Colors, _Player),JSON):-
 	json([0,0,0],JSON).
 
 parse_input(humanPlay(Board,InitPos,FinalPos,P1,P2),NewBoard):-
-	humanPlay(Board,InitPos,FinalPos,P1,P2,Tmp,P),
+	humanPlay(Board,InitPos,FinalPos,P1,P2,Tmp,_P),
 	matrix_to_json(Tmp,NewBoard).
 
-parse_input(humanPlay(Board,InitPos,FinalPos,P1,P2),NewBoard):-
+parse_input(humanPlay(Board,_InitPos,_FinalPos,_P1,_P2),NewBoard):-
 	matrix_to_json(Board,NewBoard).
 
 parse_input(getMove(Board,Player1,Player2),JSON):-
 	getMove(Board,Player1,Player2,X1,Y1,X2,Y2),
 	json([0,X1,Y1,X2,Y2],JSON).
 
-parse_input(getMove(Board,Player1,Player2),JSON):-
+parse_input(getMove(_Board,_Player1,_Player2),JSON):-
 	json([1,0,0,0,0],JSON).
 
 parse_input(makeMove(Board,Player,X1,Y1,X2,Y2),NewBoard):-
-	makeMove(Board,Player,X1,Y1,X2,Y2,Tmp,NP),
+	makeMove(Board,Player,X1,Y1,X2,Y2,Tmp,_NP),
 	matrix_to_json(Tmp,NewBoard).
 
 parse_input(isGameOver(Board,P1,P2),Over):-

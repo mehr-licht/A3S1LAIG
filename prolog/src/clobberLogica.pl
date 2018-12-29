@@ -184,30 +184,37 @@ anunciamento(Color):-
 */
 
 gameOver(Tabuleiro, Looser):-
-        Looser == black,
-        CorContraria = white,
-        posicoesPecasNoTabuleiro(Tabuleiro, Looser,ListaDePecasNoTabuleiro),
-        loop(Tabuleiro, CorContraria, ListaDePecasNoTabuleiro, Total),
+       % Looser == black, CorContraria = white,
+        ( posicoesPecasNoTabuleiro(Tabuleiro, black,ListaDePecasNoTabuleiro),
+          loop(Tabuleiro, white, ListaDePecasNoTabuleiro, Total),
+          Total =:= 0, Looser == black)
+        ;
+        ( posicoesPecasNoTabuleiro(Tabuleiro, white,ListaDePecasNoTabuleiro),
+          loop(Tabuleiro, black, ListaDePecasNoTabuleiro, Total),
+          Total =:= 0, Looser == white
+        )
+        ;
+        Looser == empty.
  %       nl,
   %      write('total de Jogadas'), write(Total), nl.
  %       write('ListadePares'), write(ListaDePares),nl,
 %write('ListaFinal : '), write(ListaFinal), nl.
     %    ListaDePares == [].
-        Total =:= 0,
-        !,      
-        anunciamento(Looser).
+     %   Total =:= 0,
+     %   !.      
+   %     anunciamento(Looser).
 
-gameOver(Tabuleiro, Looser):-
-        Looser == white,
-        CorContraria = black,
-        posicoesPecasNoTabuleiro(Tabuleiro, Looser,ListaDePecasNoTabuleiro), 
-        loop(Tabuleiro, CorContraria, ListaDePecasNoTabuleiro, Total),
+%gameOver(Tabuleiro, Looser):-
+%        Looser == white,
+%        CorContraria = black,
+%        posicoesPecasNoTabuleiro(Tabuleiro, Looser,ListaDePecasNoTabuleiro), 
+%        loop(Tabuleiro, CorContraria, ListaDePecasNoTabuleiro, Total),
  %       nl,
  %       write('white total de Jogadas'), write(Total), nl.
-        Total =:= 0,
-        !,
-        anunciamento(Looser).
-gameOver( _, _).
+%        Total =:= 0,
+%        !.
+   %     anunciamento(Looser).
+%gameOver( _, _):- false.
 /**
  * loop(+Tabuleiro, +CorContraria, +Lista, -Total).
  * @brief descobre o numero total de jogadas validas 
