@@ -16,4 +16,21 @@ class Piece {
     }
 
 
+
+
+    enhancePiece(type) {
+        switch (type) {
+            case "valid":
+                //shader para verde
+                break;
+            case "invalid":
+                //shader para vermelho
+                break;
+            case "none":
+                //sem shader
+                break;
+            default:
+                break;
+        }
+    }
 }

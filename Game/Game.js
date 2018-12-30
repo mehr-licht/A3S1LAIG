@@ -1,4 +1,19 @@
 var SERVER_PORT = 8081;
+/*initial board*/
+var INITIAL_BOARD = [
+    [black, white, black, white, black],
+    [white, black, white, black, white],
+    [black, white, black, white, black],
+    [white, black, white, black, white],
+    [black, white, black, white, black],
+    [white, black, white, black, white]
+];
+/*score points at the beginning of a regular game*/
+var SCORE_1 = 49;
+var SCORE_2 = 49;
+/*time of each turn (seconds)*/
+var TIME_LEFT = 30;
+
 
 ERRORS = {
     ISOLATED: -3,
@@ -23,23 +38,28 @@ initialBoard = [];
 class Game {
 
 
-    constructor(scene, init_board, init_turn) {
+    constructor(scene, init_board, init_turn, score1, score2) {
         this.scene = scene;
-        this.currentPlayer = 0;
+
         this.colors = ['white', 'black'];
-        //  this.players = [[0,1],[0,2]];
-        //this.color_bases = [[[8,0,10],[8,0,12]],[[8,0,-10],[8,0,-12]]];
-        // this.piece_bases = [[[-8,0,-10],[-6,0,-10],[-4,0,-10],[-2,0,-10]],[[-8,0,10],[-6,0,10],[-4,0,10],[-2,0,10]]];
-        this.init_board = init_board;
+        this.init_board = init_board || INITIAL_BOARD;
         this.animationCounter = 0;
         this.board = new Board(scene, this);
         this.running = true;
-        this.over = false;
+        this.gameOver = false;
         this.computer_playing = false;
-        this.turn = init_turn || this.colors[0];
+        this.currentColor = init_turn || this.colors[0];
+        this.otherColor = (this.currentColor == this.colors[0] ? this.colors[1] : this.colors[0]) || this.colors[1];
+        this.timeleft = 0;
+        this.score1 = score1 || SCORE_1;
+        this.score2 = score2 || SCORE_2;
+        this.validReply = false;
+        this.winner = null;
+
         var start = Date.now();
-        var newG = new Game(scene, init_board, init_turn);
+        var newG = new Game(scene, init_board, init_turn, score1, score2);
         this.save = { start, newG };
+
 
         for (let i = 0; i < this.colors.length; i++) {
             let color_node = this.scene.graph.nodes[this.colors[i]];
@@ -77,10 +97,24 @@ class Game {
     //***********************************************************************************************//
 
     /**
-     * Move
-
+     * Initial Board
      */
-    move(tabuleiro, pecaX, pecaY, destX, destY) {
+    InitialBoard(tabuleiro, callback) {
+        let requestString = 'initialBoard(' +
+            JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
+        this.getPrologRequest(requestString, callback);
+        /**gets 
+         * -1 => not received
+         * 0 + tabuleiroFinal
+         *  */
+        // return callback;
+    }
+
+
+    /**
+     * Move
+     */
+    move(tabuleiro, pecaX, pecaY, destX, destY, callback) {
         let requestString = 'mov(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
             JSON.stringify(pecaX).replace(/"/g, '') + ',' +
@@ -97,7 +131,7 @@ class Game {
     }
 
 
-    validMoves(tabuleiro, line, column, color) {
+    validMoves(tabuleiro, line, column, color, callback) {
         let requestString = 'validMoves(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
             JSON.stringify(line).replace(/"/g, '') + ',' +
@@ -114,7 +148,7 @@ class Game {
         //return callback
     }
 
-    checkDifferenceIndexes(pecaX, pecaY, destX, destY) {
+    checkDifferenceIndexes(pecaX, pecaY, destX, destY, callback) {
         let requestString = 'checkDifferenceIndexes(' +
             JSON.stringify(pecaX).replace(/"/g, '') + ',' +
             JSON.stringify(pecaY).replace(/"/g, '') + ',' +
@@ -131,7 +165,7 @@ class Game {
         // return callback;
     }
 
-    jogadasValidas(tabuleiro, color) {
+    jogadasValidas(tabuleiro, color, callback) {
         let requestString = 'jogadasValidas(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
             JSON.stringify(color).replace(/"/g, '') + ')';
@@ -144,13 +178,6 @@ class Game {
     }
 
 
-    /*
-        gameOver(tabuleiro,color) {
-            let requestString = 'game_over(' +
-            JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
-            JSON.stringify(color).replace(/"/g, '') + ')';
-        this.getPrologRequest(requestString, callback);
-         }*/
 
 
     //*************************************************************************************************
@@ -224,14 +251,183 @@ class Game {
     //*************************************************************************************************
     //                                          GAME UTILITIES                                       //
     //***********************************************************************************************/
-    setBoard(board) {
-        this.board = board;
+
+
+    updateScore() {
+        //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
+        if (this.score1) {
+            //campoEstaCor = this.score1;
+            //campoOutraCor = this.score2;
+        } else {
+            this.gameOver = true;
+            this.winner = this.otherColor;
+        }
+
+
     }
 
-    getBoard() {
-        return this.board;
+
+    displayBoard() {
+        if (this.board == INITIAL_BOARD) {
+            this.pieces = [];
+            this.piecesCoords = [];
+            for (var i = 0; i < 30; i++) {
+                this.pieces.push(this.piece);
+                var tmp = new Piece();
+                tmp.id = i;
+                tmp.colour = (i % 2 == 0 ? this.scene.materialWhites : this.scene.materialBlacks);
+                tmp.x = offsetX - incX * parseInt(i / 5);
+                tmp.y = offsetY;
+                tmp.z = offsetZ - incZ * parseInt(i % 5);
+                tmp.scale = 0.2;
+                tmp.active = true;
+                this.piecesCoords.push(tmp);
+
+            }
+        }
+        //mostra this.board;
+
+        //caso geral.temos que seguir o ID da peca quando há movimento e nos saves
+
+        //por cada piece no board
+        //se piece.active mostra no piece.x piece.y piece.z
+        /*
+         
+        */
+        this.updateScore();
     }
 
 
 
+    gameLoop() {
+        this.timeleft = TIME_LEFT;
+        this.markSelectables(current);
+        //wait for a click
+        while (!validReply) {
+            this.validMoves(this.board, line, column, this.currentColor, this.verifyPieceReply());
+        }
+        this.resetError();
+        this.markSelectables(other);
+        //wait for a click
+        while (!validReply) {
+            this.checkDifferenceIndexes(pecaX, pecaY, destX, destY, this.verifyAttackReply());
+        }
+        /*VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0*/
+        if (this.timeleft) {
+            this.timeleft = 0;
+        } else {
+            this.winner = this.otherColor;
+            //msg=YouTookTooMuchTime
+        }
+        this.resetError();
+        while (!validReply) {
+            this.move(this.board, pecaX, pecaY, destX, destY, this.verifyMoveReply());
+        }
+        this.resetError();
+        this.changeColors();
+        this.displayBoard();
+        while (!validReply) {
+            this.jogadasValidas(this.board, this.verifyScoreReply());
+        }
+        this.resetError();
+        this.updateScore();
+    }
+
+
+
+    start() {
+        while (!validReply) {
+            InitialBoard(this.board, this.verifyTabReply());
+        }
+        this.resetError();
+        this.displayBoard();
+        while (!this.gameOver) {
+            this.gameLoop();
+        }
+
+    }
+
+
+
+    verifyTabReply() {
+        let response = JSON.parse(data.target.response);
+        if (response[0]) {
+            this.Board = response[1];
+            return true;
+        } else {
+            this.showError(response[0]);
+            return false;
+        }
+    }
+
+    verifyPieceReply() {
+        let response = JSON.parse(data.target.response);
+        if (response[0]) {
+            return true;
+        } else {
+            this.showError(response[0]);
+            return false;
+        }
+    }
+
+    verifyAttackReply() {
+        let response = JSON.parse(data.target.response);
+        if (response[0]) {
+            return true;
+        } else {
+            this.showError(response[0]);
+            return false;
+        }
+    }
+
+    verifyMoveReply() {
+        let response = JSON.parse(data.target.response);
+        if (response[0]) {
+            this.Board = response[1];
+            return true;
+        } else {
+            this.showError(response[0]);
+            return false;
+        }
+    }
+
+    verifyScoreReply() {
+        let response = JSON.parse(data.target.response);
+        if (response[0]) {
+            //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
+            this.score1 = response[1];
+            this.score2 = response[2];
+            return true;
+        } else {
+            this.showError(response[0]);
+            return false;
+        }
+    }
+
+    showError(func, code) {
+        //translate code into msg (de acordo com func  ou code independente?)
+        //document.getElementById('errorMessage').innerText = func + " : " + msg;  
+    }
+
+    resetError() {
+        this.validReply = false;
+        //document.getElementById('errorMessage').innerText = ""; 
+    }
+
+    changeColors() {
+        let tmp = this.otherColor;
+        this.otherColor = this.currentColor;
+        this.currentColor = temp;
+    }
+
+    markSelectables(which) {
+        //por cada piece
+        //if(piece.color == which) marcar Selectable
+        //if(não alcancavel) desmarcar Selectable //se assim optarmos
+    }
+
+    translateBoard() {
+        //transforma this.board em linha-coluna
+        //e linha-coluna em coords já com offset
+    }
 }
