@@ -5,7 +5,7 @@
  */
 class Piece {
 
-    constructor(scene, id, x, y, z, scale, active, colour) {
+    constructor(scene, id, x, y, z, scale, active, colour, cell = id) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -13,6 +13,7 @@ class Piece {
         this.scale = scale;
         this.colour = colour;
         this.active = active;
+        this.cell = cell;
     }
 
 

@@ -13,7 +13,8 @@ var SCORE_1 = 49;
 var SCORE_2 = 49;
 /*time of each turn (seconds)*/
 var TIME_LEFT = 30;
-
+/*initial number of pieces on board*/
+var NUMBER_PIECES = 30;
 
 ERRORS = {
     ISOLATED: -3,
@@ -41,31 +42,35 @@ class Game {
     constructor(scene, init_board, init_turn, score1, score2) {
         this.scene = scene;
 
-        this.colors = ['white', 'black'];
+        this.colours = ['white', 'black'];
         this.init_board = init_board || INITIAL_BOARD;
         this.animationCounter = 0;
         this.board = new Board(scene, this);
         this.running = true;
         this.gameOver = false;
         this.computer_playing = false;
-        this.currentColor = init_turn || this.colors[0];
-        this.otherColor = (this.currentColor == this.colors[0] ? this.colors[1] : this.colors[0]) || this.colors[1];
+        this.currentColour = init_turn || this.colours[0];
+        this.otherColour = (this.currentColour == this.colours[0] ? this.colours[1] : this.colours[0]) || this.colours[1];
         this.timeleft = 0;
         this.score1 = score1 || SCORE_1;
         this.score2 = score2 || SCORE_2;
         this.validReply = false;
         this.winner = null;
 
+        this.pieces = Array.from({ length: NUMBER_PIECES }, (v, k) => k + 1);
+        // this.piecesCoords = [];  //use coords from the piece(id) object
+
+
         var start = Date.now();
         var newG = new Game(scene, init_board, init_turn, score1, score2);
         this.save = { start, newG };
 
 
-        for (let i = 0; i < this.colors.length; i++) {
-            let color_node = this.scene.graph.nodes[this.colors[i]];
-            mat4.identity(color_node.transformMatrix);
-            mat4.translate(color_node.transformMatrix, color_node.transformMatrix, color_node.position);
-            mat4.rotate(color_node.transformMatrix, color_node.transformMatrix, -Math.PI / 2, [1, 0, 0]);
+        for (let i = 0; i < this.colours.length; i++) {
+            let colour_node = this.scene.graph.nodes[this.colours[i]];
+            mat4.identity(colour_node.transformMatrix);
+            mat4.translate(colour_node.transformMatrix, colour_node.transformMatrix, colour_node.position);
+            mat4.rotate(colour_node.transformMatrix, colour_node.transformMatrix, -Math.PI / 2, [1, 0, 0]);
         }
         document.getElementById('turn').innerText = 'Player 1';
 
@@ -131,17 +136,17 @@ class Game {
     }
 
 
-    validMoves(tabuleiro, line, column, color, callback) {
+    validMoves(tabuleiro, line, column, colour, callback) {
         let requestString = 'validMoves(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
             JSON.stringify(line).replace(/"/g, '') + ',' +
             JSON.stringify(column).replace(/"/g, '') + ',' +
-            JSON.stringify(color).replace(/"/g, '') + ')';
+            JSON.stringify(colour).replace(/"/g, '') + ')';
 
         this.getPrologRequest(requestString, callback);
         /**gets 
          * -3 => piece is isolated
-         * -2 => wrong color chosen
+         * -2 => wrong colour chosen
          * -1 => not received
          * 0 => OK
          *  */
@@ -158,17 +163,17 @@ class Game {
         this.getPrologRequest(requestString, callback);
         /**gets 
          * -3 => empty space
-         * -2 => to wrong color
+         * -2 => to wrong colour
          * -1 => not received
          * 0 => OK
          *  */
         // return callback;
     }
 
-    jogadasValidas(tabuleiro, color, callback) {
+    jogadasValidas(tabuleiro, colour, callback) {
         let requestString = 'jogadasValidas(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
-            JSON.stringify(color).replace(/"/g, '') + ')';
+            JSON.stringify(colour).replace(/"/g, '') + ')';
         this.getPrologRequest(requestString, callback);
         /**gets 
          * -1 => not received
@@ -260,7 +265,7 @@ class Game {
             //campoOutraCor = this.score2;
         } else {
             this.gameOver = true;
-            this.winner = this.otherColor;
+            this.winner = this.otherColour;
         }
 
 
@@ -268,43 +273,52 @@ class Game {
 
 
     displayBoard() {
-        if (this.board == INITIAL_BOARD) {
-            this.pieces = [];
-            this.piecesCoords = [];
-            for (var i = 0; i < 30; i++) {
-                this.pieces.push(this.piece);
-                var tmp = new Piece();
-                tmp.id = i;
-                tmp.colour = (i % 2 == 0 ? this.scene.materialWhites : this.scene.materialBlacks);
-                tmp.x = offsetX - incX * parseInt(i / 5);
-                tmp.y = offsetY;
-                tmp.z = offsetZ - incZ * parseInt(i % 5);
-                tmp.scale = 0.2;
-                tmp.active = true;
-                this.piecesCoords.push(tmp);
+        /* COMO ESTAVA NO XMLscene */
+        /* if (this.board == INITIAL_BOARD) {
 
-            }
-        }
-        //mostra this.board;
+             for (var i = 0; i < NUMBER_PIECES; i++) {
+                 // this.pieces.push(this.piece);
+                 var tmp = new Piece();
+                 tmp.id = i;
+                 tmp.colour = (i % 2 == 0 ? this.scene.materialWhites : this.scene.materialBlacks);
+                 tmp.x = offsetX - incX * parseInt(i / 5);
+                 tmp.y = offsetY;
+                 tmp.z = offsetZ - incZ * parseInt(i % 5);
+                 tmp.scale = 0.2;
+                 tmp.active = true;
+                 this.piecesCoords.push(tmp);
 
-        //caso geral.temos que seguir o ID da peca quando há movimento e nos saves
+             }
+         }*/
 
-        //por cada piece no board
-        //se piece.active mostra no piece.x piece.y piece.z
-        /*
-         
-        */
+        this.translateBoard();
         this.updateScore();
     }
 
-
+    translateBoard() {
+        for (var i = 0; i < this.Board.length; i++) {
+            for (var j = 0; j < this.Board[i].length; j++) {
+                if (this.Board[i][j] != "empty") {
+                    var tmp = new Piece();
+                    tmp.active = true;
+                    tmp.colour = this.Board[i][j];
+                    tmp.id = j;
+                    tmp.x = offsetX - incX * parseInt(j / 5);
+                    tmp.cell = j;
+                    tmp.y = offsetZ - incZ * parseInt(j % 5);
+                    //line=parseInt(j / 5); 
+                    //column=parseInt(j % 5);
+                }
+            }
+        }
+    }
 
     gameLoop() {
         this.timeleft = TIME_LEFT;
         this.markSelectables(current);
         //wait for a click
         while (!validReply) {
-            this.validMoves(this.board, line, column, this.currentColor, this.verifyPieceReply());
+            this.validMoves(this.board, line, column, this.currentColour, this.verifyPieceReply());
         }
         this.resetError();
         this.markSelectables(other);
@@ -316,15 +330,20 @@ class Game {
         if (this.timeleft) {
             this.timeleft = 0;
         } else {
-            this.winner = this.otherColor;
+            this.winner = this.otherColour;
             //msg=YouTookTooMuchTime
         }
         this.resetError();
+        //irBuscar a celula e o id da peca escolhida
+        //irBuscar a celula e o id do destino escolhido
         while (!validReply) {
             this.move(this.board, pecaX, pecaY, destX, destY, this.verifyMoveReply());
         }
+        //esvaziar a celula da peca escolhida
+        //id do destino passa a inactivo e coords do inactivo
+        //celula destino passa a ter o id da peca escolhida
         this.resetError();
-        this.changeColors();
+        this.changeColours();
         this.displayBoard();
         while (!validReply) {
             this.jogadasValidas(this.board, this.verifyScoreReply());
@@ -344,7 +363,7 @@ class Game {
         while (!this.gameOver) {
             this.gameLoop();
         }
-
+        //document.getElementById('winner').innerText = this.winner;  
     }
 
 
@@ -414,15 +433,15 @@ class Game {
         //document.getElementById('errorMessage').innerText = ""; 
     }
 
-    changeColors() {
-        let tmp = this.otherColor;
-        this.otherColor = this.currentColor;
-        this.currentColor = temp;
+    changeColours() {
+        let tmp = this.otherColour;
+        this.otherColour = this.currentColour;
+        this.currentColour = temp;
     }
 
     markSelectables(which) {
         //por cada piece
-        //if(piece.color == which) marcar Selectable
+        //if(piece.colour == which) marcar Selectable
         //if(não alcancavel) desmarcar Selectable //se assim optarmos
     }
 
