@@ -5,7 +5,7 @@
  */
 class Piece {
 
-    constructor(scene, id, x, y, z, scale, active, colour, cell = id) {
+    constructor(scene, id, x, y, z, scale, active, colour, line, column) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -13,10 +13,10 @@ class Piece {
         this.scale = scale;
         this.colour = colour;
         this.active = active;
-        this.cell = cell;
+        this.line = line;
+        this.column = column;
+        //   this.cell = cell;
     }
-
-
 
 
     enhancePiece(type) {

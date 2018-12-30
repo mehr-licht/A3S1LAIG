@@ -37,8 +37,8 @@ class XMLscene extends CGFscene {
         let currentDate = new Date();
         this.initialTime = currentDate.getTime();
         this.currScene = "FEUP";
-        this.gameMode = "Player vs Player";
-        this.gameLevel = "Easy";
+        this.GameMode = "Player vs Player";
+        this.GameLevel = "Easy";
     }
 
     /**
@@ -136,7 +136,7 @@ class XMLscene extends CGFscene {
 
         this.shader.setUniformsValues({ timeFactor: this.time });
 
-        if (typeof this.game != "undefined" && !this.game.over)
+        if (typeofthis.Game != "undefined" && !this.game.over)
             this.updateTime(currTime);
 
         this.prevTime = currTime;
@@ -245,6 +245,8 @@ class XMLscene extends CGFscene {
     display() {
 
         this.logPicking();
+        this.handlePicking(); //Só 1 destes 2
+
         this.clearPickRegistration();
         // ---- BEGIN Background, camera and axis setup
 
@@ -295,9 +297,9 @@ class XMLscene extends CGFscene {
             }
 
             this.setCameraUsed();
-   console.log(this.currScene); //TIRAR ISTO - isto FAZ COm que funcione (mesmo assim repete guis - meter flag?)
+            console.log(this.currScene); //TIRAR ISTO - isto FAZ COm que funcione (mesmo assim repete guis - meter flag?)
             this.scenes[this.currScene].displayScene();
-         
+
 
 
             // registar para picking
@@ -305,19 +307,19 @@ class XMLscene extends CGFscene {
             //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
 
             // draw objects
-            for (i = 0; i < this.pieces.length; i++) {
+            for (i = 0; i < this.Game.pieces.length; i++) {
                 this.pushMatrix();
                 this.translate(7, 0, 7);
                 this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
                 //    this.scale(this.piecesCoords[i].scale, this.piecesCoords[i].scale, this.piecesCoords[i].scale);
-                this.translate(this.piecesCoords[i].x, this.piecesCoords[i].y, this.piecesCoords[i].z);
+                this.translate(this.game.piecesCoords[i].x, this.Game.piecesCoords[i].y, this.Game.piecesCoords[i].z);
                 // this.translate(-0.73, 4.185, 0.605);
                 this.scale(0.10, 0.10, 0.10);
-                this.registerForPick(i + 1, this.pieces[i]);
+                this.registerForPick(i + 1, this.Game.pieces[i]);
 
-                this.piecesCoords[i].colour.apply();
+                this.Game.piecesCoords[i].colour.apply();
 
-                this.pieces[i].display();
+                this.Game.pieces[i].display();
                 this.popMatrix();
             }
 
@@ -366,6 +368,7 @@ class XMLscene extends CGFscene {
                     var obj = this.pickResults[i][0];
                     if (obj) {
                         var customId = this.pickResults[i][1];
+                        this.Game.pickedPiece = customId;
                         console.log("Picked object: " + obj + ", with pick id " + customId);
                     }
                 }
@@ -379,19 +382,16 @@ class XMLscene extends CGFscene {
             if (this.pickResults != null && this.pickResults.length > 0) {
                 for (var i = 0; i < this.pickResults.length; i++) {
                     var obj = this.pickResults[i][0];
-
                     if (obj != null)
-
                         if (obj) {
-                        var customId = this.pickResults[i][1];
-
-                        if (!this.game.over)
-                            if (this.game.running) {
-                                obj.pickedShader = 1;
-                                this.game.picked(obj);
-                            }
-
-                    }
+                            var customId = this.pickResults[i][1];
+                            if (!this.game.over)
+                                if (this.game.running) {
+                                    // obj.pickedShader = 1;
+                                    this.Game.pickedPiece = customId;
+                                    //  this.Game.picked(obj);
+                                }
+                        }
                 }
                 this.pickResults.splice(0, this.pickResults.length);
             }
@@ -441,19 +441,19 @@ class XMLscene extends CGFscene {
     };
 
     startGame() {
-        this.game.start(this.gameMode, this.gameLevel);
+        this.Game.start(this.gameMode, this.GameLevel);
     }
 
     quitGame() {
-        this.game.quit();
+        this.Game.quit();
     }
 
     undo() {
-        this.game.undo();
+        this.Game.undo();
     }
 
     movie() {
-        this.game.movie();
+        this.Game.movie();
     }
 
 }

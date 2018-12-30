@@ -41,7 +41,7 @@ class Game {
 
     constructor(scene, init_board, init_turn, score1, score2) {
         this.scene = scene;
-
+        this.pickedPiece = 0;
         this.colours = ['white', 'black'];
         this.init_board = init_board || INITIAL_BOARD;
         this.animationCounter = 0;
@@ -57,12 +57,11 @@ class Game {
         this.validReply = false;
         this.winner = null;
 
-        this.pieces = Array.from({ length: NUMBER_PIECES }, (v, k) => k + 1);
-        // this.piecesCoords = [];  //use coords from the piece(id) object
-
+        this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
+        this.piecesCoords = []; //use coords from the piece(id) object
 
         var start = Date.now();
-        var newG = new Game(scene, init_board, init_turn, score1, score2);
+        var newG = new Game(scene, this.init_board, this.init_turn, this.score1, this.score2, this.pieces, this.piecesCoords);
         this.save = { start, newG };
 
 
@@ -304,10 +303,11 @@ class Game {
                     tmp.colour = this.Board[i][j];
                     tmp.id = j;
                     tmp.x = offsetX - incX * parseInt(j / 5);
-                    tmp.cell = j;
+                    // tmp.cell = j;
                     tmp.y = offsetZ - incZ * parseInt(j % 5);
-                    //line=parseInt(j / 5); 
-                    //column=parseInt(j % 5);
+                    tmp.line = parseInt(j / 5);
+                    tmp.column = parseInt(j % 5);
+                    this.piecesCoords.push(tmp);
                 }
             }
         }
@@ -316,16 +316,24 @@ class Game {
     gameLoop() {
         this.timeleft = TIME_LEFT;
         this.markSelectables(current);
-        //wait for a click
-        while (!validReply) {
-            this.validMoves(this.board, line, column, this.currentColour, this.verifyPieceReply());
+
+        while (!this.validReply) {
+            if (this.pickedPiece) {
+                piece2Move = this.pieces[this.pickedPiece - 1];
+                this.validMoves(this.board, piece2Move.line, piece2Move.column, this.currentColour, this.verifyPieceReply());
+            }
         }
+        this.pickedPiece = 0;
         this.resetError();
         this.markSelectables(other);
-        //wait for a click
-        while (!validReply) {
-            this.checkDifferenceIndexes(pecaX, pecaY, destX, destY, this.verifyAttackReply());
+
+        while (!this.validReply) {
+            if (this.pickedPiece) {
+                moveWhere2 = this.pieces[this.pickedPiece - 1];
+                this.checkDifferenceIndexes(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply());
+            }
         }
+        this.pickedPiece = 0;
         /*VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0*/
         if (this.timeleft) {
             this.timeleft = 0;
@@ -334,18 +342,14 @@ class Game {
             //msg=YouTookTooMuchTime
         }
         this.resetError();
-        //irBuscar a celula e o id da peca escolhida
-        //irBuscar a celula e o id do destino escolhido
-        while (!validReply) {
-            this.move(this.board, pecaX, pecaY, destX, destY, this.verifyMoveReply());
+
+        while (!this.validReply) {
+            this.move(this.board, piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply());
         }
-        //esvaziar a celula da peca escolhida
-        //id do destino passa a inactivo e coords do inactivo
-        //celula destino passa a ter o id da peca escolhida
         this.resetError();
         this.changeColours();
         this.displayBoard();
-        while (!validReply) {
+        while (!this.validReply) {
             this.jogadasValidas(this.board, this.verifyScoreReply());
         }
         this.resetError();
@@ -355,7 +359,7 @@ class Game {
 
 
     start() {
-        while (!validReply) {
+        while (!this.validReply) {
             InitialBoard(this.board, this.verifyTabReply());
         }
         this.resetError();
@@ -441,7 +445,7 @@ class Game {
 
     markSelectables(which) {
         //por cada piece
-        //if(piece.colour == which) marcar Selectable
+        //if(piece.colour == which) marcar Selectable }else{nao selectable}
         //if(não alcancavel) desmarcar Selectable //se assim optarmos
     }
 
