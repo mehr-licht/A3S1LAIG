@@ -1,12 +1,12 @@
 var SERVER_PORT = 8081;
 /*initial board*/
 var INITIAL_BOARD = [
-    [black, white, black, white, black],
-    [white, black, white, black, white],
-    [black, white, black, white, black],
-    [white, black, white, black, white],
-    [black, white, black, white, black],
-    [white, black, white, black, white]
+    ['black', 'white', 'black', 'white', 'black'],
+    ['white', 'black', 'white', 'black', 'white'],
+    ['black', 'white', 'black', 'white', 'black'],
+    ['white', 'black', 'white', 'black', 'white'],
+    ['black', 'white', 'black', 'white', 'black'],
+    ['white', 'black', 'white', 'black', 'white']
 ];
 /*score points at the beginning of a regular game*/
 var SCORE_1 = 49;

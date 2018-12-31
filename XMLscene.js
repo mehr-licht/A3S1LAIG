@@ -136,7 +136,7 @@ class XMLscene extends CGFscene {
 
         this.shader.setUniformsValues({ timeFactor: this.time });
 
-        if (typeofthis.Game != "undefined" && !this.game.over)
+        if (typeof this.Game != "undefined" && !this.game.over)
             this.updateTime(currTime);
 
         this.prevTime = currTime;
