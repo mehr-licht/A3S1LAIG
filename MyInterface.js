@@ -71,7 +71,7 @@ class MyInterface extends CGFinterface {
     }
 
     addScenePicker() {
-        this.gui.add(this.scene, "currScene", ["FEUP", "naufragio"]).name("Scene");
+        this.gui.add(this.scene, "currScene", ["FEUP", "stranded"]).name("Scene");
     };
 
     addSettingsGroup(game) {

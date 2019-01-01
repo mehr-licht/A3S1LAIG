@@ -68,27 +68,31 @@ serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
         app.setScene(myScene);
         app.setInterface(myInterface);
 
-        myInterface.setActiveCamera(myScene.camera);
+        myInterface.setActiveCamera(myScene.camera); //isto deve ser comentado quando pusermos a camara a alterar
 
         // get file name provided in URL, 
         //e.g. http://localhost:8080/?file=stranded.xml
         //or http://localhost:8080/?file=FEUP.xml
         // or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor) 
 
+
+
         var filename = getUrlVars()['file'] || "FEUP.xml";
+        // var myGraph = new MySceneGraph(filename, myScene);
+        myScene.currScene = filename.substring(0, filename.indexOf(".xml"));
+
+        myScene.scenes['FEUP'] = new MySceneGraph("FEUP.xml", myScene);
+        myScene.scenes.length++;
+
+        // filename = getUrlVars()['file'] || "stranded.xml";
 
         // create and load graph, and associate it to scene. 
         // Check console for loading errors
         //var myGraph = new MySceneGraph(filename, myScene);
 
-        myScene.scenes["FEUP"] = new MySceneGraph(filename, myScene);
-        myScene.scenes.length++;
+        myScene.scenes['stranded'] = new MySceneGraph("stranded.xml", myScene);
+        // myScene.scenes.length++;
 
-
-        var filename = getUrlVars()['file'] || "stranded.xml";
-
-        myScene.scenes["naufragio"] = new MySceneGraph(filename, myScene);
-        myScene.scenes.length++;
 
         // start
         app.run();

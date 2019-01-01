@@ -1,12 +1,12 @@
 var SERVER_PORT = 8081;
 /*initial board*/
 var INITIAL_BOARD = [
-    [black, white, black, white, black],
-    [white, black, white, black, white],
-    [black, white, black, white, black],
-    [white, black, white, black, white],
-    [black, white, black, white, black],
-    [white, black, white, black, white]
+    ['black', 'white', 'black', 'white', 'black'],
+    ['white', 'black', 'white', 'black', 'white'],
+    ['black', 'white', 'black', 'white', 'black'],
+    ['white', 'black', 'white', 'black', 'white'],
+    ['black', 'white', 'black', 'white', 'black'],
+    ['white', 'black', 'white', 'black', 'white']
 ];
 /*score points at the beginning of a regular game*/
 var SCORE_1 = 49;
@@ -15,6 +15,10 @@ var SCORE_2 = 49;
 var TIME_LEFT = 30;
 /*initial number of pieces on board*/
 var NUMBER_PIECES = 30;
+
+/*default game config*/
+var DEFAULT_MODE = "Player vs Player";
+var DEFAULT_LEVEL = "Easy";
 
 ERRORS = {
     ISOLATED: -3,
@@ -29,7 +33,7 @@ LEVELS = {
     HARD: 1
 };
 
-initialBoard = [];
+
 
 /**
  * Game
@@ -39,13 +43,14 @@ initialBoard = [];
 class Game {
 
 
-    constructor(scene, init_board, init_turn, score1, score2) {
+    constructor(scene, init_board, init_turn, score1, score2, gameMode, gameLevel) {
         this.scene = scene;
         this.pickedPiece = 0;
         this.colours = ['white', 'black'];
         this.init_board = init_board || INITIAL_BOARD;
         this.animationCounter = 0;
-        this.board = new Board(scene, this);
+        this.board = [];
+
         this.running = true;
         this.gameOver = false;
         this.computer_playing = false;
@@ -56,21 +61,22 @@ class Game {
         this.score2 = score2 || SCORE_2;
         this.validReply = false;
         this.winner = null;
+        this.gameMode = DEFAULT_MODE || gameMode;
+        this.gameLevel = DEFAULT_LEVEL || gameLevel;
 
-        this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
-        this.piecesCoords = []; //use coords from the piece(id) object
+        //this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
+        this.pieces = []; //use coords from the piece(id) object
 
         var start = Date.now();
-        var newG = new Game(scene, this.init_board, this.init_turn, this.score1, this.score2, this.pieces, this.piecesCoords);
-        this.save = { start, newG };
 
 
-        for (let i = 0; i < this.colours.length; i++) {
-            let colour_node = this.scene.graph.nodes[this.colours[i]];
-            mat4.identity(colour_node.transformMatrix);
-            mat4.translate(colour_node.transformMatrix, colour_node.transformMatrix, colour_node.position);
-            mat4.rotate(colour_node.transformMatrix, colour_node.transformMatrix, -Math.PI / 2, [1, 0, 0]);
-        }
+        /*
+                for (let i = 0; i < this.colours.length; i++) {
+                    let colour_node = this.scene.graph.nodes[this.colours[i]];
+                    mat4.identity(colour_node.transformMatrix);
+                    mat4.translate(colour_node.transformMatrix, colour_node.transformMatrix, colour_node.position);
+                    mat4.rotate(colour_node.transformMatrix, colour_node.transformMatrix, -Math.PI / 2, [1, 0, 0]);
+                }*/
         document.getElementById('turn').innerText = 'Player 1';
 
     }
@@ -82,11 +88,8 @@ class Game {
         let requestPort = port || SERVER_PORT;
         let request = new XMLHttpRequest();
         request.open('GET', 'http://localhost:' + requestPort + '/' + requestString, true);
-
         request.onload = onSuccess;
-
-        request.onerror = onError || prologRequestError;
-
+        request.onerror = onError || this.prologRequestError;
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         request.send();
     }
@@ -103,10 +106,12 @@ class Game {
     /**
      * Initial Board
      */
-    InitialBoard(tabuleiro, callback) {
-        let requestString = 'initialBoard(' +
-            JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
+    InitialBoard(callback) {
+
+        let requestString = 'initialBoard';
+        alert("ini01");
         this.getPrologRequest(requestString, callback);
+        alert("ini02");
         /**gets 
          * -1 => not received
          * 0 + tabuleiroFinal
@@ -230,8 +235,9 @@ class Game {
      * ->jogo
      */
     save() {
+
         var now = new Date();
-        var newG = new Game(scene, init_board, this.turn);
+        var newG = new Game(scene, this.init_board, this.init_turn, this.score1, this.score2, this.pieces, this.piecesCoords, this.gameMode, this.gameLevel);
         this.save = {
             now,
             newG
@@ -307,7 +313,7 @@ class Game {
                     tmp.y = offsetZ - incZ * parseInt(j % 5);
                     tmp.line = parseInt(j / 5);
                     tmp.column = parseInt(j % 5);
-                    this.piecesCoords.push(tmp);
+                    this.pieces.push(tmp);
                 }
             }
         }
@@ -320,7 +326,7 @@ class Game {
         while (!this.validReply) {
             if (this.pickedPiece) {
                 piece2Move = this.pieces[this.pickedPiece - 1];
-                this.validMoves(this.board, piece2Move.line, piece2Move.column, this.currentColour, this.verifyPieceReply());
+                this.validMoves(this.board, piece2Move.line, piece2Move.column, this.currentColour, this.verifyPieceReply.bind(this));
             }
         }
         this.pickedPiece = 0;
@@ -330,7 +336,7 @@ class Game {
         while (!this.validReply) {
             if (this.pickedPiece) {
                 moveWhere2 = this.pieces[this.pickedPiece - 1];
-                this.checkDifferenceIndexes(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply());
+                this.checkDifferenceIndexes(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
             }
         }
         this.pickedPiece = 0;
@@ -339,18 +345,19 @@ class Game {
             this.timeleft = 0;
         } else {
             this.winner = this.otherColour;
-            //msg=YouTookTooMuchTime
+            document.getElementById('messages').innerText = 'YouTookTooMuchTime';
+            document.getElementById('info').innerText = this.winner;
         }
         this.resetError();
 
         while (!this.validReply) {
-            this.move(this.board, piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply());
+            this.move(this.board, piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
         }
         this.resetError();
         this.changeColours();
         this.displayBoard();
         while (!this.validReply) {
-            this.jogadasValidas(this.board, this.verifyScoreReply());
+            this.jogadasValidas(this.board, this.verifyScoreReply.bind(this));
         }
         this.resetError();
         this.updateScore();
@@ -359,82 +366,92 @@ class Game {
 
 
     start() {
+        alert("00");
         while (!this.validReply) {
-            InitialBoard(this.board, this.verifyTabReply());
+            alert("01");
+            this.InitialBoard(this.verifyTabReply()); //this.InitialBoard(this.verifyTabReply(this));
+            alert("02");
         }
+        alert("03");
         this.resetError();
         this.displayBoard();
         while (!this.gameOver) {
             this.gameLoop();
         }
-        //document.getElementById('winner').innerText = this.winner;  
+        document.getElementById('info').innerText = this.winner;
     }
 
 
 
-    verifyTabReply() {
+    verifyTabReply() { //  verifyTabReply(data) {
+        alert("t_0");
+        let response = JSON.parse(data.target.response);
+        alert("t_1");
+        if (response[0]) {
+            alert("t_2");
+            this.Board = response[1];
+            alert("t_3");
+            this.validReply = true;
+        } else {
+            alert("t_4");
+            this.showError(response[0]);
+            alert("t_5");
+            this.validReply = false;
+        }
+    }
+
+    verifyPieceReply(data) {
+        let response = JSON.parse(data.target.response);
+        if (response[0]) {
+            this.validReply = true;
+        } else {
+            this.showError(response[0]);
+            this.validReply = false;
+        }
+    }
+
+    verifyAttackReply(data) {
+        let response = JSON.parse(data.target.response);
+        if (response[0]) {
+            this.validReply = true;
+        } else {
+            this.showError(response[0]);
+            this.validReply = false;
+        }
+    }
+
+    verifyMoveReply(data) {
         let response = JSON.parse(data.target.response);
         if (response[0]) {
             this.Board = response[1];
-            return true;
+            this.validReply = true;
         } else {
             this.showError(response[0]);
-            return false;
+            this.validReply = false;
         }
     }
 
-    verifyPieceReply() {
-        let response = JSON.parse(data.target.response);
-        if (response[0]) {
-            return true;
-        } else {
-            this.showError(response[0]);
-            return false;
-        }
-    }
-
-    verifyAttackReply() {
-        let response = JSON.parse(data.target.response);
-        if (response[0]) {
-            return true;
-        } else {
-            this.showError(response[0]);
-            return false;
-        }
-    }
-
-    verifyMoveReply() {
-        let response = JSON.parse(data.target.response);
-        if (response[0]) {
-            this.Board = response[1];
-            return true;
-        } else {
-            this.showError(response[0]);
-            return false;
-        }
-    }
-
-    verifyScoreReply() {
+    verifyScoreReply(data) {
         let response = JSON.parse(data.target.response);
         if (response[0]) {
             //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
             this.score1 = response[1];
             this.score2 = response[2];
-            return true;
+            this.validReply = true;
         } else {
             this.showError(response[0]);
-            return false;
+            this.validReply = false;
         }
     }
 
     showError(func, code) {
         //translate code into msg (de acordo com func  ou code independente?)
-        //document.getElementById('errorMessage').innerText = func + " : " + msg;  
+        document.getElementById('messages').innerText = func + " : " + msg;
     }
 
     resetError() {
         this.validReply = false;
-        //document.getElementById('errorMessage').innerText = ""; 
+        document.getElementById('messages').innerText = "";
     }
 
     changeColours() {
@@ -449,8 +466,5 @@ class Game {
         //if(não alcancavel) desmarcar Selectable //se assim optarmos
     }
 
-    translateBoard() {
-        //transforma this.board em linha-coluna
-        //e linha-coluna em coords já com offset
-    }
+
 }

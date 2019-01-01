@@ -44,6 +44,8 @@ class MySceneGraph {
          * If any error occurs, the reader calls onXMLError on this object, with an error message
          */
         this.reader.open('scenes/' + filename, this);
+        //  this.GameMode = ["PlayerVsPlayer", "PlayerVsComputer", "Computer"];
+        //this.pickID=0;
     }
 
     /*
@@ -1965,6 +1967,19 @@ class MySceneGraph {
         this.scene.popMatrix();
         if (flag)
             this.scene.setActiveShader(this.scene.defaultShader);
+
+    }
+
+
+    update(deltaTime) {
+        this.totalTime += deltaTime;
+
+        var rootNode = this.nodes[this.idRoot];
+
+        if (rootNode == null)
+            return "there is not root node";
+
+        this.processNode(rootNode.children);
 
     }
 }

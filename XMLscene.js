@@ -31,14 +31,23 @@ class XMLscene extends CGFscene {
         this.lightValues = {};
         this.scenesList = [];
         this.scenes = [];
+        var FEUP = new MySceneGraph("FEUP.xml", this);
+        var stranded = new MySceneGraph("stranded.xml", this);
+        // this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
+        //this.scenes['stranded'] = new MySceneGraph("stranded.xml", this);
+        this.scenes.push(FEUP);
+        this.scenes.push(stranded);
 
         this.shaderObjects = [];
         this.lastTime = 0;
         let currentDate = new Date();
         this.initialTime = currentDate.getTime();
-        this.currScene = "FEUP";
-        this.GameMode = "Player vs Player";
-        this.GameLevel = "Easy";
+        this.currScene = "stranded";
+
+        //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
+        this.newGame = new Game()
+        this.gameMode = "Player vs Player";
+        this.gameLevel = "Easy";
     }
 
     /**
@@ -93,9 +102,9 @@ class XMLscene extends CGFscene {
 
         this.setUpdatePeriod(100);
         //msecs
+        //  this.scenes.push(new MySceneGraph('stranded.xml', this));
+        //this.scenes.push(new MySceneGraph('FEUP.xml', this));
 
-        this.scenes.push(new MySceneGraph('FEUP.xml', this));
-        this.scenes.push(new MySceneGraph('stranded.xml', this));
 
 
         this.setPickEnabled(true);
@@ -106,10 +115,10 @@ class XMLscene extends CGFscene {
         // this.updateScaleFactor(currTime);
         /*
                 if (this.prevTime == -1) {
-                    this.animateCamera(0);
+                    //this.animateCamera(0);
                     this.graph.update(0);
                 } else {
-                    this.animateCamera(currTime - this.prevTime);
+                    //this.animateCamera(currTime - this.prevTime);
                     this.graph.update(currTime - this.prevTime);
                 }*/
 
@@ -136,8 +145,8 @@ class XMLscene extends CGFscene {
 
         this.shader.setUniformsValues({ timeFactor: this.time });
 
-        if (typeofthis.Game != "undefined" && !this.game.over)
-            this.updateTime(currTime);
+        /*  if (typeof this.newGame != "undefined" && !this.newGame.gameOver)
+              this.updateTime(currTime);*/
 
         this.prevTime = currTime;
     }
@@ -227,7 +236,7 @@ class XMLscene extends CGFscene {
         var views = this.interface.gui.add(this, 'currView', this.viewsList).name('views');
 
         this.interface.addScenePicker();
-        this.interface.addSettingsGroup(this.game);
+        this.interface.addSettingsGroup(this.newGame);
         this.interface.addOptionsGroup();
 
         // Adds lights group.
@@ -276,9 +285,9 @@ class XMLscene extends CGFscene {
         this.pushMatrix();
 
 
-        if (this.sceneInited) {
-            // Draw axis
 
+        // Draw axis
+        if (this.graph.loadedOk) {
             this.axis.display();
             this.setDefaultAppearance();
             var i = 0;
@@ -297,9 +306,12 @@ class XMLscene extends CGFscene {
             }
 
             this.setCameraUsed();
-            console.log(this.currScene); //TIRAR ISTO - isto FAZ COm que funcione (mesmo assim repete guis - meter flag?)
-            this.scenes[this.currScene].displayScene();
+            // console.log(this.currScene); //TIRAR ISTO - isto FAZ COm que funcione (mesmo assim repete guis - meter flag?)
+            this.graph = this.scenes[this.currScene];
 
+
+            this.graph.displayScene();
+            //console.log(this.currScene);
 
 
             // registar para picking
@@ -307,21 +319,23 @@ class XMLscene extends CGFscene {
             //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
 
             // draw objects
-            for (i = 0; i < this.Game.pieces.length; i++) {
+
+            for (i = 0; i < this.newGame.pieces.length; i++) {
                 this.pushMatrix();
                 this.translate(7, 0, 7);
                 this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
                 //    this.scale(this.piecesCoords[i].scale, this.piecesCoords[i].scale, this.piecesCoords[i].scale);
-                this.translate(this.game.piecesCoords[i].x, this.Game.piecesCoords[i].y, this.Game.piecesCoords[i].z);
+                this.translate(this.newGame.pieces[i].x, this.newGame.pieces[i].y, this.newGame.pieces[i].z);
                 // this.translate(-0.73, 4.185, 0.605);
                 this.scale(0.10, 0.10, 0.10);
-                this.registerForPick(i + 1, this.Game.pieces[i]);
+                this.registerForPick(i + 1, this.newGame.pieces[i]);
 
-                this.Game.piecesCoords[i].colour.apply();
+                this.newGame.pieces[i].colour.apply();
 
-                this.Game.pieces[i].display();
+                this.newGame.pieces[i].display();
                 this.popMatrix();
             }
+
 
         } else {
             // Draw axis
@@ -368,7 +382,7 @@ class XMLscene extends CGFscene {
                     var obj = this.pickResults[i][0];
                     if (obj) {
                         var customId = this.pickResults[i][1];
-                        this.Game.pickedPiece = customId;
+                        this.newGame.pickedPiece = customId;
                         console.log("Picked object: " + obj + ", with pick id " + customId);
                     }
                 }
@@ -385,11 +399,11 @@ class XMLscene extends CGFscene {
                     if (obj != null)
                         if (obj) {
                             var customId = this.pickResults[i][1];
-                            if (!this.game.over)
-                                if (this.game.running) {
+                            if (!this.newGame.gameOver)
+                                if (this.newGame.running) {
                                     // obj.pickedShader = 1;
-                                    this.Game.pickedPiece = customId;
-                                    //  this.Game.picked(obj);
+                                    this.newGame.pickedPiece = customId;
+                                    //  this.newGame.picked(obj);
                                 }
                         }
                 }
@@ -441,19 +455,19 @@ class XMLscene extends CGFscene {
     };
 
     startGame() {
-        this.Game.start(this.gameMode, this.GameLevel);
+        this.newGame.start(this.newGame.gameMode, this.newGame.gameLevel);
     }
 
     quitGame() {
-        this.Game.quit();
+        this.newGame.quit();
     }
 
     undo() {
-        this.Game.undo();
+        this.newGame.undo();
     }
 
     movie() {
-        this.Game.movie();
+        this.newGame.movie();
     }
 
 }

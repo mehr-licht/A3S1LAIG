@@ -10,7 +10,7 @@
     <!-- ##################################   scene-0 ###################################-->
     <scene root="naufragio" axis_length="1" />
     <!-- ##################################   views-1 ####################################-->
-    <views default="vista0">
+    <views default="player1">
       <!-- qto maior a distancia entre near e far menor a distincao entre profundidade dos objectos na cena
     angle  angulo de abertura da camara (field of view) metade near  para ca de near nao eh desenhado
     far   para la de far  nao eh desenhado from  posicao da camara
@@ -727,8 +727,76 @@
         <children>
           <componentref id="tampo" />
           <componentref id="pernas" />
+            <componentref id="boardgame" />
         </children>
       </component>
+
+ <component id="boardgame">
+        <transformation>
+          <!--<rotate axis="x" angle="180" />-->
+          <scale x="0.08" y="4" z="0.2" />
+           <translate x="0" y="-1.55" z="0" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="inherit" length_s="2" length_t="2" />
+        <children>
+     <!--     <componentref id="pecas" /> -->
+            <componentref id="tabuleiro" />
+        </children>
+      </component>
+
+       <component id="tabuleiro">
+        <transformation>
+          <rotate axis="x" angle="180" />
+          <scale x="5.0" y="0.3" z="3.0" />
+          <translate x="0" y="-12.1" z="0" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="inherit" length_s="2" length_t="2" />
+        <children>
+          <componentref id="superficie" />
+            <componentref id="boardBase" />
+        </children>
+      </component>
+
+
+ <component id="superficie">
+        <transformation>
+          <rotate axis="x" angle="90" />
+            <rotate axis="z" angle="90" />
+          <scale x="3.0" y="5.0" z="3.0" />
+          <translate x="0" y="0.0" z="-1.1575" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="chessboard" length_s="2" length_t="2" />
+        <children>
+          <primitiveref id="planoo" />
+        </children>
+      </component>
+
+      <component id="boardBase">
+        <transformation>
+          <rotate axis="x" angle="180" />
+          <scale x="5.0" y="0.3" z="3.0" />
+          <translate x="0" y="-12.1" z="0" />
+        </transformation>
+        <materials>
+          <material id="brownMaterial" />
+        </materials>
+        <texture id="none" length_s="2" length_t="2" />
+        <children>
+          <componentref id="cubo" />
+        </children>
+      </component>
+
+
+
 
       <component id="tampo">
         <transformation>
