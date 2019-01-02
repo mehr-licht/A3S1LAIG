@@ -75,23 +75,14 @@ serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
         //or http://localhost:8080/?file=FEUP.xml
         // or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor) 
 
+        var filename = getUrlVars().file || "FEUP.xml";
 
-
-        var filename = getUrlVars()['file'] || "FEUP.xml";
         var myGraph = new MySceneGraph(filename, myScene);
-        //  myScene.currScene = filename.substring(0, filename.indexOf(".xml"));
+        //var stranded = new MySceneGraph("stranded.xml", myScene);
 
-        // myScene.scenes['FEUP'] = new MySceneGraph(filename, myScene);
-        //  myScene.scenes.length++;
-
-        // filename = getUrlVars()['file'] || "stranded.xml";
-
-        // create and load graph, and associate it to scene. 
-        // Check console for loading errors
-        //var myGraph = new MySceneGraph(filename, myScene);
-
-        //  myScene.scenes['stranded'] = new MySceneGraph("stranded.xml", myScene);
-        // myScene.scenes.length++;
+        // myScene.currScene = filename.substring(0, filename.indexOf(".xml"));
+        // var reader = new CGFXMLreader();
+        // var stranded = reader.open('scenes/' + "stranded.xml", myScene.graph);
 
 
         // start

@@ -131,8 +131,8 @@ parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Co
 * Devolve o tabuleiro inicial
 */
 parse_input(initialBoard,B):-
-	initialBoard(B).
-	%json(B,Board).
+	initialBoard(B),
+	json(B,Board).
 	%matrix_to_json(B,Board).
 
 /**

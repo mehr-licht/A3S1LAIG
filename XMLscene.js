@@ -31,8 +31,9 @@ class XMLscene extends CGFscene {
         this.lightValues = {};
         this.scenesList = [];
         this.scenes = [];
+
         //   var FEUP = new MySceneGraph("FEUP.xml", this);
-        //   var stranded = new MySceneGraph("stranded.xml", this);
+        // var stranded = new MySceneGraph("stranded.xml", this);
         // this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
         //this.scenes['stranded'] = new MySceneGraph("stranded.xml", this);
         //  this.scenes.push(FEUP);
@@ -102,7 +103,7 @@ class XMLscene extends CGFscene {
 
         this.setUpdatePeriod(100);
         //msecs
-        //  this.scenes.push(new MySceneGraph('stranded.xml', this));
+        //this.scenes.push(new MySceneGraph('stranded.xml', this));
         //this.scenes.push(new MySceneGraph('FEUP.xml', this));
 
 
@@ -391,6 +392,7 @@ class XMLscene extends CGFscene {
             }
         }
     }
+
 
     handlePicking() {
         if (this.pickMode == false) {

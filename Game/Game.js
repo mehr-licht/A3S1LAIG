@@ -94,7 +94,7 @@ class Game {
         request.open('GET', 'http://localhost:' + requestPort + '/' + requestString, true);
         console.log("g03");
 
-        request.onload = function(data) { console.log("Request successful. Reply: " + data.target.response); };
+        request.onload = onSuccess.bind(this) || function(data) { console.log("Request successful. Reply: " + data.target.response); };
         console.log("g04");
         request.onerror = onError || this.prologRequestError;
         console.log("g05");
@@ -376,14 +376,14 @@ class Game {
 
     start() {
         console.log("00");
-        while (!this.validReply) {
-            console.log("01");
-            // this.InitialBoard(this.verifyTabReply); //this.InitialBoard(this.verifyTabReply.bind(this));
-            this.makeRequest();
-            console.log("02");
-        }
+        // while (!this.validReply) {
+        console.log("01");
+        // this.InitialBoard(this.verifyTabReply); //this.InitialBoard(this.verifyTabReply.bind(this));
+        this.makeRequest();
+        console.log("02");
+        // }
         console.log("03");
-        console.log(this.answer);
+        alert(this.answer);
         this.resetError();
         this.displayBoard();
         while (!this.gameOver) {
@@ -397,7 +397,7 @@ class Game {
         console.log(data);
         let response = JSON.parse(data.target.response);
         console.log("t_1");
-        if (!response[0]) {
+        if (response[0]) {
             console.log("t_2");
             this.Board = response[1];
             console.log("t_3");
@@ -412,7 +412,7 @@ class Game {
 
     verifyPieceReply(data) {
         let response = JSON.parse(data.target.response);
-        if (!response[0]) {
+        if (response[0]) {
             this.validReply = true;
         } else {
             this.showError(response[0]);
@@ -422,7 +422,7 @@ class Game {
 
     verifyAttackReply(data) {
         let response = JSON.parse(data.target.response);
-        if (!response[0]) {
+        if (response[0]) {
             this.validReply = true;
         } else {
             this.showError(response[0]);
@@ -432,7 +432,7 @@ class Game {
 
     verifyMoveReply(data) {
         let response = JSON.parse(data.target.response);
-        if (!response[0]) {
+        if (response[0]) {
             this.Board = response[1];
             this.validReply = true;
         } else {
@@ -443,7 +443,7 @@ class Game {
 
     verifyScoreReply(data) {
         let response = JSON.parse(data.target.response);
-        if (!response[0]) {
+        if (response[0]) {
             //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
             this.score1 = response[1];
             this.score2 = response[2];
@@ -455,6 +455,15 @@ class Game {
     }
 
     showError(func, code) {
+        var msg = "";
+        switch (code) {
+            case (1):
+                msg = "wrong";
+                break;
+            default:
+                break;
+
+        }
         //translate code into msg (de acordo com func  ou code independente?)
         document.getElementById('messages').innerText = func + " : " + msg;
     }
@@ -493,13 +502,29 @@ class Game {
         // return callback;
 
         // Make Request
+        console.log("m00");
         this.getPrologRequest(requestString, this.handleReply);
-
+        console.log("m01");
     }
 
     //Handle the Reply
     handleReply(data) {
+        console.log("t_0");
+        console.log(data);
         this.answer = data.target.response;
+        let response = this.answer;
+        console.log("t_1");
+        if (response[0]) {
+            console.log("t_2");
+            this.Board = response[1];
+            console.log("t_3");
+            this.validReply = true;
+        } else {
+            console.log("t_4");
+            this.showError(response[0]);
+            console.log("t_5");
+            this.validReply = false;
+        }
         this.validReply = true;
     }
 }
