@@ -130,9 +130,10 @@ parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Co
 * TESTE http://localhost:8081/initialBoard
 * Devolve o tabuleiro inicial
 */
-parse_input(initialBoard,Board):-
-	initialBoard(B),
-	matrix_to_json(B,Board).
+parse_input(initialBoard,B):-
+	initialBoard(B).
+	%json(B,Board).
+	%matrix_to_json(B,Board).
 
 /**
  * IDEIA: Quando clica numa peca saber se a peca eh valida - Se for valida aparece um indicador de selecao

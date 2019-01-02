@@ -50,7 +50,7 @@ class Game {
         this.init_board = init_board || INITIAL_BOARD;
         this.animationCounter = 0;
         this.board = [];
-
+        this.answer = "";
         this.running = true;
         this.gameOver = false;
         this.computer_playing = false;
@@ -85,12 +85,21 @@ class Game {
     //                             PROLOG COMMUNICATION FUNCTIONS                                    //
     //***********************************************************************************************//
     getPrologRequest(requestString, onSuccess, onError, port) {
-        let requestPort = port || SERVER_PORT;
+        console.log("g00");
+        let requestPort = 8081;
+        console.log("g01");
         let request = new XMLHttpRequest();
+
+        console.log("g02");
         request.open('GET', 'http://localhost:' + requestPort + '/' + requestString, true);
-        request.onload = onSuccess;
+        console.log("g03");
+
+        request.onload = function(data) { console.log("Request successful. Reply: " + data.target.response); };
+        console.log("g04");
         request.onerror = onError || this.prologRequestError;
+        console.log("g05");
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+        console.log("g06");
         request.send();
     }
 
@@ -107,11 +116,11 @@ class Game {
      * Initial Board
      */
     InitialBoard(callback) {
-
+        console.log("ini00");
         let requestString = 'initialBoard';
-        alert("ini01");
+        console.log("ini01");
         this.getPrologRequest(requestString, callback);
-        alert("ini02");
+        console.log("ini02");
         /**gets 
          * -1 => not received
          * 0 + tabuleiroFinal
@@ -157,8 +166,8 @@ class Game {
         //return callback
     }
 
-    checkDifferenceIndexes(pecaX, pecaY, destX, destY, callback) {
-        let requestString = 'checkDifferenceIndexes(' +
+    checkDifferenceIndexs(pecaX, pecaY, destX, destY, callback) {
+        let requestString = 'checkDifferenceIndexs(' +
             JSON.stringify(pecaX).replace(/"/g, '') + ',' +
             JSON.stringify(pecaY).replace(/"/g, '') + ',' +
             JSON.stringify(destX).replace(/"/g, '') + ',' +
@@ -336,7 +345,7 @@ class Game {
         while (!this.validReply) {
             if (this.pickedPiece) {
                 moveWhere2 = this.pieces[this.pickedPiece - 1];
-                this.checkDifferenceIndexes(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
+                this.checkDifferenceIndexs(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
             }
         }
         this.pickedPiece = 0;
@@ -366,13 +375,15 @@ class Game {
 
 
     start() {
-        alert("00");
+        console.log("00");
         while (!this.validReply) {
-            alert("01");
-            this.InitialBoard(this.verifyTabReply()); //this.InitialBoard(this.verifyTabReply(this));
-            alert("02");
+            console.log("01");
+            // this.InitialBoard(this.verifyTabReply); //this.InitialBoard(this.verifyTabReply.bind(this));
+            this.makeRequest();
+            console.log("02");
         }
-        alert("03");
+        console.log("03");
+        console.log(this.answer);
         this.resetError();
         this.displayBoard();
         while (!this.gameOver) {
@@ -382,27 +393,26 @@ class Game {
     }
 
 
-
-    verifyTabReply() { //  verifyTabReply(data) {
-        alert("t_0");
+    verifyTabReply(data) {
+        console.log(data);
         let response = JSON.parse(data.target.response);
-        alert("t_1");
-        if (response[0]) {
-            alert("t_2");
+        console.log("t_1");
+        if (!response[0]) {
+            console.log("t_2");
             this.Board = response[1];
-            alert("t_3");
+            console.log("t_3");
             this.validReply = true;
         } else {
-            alert("t_4");
+            console.log("t_4");
             this.showError(response[0]);
-            alert("t_5");
+            console.log("t_5");
             this.validReply = false;
         }
     }
 
     verifyPieceReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response[0]) {
+        if (!response[0]) {
             this.validReply = true;
         } else {
             this.showError(response[0]);
@@ -412,7 +422,7 @@ class Game {
 
     verifyAttackReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response[0]) {
+        if (!response[0]) {
             this.validReply = true;
         } else {
             this.showError(response[0]);
@@ -422,7 +432,7 @@ class Game {
 
     verifyMoveReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response[0]) {
+        if (!response[0]) {
             this.Board = response[1];
             this.validReply = true;
         } else {
@@ -433,7 +443,7 @@ class Game {
 
     verifyScoreReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response[0]) {
+        if (!response[0]) {
             //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
             this.score1 = response[1];
             this.score2 = response[2];
@@ -466,5 +476,30 @@ class Game {
         //if(não alcancavel) desmarcar Selectable //se assim optarmos
     }
 
+    makeRequest() {
+        // Get Parameter Values
 
+        //  var requestString = document.querySelector("#query_field").value;
+
+        console.log("ini00");
+        let requestString = 'initialBoard';
+        console.log("ini01");
+
+
+        /**gets 
+         * -1 => not received
+         * 0 + tabuleiroFinal
+         *  */
+        // return callback;
+
+        // Make Request
+        this.getPrologRequest(requestString, this.handleReply);
+
+    }
+
+    //Handle the Reply
+    handleReply(data) {
+        this.answer = data.target.response;
+        this.validReply = true;
+    }
 }

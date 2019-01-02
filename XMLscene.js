@@ -31,18 +31,18 @@ class XMLscene extends CGFscene {
         this.lightValues = {};
         this.scenesList = [];
         this.scenes = [];
-        var FEUP = new MySceneGraph("FEUP.xml", this);
-        var stranded = new MySceneGraph("stranded.xml", this);
+        //   var FEUP = new MySceneGraph("FEUP.xml", this);
+        //   var stranded = new MySceneGraph("stranded.xml", this);
         // this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
         //this.scenes['stranded'] = new MySceneGraph("stranded.xml", this);
-        this.scenes.push(FEUP);
-        this.scenes.push(stranded);
+        //  this.scenes.push(FEUP);
+        //      this.scenes.push(stranded);
 
         this.shaderObjects = [];
         this.lastTime = 0;
         let currentDate = new Date();
         this.initialTime = currentDate.getTime();
-        this.currScene = "stranded";
+        this.currScene = "FEUP";
 
         //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
         this.newGame = new Game()
@@ -209,9 +209,10 @@ class XMLscene extends CGFscene {
                 this.camera = this.graph.views[v][1];
             }
         }
-        this.texture1 = this.graph.textures[this.idtexture];
-        this.texture2 = this.graph.textures[this.idwavemap];
-
+        if (this.currScene == "stranded") {
+            this.texture1 = this.graph.textures[this.idtexture];
+            this.texture2 = this.graph.textures[this.idwavemap];
+        }
         this.camera.near = this.graph.near;
         this.camera.far = this.graph.far;
 
@@ -307,7 +308,7 @@ class XMLscene extends CGFscene {
 
             this.setCameraUsed();
             // console.log(this.currScene); //TIRAR ISTO - isto FAZ COm que funcione (mesmo assim repete guis - meter flag?)
-            this.graph = this.scenes[this.currScene];
+            // this.graph = this.scenes[this.currScene];
 
 
             this.graph.displayScene();

@@ -78,11 +78,11 @@ serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
 
 
         var filename = getUrlVars()['file'] || "FEUP.xml";
-        // var myGraph = new MySceneGraph(filename, myScene);
-        myScene.currScene = filename.substring(0, filename.indexOf(".xml"));
+        var myGraph = new MySceneGraph(filename, myScene);
+        //  myScene.currScene = filename.substring(0, filename.indexOf(".xml"));
 
-        myScene.scenes['FEUP'] = new MySceneGraph("FEUP.xml", myScene);
-        myScene.scenes.length++;
+        // myScene.scenes['FEUP'] = new MySceneGraph(filename, myScene);
+        //  myScene.scenes.length++;
 
         // filename = getUrlVars()['file'] || "stranded.xml";
 
@@ -90,7 +90,7 @@ serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
         // Check console for loading errors
         //var myGraph = new MySceneGraph(filename, myScene);
 
-        myScene.scenes['stranded'] = new MySceneGraph("stranded.xml", myScene);
+        //  myScene.scenes['stranded'] = new MySceneGraph("stranded.xml", myScene);
         // myScene.scenes.length++;
 
 
