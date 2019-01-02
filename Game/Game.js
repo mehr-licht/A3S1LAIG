@@ -375,15 +375,16 @@ class Game {
 
 
     start() {
-        console.log("00");
-        // while (!this.validReply) {
+                //console.log("00");
+                // while (!this.validReply) {
         console.log("01");
-        // this.InitialBoard(this.verifyTabReply); //this.InitialBoard(this.verifyTabReply.bind(this));
+                // this.InitialBoard(this.verifyTabReply); //this.InitialBoard(this.verifyTabReply.bind(this));
         this.makeRequest();
         console.log("02");
         // }
         console.log("03");
-        alert(this.answer);
+        //alert(this.answer);
+        
         this.resetError();
         this.displayBoard();
         while (!this.gameOver) {
@@ -486,45 +487,47 @@ class Game {
     }
 
     makeRequest() {
-        // Get Parameter Values
-
-        //  var requestString = document.querySelector("#query_field").value;
-
-        console.log("ini00");
         let requestString = 'initialBoard';
-        console.log("ini01");
+            //console.log("ini01");
+            /**gets 
+             * -1 => not received
+             * 0 + tabuleiroFinal
+             *  */
+            // return callback;
 
-
-        /**gets 
-         * -1 => not received
-         * 0 + tabuleiroFinal
-         *  */
-        // return callback;
-
-        // Make Request
-        console.log("m00");
+            // Make Request
+          console.log("m00");
         this.getPrologRequest(requestString, this.handleReply);
         console.log("m01");
     }
 
     //Handle the Reply
     handleReply(data) {
-        console.log("t_0");
-        console.log(data);
+                //data.currentTarget.reponse
+                //          \/
+                //data.target.response ->ambos têm a board
+                //console.log(data.currentTarget.response);
+                //console.log(data);
         this.answer = data.target.response;
         let response = this.answer;
-        console.log("t_1");
-        if (response[0]) {
-            console.log("t_2");
-            this.Board = response[1];
-            console.log("t_3");
+       
+        if (data.target.status == 200) {
+                        //console.log("t_2");
+            //Ja eh uma array de arrays
+            this.Board = JSON.parse(response);
+            
+            console.log(this.Board);
+                        //console.log("t_3");
+                        //console.log(this.Board[1][1]); TEST ASSESSING ELEMENTS - OK 
+                        //console.log("t_8");
             this.validReply = true;
+            
         } else {
             console.log("t_4");
-            this.showError(response[0]);
+            this.showError(data.target.status);
             console.log("t_5");
             this.validReply = false;
         }
-        this.validReply = true;
+       // this.validReply = true;
     }
 }
