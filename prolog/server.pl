@@ -132,7 +132,6 @@ parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Co
 */
 parse_input(initialBoard,Board):-
 	initialBoard(B),
-	%json(B,Board).
 	matrix_to_json(B,Board).
 
 /**
@@ -182,7 +181,7 @@ parse_input(gameOver(Board,Looser),JSON):-
  * 2 elemento da array Scores - white
  * http://localhost:8081/sendScore([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],Score)
 */ 
-parse_input(sendScore(Tabuleiro, Scores),ScoresJSON):-
+parse_input(sendScore(Tabuleiro),ScoresJSON):-
 	sendScore(Tabuleiro, Scores),
 	json(Scores, ScoresJSON).
 

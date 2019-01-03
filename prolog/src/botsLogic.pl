@@ -99,7 +99,6 @@ sendScore(Tabuleiro, [Score,ScoreW]):-
     posicoesPecasNoTabuleiro(Tabuleiro,white,ListaDeParesW),
     escolha1(Tabuleiro, ListaDeParesW,ListaParaLimparW),
     cleanLista(ListaParaLimparW, NovaListaW),
-    write(ListaParaLimparW),
     calcScore(NovaListaW, ScoreW).
 
 calcScore([],0).
