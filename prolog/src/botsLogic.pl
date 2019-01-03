@@ -90,6 +90,31 @@ posicaoPecasPretas([[1-1],[1-3],[2-2],[2-4],[3-3],[5-1]]).
 posicaoPecasBrancas([[1-2],[2-1],[3-0],[3-1],[4-1],[4-3]]).
 
 
+sendScore(Tabuleiro, [Score,ScoreW]):-
+    posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
+    escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
+    cleanLista(ListaParaLimpar, NovaLista),
+    calcScore(NovaLista, Score),
+
+    posicoesPecasNoTabuleiro(Tabuleiro,white,ListaDeParesW),
+    escolha1(Tabuleiro, ListaDeParesW,ListaParaLimparW),
+    cleanLista(ListaParaLimparW, NovaListaW),
+    write(ListaParaLimparW),
+    calcScore(NovaListaW, ScoreW).
+
+calcScore([],0).
+calcScore([[_-_]-Z|T], Score):-
+    calcScore(T, AuxScore),
+    Score is AuxScore + Z.
+
+
+escolha1(_,[],[]).
+escolha1(Tabuleiro,[[Line-Column]|T], [[Line-Column]-SizeLista|ListaFinal]):-
+    escolha1(Tabuleiro,T,ListaFinal),
+    valid_moves(Tabuleiro, Line, Column, black, ListasJogadas),
+    length(ListasJogadas, SizeLista).
+
+
 /**
  * choose_move(+TabuleiroInicial, -TabuleiroFinal, +Color, +Nivel)
  * @brief Generates a random play for the bot without being clever - a black piece eats a white one

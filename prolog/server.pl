@@ -176,13 +176,15 @@ parse_input(gameOver(Board,Looser),JSON):-
 	Value is 1, % Se 1 NAO ha gameOver
 	json(Value,JSON).
 
-
 /**
- * Verificar se se pode seleccionar a peca
+ * Devolve o score, calcula as jogadas validas para as cores
+ * 1 elemento da array Scores - blacks
+ * 2 elemento da array Scores - white
+ * http://localhost:8081/sendScore([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],Score)
 */ 
-%validMoves(Tabuleiro,Line,Column,Colour):-
-%devolve par NumeroWhites-NumeroBlacks
-%numeroJogadasValidasParaTodasAsPecasDasDuasCores(Tabuleiro,NumeroWhites-NumeroBlacks):-
+parse_input(sendScore(Tabuleiro, Scores),ScoresJSON):-
+	sendScore(Tabuleiro, Scores),
+	json(Scores, ScoresJSON).
 
 /** BOT PLAY esta predefenido com a cor black
  * TESTE http://localhost:8081/choose_move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],TabuleiroFinal,black,1)
