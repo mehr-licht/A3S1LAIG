@@ -165,11 +165,11 @@ parse_input(checkDifferenceIndexs(_RowIndex,_ColumnIndex,_PP_RowIndex, _PP_Colum
  * TESTE http://localhost:8081/gameOver([[empty,empty,empty,empty,empty],[empty,empty,black,black,empty],[empty,white,empty,empty,black],[white,white,empty,black,empty],[empty,white,empty,empty,empty],[empty,empty,empty,empty,empty]],white)
  * A chamada tem que ser feita com o Board e Looser com white ou black
 */
-parse_input(gameOver(Board, Looser),JSON):-
+parse_input(gameOver(Board),JSON):-
 	gameOver(Board,Looser),
 	!,
 	json(Looser,JSON).
-parse_input(gameOver(Board,Looser),JSON):-
+parse_input(gameOver(Board),JSON):-
 	Value is 1, % Se 1 NAO ha gameOver
 	json(Value,JSON).
 
@@ -195,7 +195,7 @@ parse_input(choose_move(Tabuleiro),Board):-
 
 /**
  * 
- * 
+ * Devolve uma lista de jogadas para cada peca escolhida 
 */
 parse_input(validMoves(TabuleiroInicial,LineIndex,ColumnIndex,ColorContraria),ListjogJSON):-
 	validMoves(TabuleiroInicial, LineIndex, ColumnIndex, ColorContraria, ListasJogadas),
