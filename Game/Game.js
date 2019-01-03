@@ -110,7 +110,7 @@ class Game {
         InitialBoard(callback) {
             let requestString = 'initialBoard';
             console.log("ini01");
-            this.getPrologRequest(requestString, callback);
+             this.makeRequest(requestString, callback);
             console.log("ini02");
             /**gets 
              * -1 => not received
@@ -131,7 +131,7 @@ class Game {
             JSON.stringify(destX).replace(/"/g, '') + ',' +
             JSON.stringify(destY).replace(/"/g, '') + ')';
 
-        this.getPrologRequest(requestString, callback);
+        this.makeRequest(requestString, callback);
         /**gets 
          * -1 => not received
          * 0 + tabuleiroFinal
@@ -147,7 +147,7 @@ class Game {
             JSON.stringify(column).replace(/"/g, '') + ',' +
             JSON.stringify(colour).replace(/"/g, '') + ')';
 
-        this.getPrologRequest(requestString, callback);
+        this.makeRequest(requestString, callback);
         /**gets 
          * -3 => piece is isolated
          * -2 => wrong colour chosen
@@ -164,7 +164,7 @@ class Game {
             JSON.stringify(destX).replace(/"/g, '') + ',' +
             JSON.stringify(destY).replace(/"/g, '') + ')';
 
-        this.getPrologRequest(requestString, callback);
+        this.makeRequest(requestString, callback);
         /**gets 
          * -3 => empty space
          * -2 => to wrong colour
@@ -178,7 +178,7 @@ class Game {
         let requestString = 'jogadasValidas(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
             JSON.stringify(colour).replace(/"/g, '') + ')';
-        this.getPrologRequest(requestString, callback);
+        this.makeRequest(requestString, callback);
         /**gets 
          * -1 => not received
          * 0 => OK + number of valid Moves
@@ -304,6 +304,8 @@ class Game {
          }*/
         console,
         console.log("d_00");
+        //  this.unstringify();
+        console.log("dANTES");
         this.translateBoard();
         console,
         console.log("d_01");
@@ -311,6 +313,17 @@ class Game {
         console,
         console.log("d_02");
     }
+
+
+    /* unstringify() {
+         alert("ENTROU");
+         this.board = JSON.stringify(this.board).replace(/black/g, "black");
+         alert("W00");
+         this.board = JSON.stringify(this.board).replace(/white/g, "white");
+         alert("W01");
+         this.board = JSON.stringify(this.board).replace(/empty/g, "empty");
+         alert(this.board);
+     }*/
 
     translateBoard() {
         console.log("b_00");
@@ -342,22 +355,22 @@ class Game {
         this.timeleft = TIME_LEFT;
         this.markSelectables(this.currentColour);
 
-        while (!this.validReply) {
-            if (this.pickedPiece) {
-                piece2Move = this.pieces[this.pickedPiece - 1];
-                this.validMoves(this.board, piece2Move.line, piece2Move.column, this.currentColour, this.verifyPieceReply.bind(this));
-            }
+        //while (!this.validReply) {
+        if (this.pickedPiece) {
+            piece2Move = this.pieces[this.pickedPiece - 1];
+            this.validMoves(this.board, piece2Move.line, piece2Move.column, this.currentColour, this.verifyPieceReply.bind(this));
         }
+        //}
         this.pickedPiece = 0;
         this.resetError();
         this.markSelectables(this.otherColour);
 
-        while (!this.validReply) {
-            if (this.pickedPiece) {
-                moveWhere2 = this.pieces[this.pickedPiece - 1];
-                this.checkDifferenceIndexs(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
-            }
+        //  while (!this.validReply) {
+        if (this.pickedPiece) {
+            moveWhere2 = this.pieces[this.pickedPiece - 1];
+            this.checkDifferenceIndexs(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
         }
+        // }
         this.pickedPiece = 0;
         /*VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0*/
         if (this.timeleft) {
@@ -369,15 +382,15 @@ class Game {
         }
         this.resetError();
 
-        while (!this.validReply) {
-            this.move(this.board, piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
-        }
+        // while (!this.validReply) {
+        this.move(this.board, piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
+        //  }
         this.resetError();
         this.changeColours();
         this.displayBoard();
-        while (!this.validReply) {
-            this.jogadasValidas(this.board, this.verifyScoreReply.bind(this));
-        }
+        // while (!this.validReply) {
+        this.jogadasValidas(this.board, this.verifyScoreReply.bind(this));
+        // }
         this.resetError();
         this.updateScore();
     }
@@ -395,8 +408,8 @@ class Game {
 
 
     verifyTabReply(data) {
-        // this.answer = JSON.parse(data.target.response);
-        this.answer = data.target.response;
+        this.answer = JSON.parse(data.target.response);
+        // this.answer = data.target.response;
         let response = this.answer;
         console.log("t_1");
         console.log(response);
