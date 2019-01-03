@@ -54,7 +54,7 @@ posicoesPecasNoTabuleiro(TabuleiroInicial,Color,ListaDePares):-
     findall([LineIndex-ColumnIndex], selecionarPecaForBot(TabuleiroInicial,[LineIndex-ColumnIndex], Color), ListaDePares).
 
 /** 
- * valid_moves(+Tabuleiro,+LineIndex,+ColumnIndex,+ColorPlayer,-ListasJogadas)
+ * validMoves(+Tabuleiro,+LineIndex,+ColumnIndex,+ColorPlayer,-ListasJogadas)
  * @brief Devolve lista com todas as jogadas possiveis validas para a peca na celula dada por linha e coluna
  * @param +Tabuleiro: tabuleiro actual
  * @param +LineIndex: indice da linha
@@ -62,8 +62,9 @@ posicoesPecasNoTabuleiro(TabuleiroInicial,Color,ListaDePares):-
  * @param +ColorPlayer: cor da peca
  * @param -ListasJogadas:  lista com todas as jogadas possiveis validas para a peca na celula dada por linha e coluna
 */
-valid_moves(TabuleiroInicial, LineIndex, ColumnIndex, ColorContraria, ListasJogadas ):-
+validMoves(TabuleiroInicial, LineIndex, ColumnIndex, ColorContraria, ListasJogadas ):-
     findall([NewLineIndex-NewColumnIndex], seleccionarBotJogada(TabuleiroInicial, LineIndex, ColumnIndex, NewLineIndex, NewColumnIndex, ColorContraria ), ListasJogadas).
+
 
 /***
  * Selecciona uma peca das pecas do tabuleiro
@@ -72,7 +73,7 @@ valid_moves(TabuleiroInicial, LineIndex, ColumnIndex, ColorContraria, ListasJoga
 escolha(_,[],[]).
 escolha(Tabuleiro,[[Line-Column]|T], [[Line-Column]-SizeLista|ListaFinal]):-
     escolha(Tabuleiro,T,ListaFinal),
-    valid_moves(Tabuleiro, Line, Column, white, ListasJogadas),
+    validMoves(Tabuleiro, Line, Column, white, ListasJogadas),
     length(ListasJogadas, SizeLista).
 
 %NovaLista formato [[1-1]-2,[1-3]-1,[2-2]-2,[3-3]-1,[5-1]-1]
@@ -110,7 +111,7 @@ calcScore([[_-_]-Z|T], Score):-
 escolha1(_,[],[]).
 escolha1(Tabuleiro,[[Line-Column]|T], [[Line-Column]-SizeLista|ListaFinal]):-
     escolha1(Tabuleiro,T,ListaFinal),
-    valid_moves(Tabuleiro, Line, Column, black, ListasJogadas),
+    validMoves(Tabuleiro, Line, Column, black, ListasJogadas),
     length(ListasJogadas, SizeLista).
 
 
@@ -135,7 +136,7 @@ choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel):-
     write('Index escolhido: '), write(IndexFuture), nl,
     nth0(IndexFuture, NovaLista, [LineFuture-ColumnFuture]-_),
     %fim da escolha da peca a mover
-    valid_moves(Tabuleiro, LineFuture, ColumnFuture, white, ListaJogadasVizinhas ),
+    validMoves(Tabuleiro, LineFuture, ColumnFuture, white, ListaJogadasVizinhas ),
     %escolha da direccao
     length(ListaJogadasVizinhas, SizeNew),    
     random(0,SizeNew,Index2),

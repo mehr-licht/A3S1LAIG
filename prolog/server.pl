@@ -143,8 +143,6 @@ parse_input(getValueFromMatrixV2([H|T], Row, Column, Value), Value):-
 	getValueFromMatrixV2([H|T], Row, Column, Value).
 	%Nao precisei de converter porque Value ja eh string
 	%json(Value, ColorPecaSelec).
-
-
 /**
  * Verificar se o destino do move eh valido/ eh uma peca vizinha
  * O ideal seria funcionar em conjugacao com o getValueFromMatrixV2
@@ -185,28 +183,29 @@ parse_input(sendScore(Tabuleiro),ScoresJSON):-
 	sendScore(Tabuleiro, Scores),
 	json(Scores, ScoresJSON).
 
-/**
- * Devolve o score, calcula as jogadas validas para as cores
- * 1 elemento da array Scores - blacks
- * 2 elemento da array Scores - white
- * http://localhost:8081/sendScore([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],Score)
-*/ 
-parse_input(sendScore(Tabuleiro, Scores),ScoresJSON):-
-	sendScore(Tabuleiro, Scores),
-	json(Scores, ScoresJSON).
 
 /** BOT PLAY esta predefenido com a cor black
  * TESTE http://localhost:8081/choose_move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],TabuleiroFinal,black,1)
  * Devolve o novo tabuleiro em Board após jogada bot 
 */
-parse_input(choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel),Board):-
+parse_input(choose_move(Tabuleiro),Board):-
 	choose_move(Tabuleiro, TabuleiroF,_Color, _Nivel),
 	matrix_to_json(TabuleiroF,Board).
 
 
+/**
+ * 
+ * 
+*/
+parse_input(validMoves(TabuleiroInicial,LineIndex,ColumnIndex,ColorContraria),ListjogJSON):-
+	validMoves(TabuleiroInicial, LineIndex, ColumnIndex, ColorContraria, ListasJogadas),
+	json(ListasJogadas,ListjogJSON).
 
 
 
+
+
+/*
 parse_input(claim(Color,Colors,Player),JSON):-
 	claim(Color,Colors,Player,NewColors,NewPlayer),
 	json([1,NewColors,NewPlayer],JSON).
@@ -344,3 +343,5 @@ setOutputMessage(Message):-
 writeOutputMessage(Message):-
 	write(Message),
 	setOutputMessage(Message).
+
+*/
