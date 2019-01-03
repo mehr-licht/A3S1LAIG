@@ -186,6 +186,16 @@ parse_input(sendScore(Tabuleiro, Scores),ScoresJSON):-
 	sendScore(Tabuleiro, Scores),
 	json(Scores, ScoresJSON).
 
+/**
+ * Devolve o score, calcula as jogadas validas para as cores
+ * 1 elemento da array Scores - blacks
+ * 2 elemento da array Scores - white
+ * http://localhost:8081/sendScore([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],Score)
+*/ 
+parse_input(sendScore(Tabuleiro, Scores),ScoresJSON):-
+	sendScore(Tabuleiro, Scores),
+	json(Scores, ScoresJSON).
+
 /** BOT PLAY esta predefenido com a cor black
  * TESTE http://localhost:8081/choose_move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],TabuleiroFinal,black,1)
  * Devolve o novo tabuleiro em Board após jogada bot 
