@@ -132,7 +132,6 @@ parse_input(move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Co
 */
 parse_input(initialBoard,Board):-
 	initialBoard(B),
-	%json(B,Board).
 	matrix_to_json(B,Board).
 
 /**
@@ -144,8 +143,6 @@ parse_input(getValueFromMatrixV2([H|T], Row, Column, Value), Value):-
 	getValueFromMatrixV2([H|T], Row, Column, Value).
 	%Nao precisei de converter porque Value ja eh string
 	%json(Value, ColorPecaSelec).
-
-
 /**
  * Verificar se o destino do move eh valido/ eh uma peca vizinha
  * O ideal seria funcionar em conjugacao com o getValueFromMatrixV2
@@ -168,11 +165,11 @@ parse_input(checkDifferenceIndexs(_RowIndex,_ColumnIndex,_PP_RowIndex, _PP_Colum
  * TESTE http://localhost:8081/gameOver([[empty,empty,empty,empty,empty],[empty,empty,black,black,empty],[empty,white,empty,empty,black],[white,white,empty,black,empty],[empty,white,empty,empty,empty],[empty,empty,empty,empty,empty]],white)
  * A chamada tem que ser feita com o Board e Looser com white ou black
 */
-parse_input(gameOver(Board, Looser),JSON):-
+parse_input(gameOver(Board),JSON):-
 	gameOver(Board,Looser),
 	!,
 	json(Looser,JSON).
-parse_input(gameOver(Board,Looser),JSON):-
+parse_input(gameOver(Board),JSON):-
 	Value is 1, % Se 1 NAO ha gameOver
 	json(Value,JSON).
 
@@ -182,32 +179,33 @@ parse_input(gameOver(Board,Looser),JSON):-
  * 2 elemento da array Scores - white
  * http://localhost:8081/sendScore([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],Score)
 */ 
-parse_input(sendScore(Tabuleiro, Scores),ScoresJSON):-
+parse_input(sendScore(Tabuleiro),ScoresJSON):-
 	sendScore(Tabuleiro, Scores),
 	json(Scores, ScoresJSON).
 
-/**
- * Devolve o score, calcula as jogadas validas para as cores
- * 1 elemento da array Scores - blacks
- * 2 elemento da array Scores - white
- * http://localhost:8081/sendScore([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],Score)
-*/ 
-parse_input(sendScore(Tabuleiro, Scores),ScoresJSON):-
-	sendScore(Tabuleiro, Scores),
-	json(Scores, ScoresJSON).
 
 /** BOT PLAY esta predefenido com a cor black
  * TESTE http://localhost:8081/choose_move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],TabuleiroFinal,black,1)
  * Devolve o novo tabuleiro em Board após jogada bot 
 */
-parse_input(choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel),Board):-
+parse_input(choose_move(Tabuleiro),Board):-
 	choose_move(Tabuleiro, TabuleiroF,_Color, _Nivel),
 	matrix_to_json(TabuleiroF,Board).
 
 
+/**
+ * 
+ * Devolve uma lista de jogadas para cada peca escolhida 
+*/
+parse_input(validMoves(TabuleiroInicial,LineIndex,ColumnIndex,ColorContraria),ListjogJSON):-
+	validMoves(TabuleiroInicial, LineIndex, ColumnIndex, ColorContraria, ListasJogadas),
+	json(ListasJogadas,ListjogJSON).
 
 
 
+
+
+/*
 parse_input(claim(Color,Colors,Player),JSON):-
 	claim(Color,Colors,Player,NewColors,NewPlayer),
 	json([1,NewColors,NewPlayer],JSON).
@@ -345,3 +343,5 @@ setOutputMessage(Message):-
 writeOutputMessage(Message):-
 	write(Message),
 	setOutputMessage(Message).
+
+*/

@@ -131,36 +131,41 @@ class Game {
     //***********************************************************************************************//
 
     /**
-     * Initial Board
+     * Update Score
      */
-    /*
-        InitialBoard(callback) {
-            let requestString = 'initialBoard';
-            console.log("ini01");
+    
+    getScore(tabuleiro, callback) {
+            let Score;
+            let requestString = 'sendScore(' +
+            JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
+            //+ ',' + JSON.stringify(Score) + ')';
+            console.log("ini0123");
              this.makeRequest(requestString, callback);
             console.log("ini02");
             /**gets 
              * -1 => not received
              * 0 + tabuleiroFinal
-             *  
-            // return callback;
-        }*/
+            */
+     }
 
 
     /**
      * Move
+     * order of the elements PROLOG:
+     * move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Colour)
      */
-    move(tabuleiro, pecaX, pecaY, destX, destY, callback) {
-        let requestString = 'mov(' +
+    move(tabuleiro, pecaX, pecaY, destX, destY, color, callback) {
+        let requestString = 'move(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
             JSON.stringify(pecaX).replace(/"/g, '') + ',' +
             JSON.stringify(pecaY).replace(/"/g, '') + ',' +
             JSON.stringify(destX).replace(/"/g, '') + ',' +
-            JSON.stringify(destY).replace(/"/g, '') + ')';
+            JSON.stringify(destY).replace(/"/g, '') + ',' +
+            JSON.stringify(color).replace(/"/g, '') + ')';
 
         this.makeRequest(requestString, callback);
         /**gets 
-         * -1 => not received
+         * -1 => not received   
          * 0 + tabuleiroFinal
          *  */
         // return callback;
@@ -170,9 +175,9 @@ class Game {
     validMoves(tabuleiro, line, column, colour, callback) {
         let requestString = 'validMoves(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
-            JSON.stringify(line).replace(/"/g, '') + ',' +
-            JSON.stringify(column).replace(/"/g, '') + ',' +
-            JSON.stringify(colour).replace(/"/g, '') + ')';
+            JSON.stringify(line).replace(/"/g, '')      + ',' +
+            JSON.stringify(column).replace(/"/g, '')    + ',' +
+            JSON.stringify(colour).replace(/"/g, '')    + ')';
 
         this.makeRequest(requestString, callback);
         /**gets 
@@ -428,6 +433,7 @@ class Game {
             }
         }
         document.getElementById('info').innerHTML = this.winner;
+        */
     }
 
 
@@ -443,7 +449,7 @@ class Game {
             this.board = response;
             this.validReply = true;
             this.resetError();
-            this.displayBoard();
+        //    this.displayBoard();
             console.log("t_3");
 
         } else {
@@ -491,11 +497,17 @@ class Game {
     }
 
     verifyScoreReply(data) {
+ console.log("Teste subF 1");       
+
         let response = JSON.parse(data.target.response);
+        console.log("Teste subF 1");
         if (response[0]) {
             //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
+            console.log("Teste subF 2");
             this.score1 = response[1];
+            console.log("Teste subF 3");
             this.score2 = response[2];
+            console.log("Teste subF 4");
             this.validReply = true;
             this.state = STATES.UPDATED;
         } else {

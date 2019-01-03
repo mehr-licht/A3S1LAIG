@@ -225,7 +225,7 @@ gameOver(Tabuleiro, Looser):-
  */
 loop(_,_,[],0).
 loop(Tabuleiro, CorContraria, [[Line-Column]|Tail], Total):-
-        valid_moves(Tabuleiro, Line, Column, CorContraria, ListaDePares ),
+        validMoves(Tabuleiro, Line, Column, CorContraria, ListaDePares ),
         length(ListaDePares, Tamanho),
         loop(Tabuleiro, CorContraria, Tail, AuxTotal),
         Total is (AuxTotal + Tamanho).
