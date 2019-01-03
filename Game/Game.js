@@ -49,12 +49,14 @@ STATES = {
     STARTED: 1,
     DISPLAYED: 2,
     READY_TO_PICK_PIECE: 3,
-    PIECE_CHOSEN: 4,
-    READY_TO_PICK_MOVE: 5,
-    MOVE_CHOSEN: 6,
-    MOVED: 7,
-    UPDATED: 8, //getUpdatedScores
-    GAMEOVER: 9,
+    SELECTABLES1: 4,
+    PIECE_CHOSEN: 5,
+    READY_TO_PICK_MOVE: 6,
+    SELECTABLES2: 7,
+    MOVE_CHOSEN: 8,
+    MOVED: 9,
+    UPDATED: 10, //getUpdatedScores
+    GAMEOVER: 11,
 }
 
 
@@ -68,6 +70,7 @@ class Game {
 
     constructor(scene, init_board, init_turn, score1, score2, gameMode, gameLevel) {
         this.scene = scene;
+
         this.pickedPiece = 0;
         this.colours = ['white', 'black'];
         this.init_board = init_board || INITIAL_BOARD;
@@ -198,7 +201,7 @@ class Game {
         // return callback;
     }
 
-    jogadasValidas(tabuleiro, callback) {
+    getScore(tabuleiro, callback) {
         let requestString = 'sendScore(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
         this.makeRequest(requestString, callback);
@@ -340,27 +343,28 @@ class Game {
                 }
             }
         }
-        //        this.scene.displayBoard();
-        //this.state = STATES.DISPLAYED;
+        //   this.scene.displayBoard();
+        this.state = STATES.DISPLAYED;
 
     }
 
     gameLoop() {
 
         this.timeleft = TIME_LEFT;
-        /*
-                if (this.state == STATES.READY_TO_PICK_PIECE) {
-                    console.log("gl_01");
-                     this.markSelectables(this.currentColour);
-                    console.log("gl_02");
-                }
-        */
+        // alert("antes " + this.state);
+        if (this.state == STATES.READY_TO_PICK_PIECE) {
+            console.log("gl_01");
+            this.markSelectables(this.currentColour);
+            console.log("gl_02");
+            //  alert("apos " + this.state);
+        }
+
 
 
         if (this.state == STATES.PIECE_CHOSEN) {
             console.log("L_00");
             this.piece2Move = this.pieces[this.pickedPiece - 1];
-            this.validMoves(this.board, this.piece2Move.line, this.piece2Move.column, this.currentColour, this.verifyPieceReply.bind(this));
+            this.validMoves(this.board, this.piece2Move.line, this.piece2Move.column, this.currentColour, this.verifyPieceReply);
             this.pickedPiece = 0;
             this.resetError();
             console.log("L_01");
@@ -376,11 +380,11 @@ class Game {
             console.log("L_02");
 
             moveWhere2 = this.pieces[this.pickedPiece - 1];
-            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
+            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply);
             console.log("L_03");
             this.pickedPiece = 0;
 
-            /*VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0*/
+            //VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0
             if (this.timeleft) {
                 this.timeleft = 0;
             } else {
@@ -392,7 +396,7 @@ class Game {
             this.resetError();
 
             // while (!this.validReply) {
-            this.move(this.board, this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
+            this.move(this.board, this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply);
             //  }
             console.log("L_05");
             this.resetError();
@@ -401,30 +405,28 @@ class Game {
             this.changeColours();
 
             // while (!this.validReply) {
-            this.jogadasValidas(this.board, this.verifyScoreReply.bind(this));
+            this.getScore(this.board, this.verifyScoreReply);
             // }
             console.log("L_06");
             this.resetError();
         }
-        if (this.state == STATES.UPDATED) {
-            this.displayBoard();
-        }
+        //   if (this.state == STATES.UPDATED) {
+        this.displayBoard();
+        // }
+
     }
 
 
 
     start() {
-
         this.makeRequest("initialBoard", this.verifyTabReply);
-
         if (this.state == STATES.DISPLAYED) {
-
-            while (this.state != STATES.GAMEOVER) {
-                this.state = STATES.READY_TO_PICK_PIECE;
+            this.state = STATES.READY_TO_PICK_PIECE;
+            while (!this.gameover) {
+                //this.state = STATES.GAMEOVER
                 this.gameLoop();
             }
         }
-
         document.getElementById('info').innerHTML = this.winner;
     }
 
@@ -539,7 +541,7 @@ class Game {
                 this.pieces[i].selectable = false; //se assim optarmos
             }
         }
-
+        this.state == 3 ? this.state = 4 : this.state = 7;
     }
 
     //Make the request

@@ -332,6 +332,7 @@ class XMLscene extends CGFscene {
     displayBoard() {
 
         for (i = 0; i < this.newGame.pieces.length; i++) {
+            console.log("desenho " + i);
             this.pushMatrix();
             this.translate(7, 0, 7);
             this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
@@ -341,7 +342,7 @@ class XMLscene extends CGFscene {
             // this.translate(-0.73, 4.185, 0.605);
             this.scale(0.10, 0.10, 0.10);
             if (this.newGame.pieces[i].selectable) {
-                alert(i + 1);
+                //  alert(i + 1);
                 this.registerForPick(i + 1, this.newGame.pieces[i]);
             }
 
@@ -354,7 +355,8 @@ class XMLscene extends CGFscene {
             this.piece.display();
             this.popMatrix();
         }
-        this.newGame.state = 2;
+        //   if (this.newGame.state == 0 || this.newGame.state == 1 || this.newGame.state == 10)
+        //     this.newGame.state = 2;
     }
 
     setCameraUsed() {
@@ -414,7 +416,12 @@ class XMLscene extends CGFscene {
                             // obj.pickedShader = 1;
                             this.newGame.pickedPiece = customId;
                             //  this.newGame.picked(obj);
-                            this.newGame.state == 1 ? this.newGame.state = 2 : this.newGame.state = 4;
+                            if (this.newGame.state == 4) {
+                                this.newGame.state = 5;
+                            } else if (this.newGame.state == 6) {
+                                this.newGame.state = 7;
+                            }
+
                             // }
                         }
                 }
