@@ -63,6 +63,7 @@ class Game {
         this.winner = null;
         this.gameMode = DEFAULT_MODE || gameMode;
         this.gameLevel = DEFAULT_LEVEL || gameLevel;
+        this.piece2Move = null;
 
         //this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
         this.pieces = []; //use coords from the piece(id) object
@@ -302,41 +303,25 @@ class Game {
 
              }
          }*/
-        console,
-        console.log("d_00");
-        //  this.unstringify();
-        console.log("dANTES");
+
+
         this.translateBoard();
-        console,
-        console.log("d_01");
+
         this.updateScore();
-        console,
-        console.log("d_02");
+
     }
 
-
-    /* unstringify() {
-         alert("ENTROU");
-         this.board = JSON.stringify(this.board).replace(/black/g, "black");
-         alert("W00");
-         this.board = JSON.stringify(this.board).replace(/white/g, "white");
-         alert("W01");
-         this.board = JSON.stringify(this.board).replace(/empty/g, "empty");
-         alert(this.board);
-     }*/
-
     translateBoard() {
-        console.log("b_00");
-        for (var i = 0; i < this.Board.length; i++) {
-            console.log("b_01");
-            for (var j = 0; j < this.Board[i].length; j++) {
-                console.log("b_02");
-                if (this.Board[i][j] != "empty") {
-                    console.log("b_03");
+
+        for (var i = 0; i < this.board.length; i++) {
+
+            for (var j = 0; j < this.board[i].length; j++) {
+
+                if (this.board[i][j] != "empty") {
+
                     var tmp = new Piece();
                     tmp.active = true;
-                    console.log(this.Board[i][j]);
-                    tmp.colour = this.Board[i][j];
+                    tmp.colour = this.board[i][j];
                     tmp.id = j;
                     tmp.x = offsetX - incX * parseInt(j / 5);
                     // tmp.cell = j;
@@ -344,7 +329,7 @@ class Game {
                     tmp.line = parseInt(j / 5);
                     tmp.column = parseInt(j % 5);
                     this.pieces.push(tmp);
-                    console.log("b_04");
+
                 }
             }
         }
@@ -357,8 +342,8 @@ class Game {
 
         //while (!this.validReply) {
         if (this.pickedPiece) {
-            piece2Move = this.pieces[this.pickedPiece - 1];
-            this.validMoves(this.board, piece2Move.line, piece2Move.column, this.currentColour, this.verifyPieceReply.bind(this));
+            this.pieceMove = this.pieces[this.pickedPiece - 1];
+            this.validMoves(this.board, this.pieceMove.line, this.pieceMove.column, this.currentColour, this.verifyPieceReply.bind(this));
         }
         //}
         this.pickedPiece = 0;
@@ -368,7 +353,7 @@ class Game {
         //  while (!this.validReply) {
         if (this.pickedPiece) {
             moveWhere2 = this.pieces[this.pickedPiece - 1];
-            this.checkDifferenceIndexs(piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
+            this.checkDifferenceIndexs(this.pieceMove.line, this.pieceMove.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
         }
         // }
         this.pickedPiece = 0;
@@ -383,7 +368,7 @@ class Game {
         this.resetError();
 
         // while (!this.validReply) {
-        this.move(this.board, piece2Move.line, piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
+        this.move(this.board, this.pieceMove.line, this.pieceMove.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
         //  }
         this.resetError();
         this.changeColours();
@@ -415,7 +400,7 @@ class Game {
         console.log(response);
         if (response) {
             console.log("t_2");
-            this.Board = response;
+            this.board = response;
             this.validReply = true;
             this.resetError();
             this.displayBoard();
@@ -452,7 +437,7 @@ class Game {
     verifyMoveReply(data) {
         let response = JSON.parse(data.target.response);
         if (response[0]) {
-            this.Board = response[1];
+            this.board = response[1];
             this.validReply = true;
         } else {
             this.showError(response[0]);
