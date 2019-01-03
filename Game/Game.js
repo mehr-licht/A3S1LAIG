@@ -63,7 +63,7 @@ class Game {
         this.winner = null;
         this.gameMode = DEFAULT_MODE || gameMode;
         this.gameLevel = DEFAULT_LEVEL || gameLevel;
-        this.piece2Move = null;
+        this.piece2Move;
 
         //this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
         this.pieces = []; //use coords from the piece(id) object
@@ -342,8 +342,8 @@ class Game {
 
         //while (!this.validReply) {
         if (this.pickedPiece) {
-            this.pieceMove = this.pieces[this.pickedPiece - 1];
-            this.validMoves(this.board, this.pieceMove.line, this.pieceMove.column, this.currentColour, this.verifyPieceReply.bind(this));
+            this.piece2Move = this.pieces[this.pickedPiece - 1];
+            this.validMoves(this.board, this.piece2Move.line, this.piece2Move.column, this.currentColour, this.verifyPieceReply.bind(this));
         }
         //}
         this.pickedPiece = 0;
@@ -353,7 +353,7 @@ class Game {
         //  while (!this.validReply) {
         if (this.pickedPiece) {
             moveWhere2 = this.pieces[this.pickedPiece - 1];
-            this.checkDifferenceIndexs(this.pieceMove.line, this.pieceMove.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
+            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
         }
         // }
         this.pickedPiece = 0;
@@ -368,7 +368,7 @@ class Game {
         this.resetError();
 
         // while (!this.validReply) {
-        this.move(this.board, this.pieceMove.line, this.pieceMove.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
+        this.move(this.board, this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
         //  }
         this.resetError();
         this.changeColours();
