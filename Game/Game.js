@@ -77,7 +77,7 @@ class Game {
                     mat4.translate(colour_node.transformMatrix, colour_node.transformMatrix, colour_node.position);
                     mat4.rotate(colour_node.transformMatrix, colour_node.transformMatrix, -Math.PI / 2, [1, 0, 0]);
                 }*/
-        document.getElementById('turn').innerText = 'Player 1';
+        document.getElementById('turn').innerHTML = 'Player 1';
 
     }
 
@@ -85,21 +85,12 @@ class Game {
     //                             PROLOG COMMUNICATION FUNCTIONS                                    //
     //***********************************************************************************************//
     getPrologRequest(requestString, onSuccess, onError, port) {
-        console.log("g00");
         let requestPort = 8081;
-        console.log("g01");
         let request = new XMLHttpRequest();
-
-        console.log("g02");
-        request.open('GET', 'http://localhost:' + requestPort + '/' + requestString, true);
-        console.log("g03");
-
+        request.open('GET', 'http://localhost:' + requestPort + '/' + requestString, false); //( reqType,address, asyncProc) 
         request.onload = onSuccess.bind(this) || function(data) { console.log("Request successful. Reply: " + data.target.response); };
-        console.log("g04");
         request.onerror = onError || this.prologRequestError;
-        console.log("g05");
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-        console.log("g06");
         request.send();
     }
 
@@ -115,18 +106,18 @@ class Game {
     /**
      * Initial Board
      */
-    InitialBoard(callback) {
-        console.log("ini00");
-        let requestString = 'initialBoard';
-        console.log("ini01");
-        this.getPrologRequest(requestString, callback);
-        console.log("ini02");
-        /**gets 
-         * -1 => not received
-         * 0 + tabuleiroFinal
-         *  */
-        // return callback;
-    }
+    /*
+        InitialBoard(callback) {
+            let requestString = 'initialBoard';
+            console.log("ini01");
+            this.getPrologRequest(requestString, callback);
+            console.log("ini02");
+            /**gets 
+             * -1 => not received
+             * 0 + tabuleiroFinal
+             *  
+            // return callback;
+        }*/
 
 
     /**
@@ -274,12 +265,19 @@ class Game {
 
     updateScore() {
         //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
+        console.log("u_00");
         if (this.score1) {
-            //campoEstaCor = this.score1;
-            //campoOutraCor = this.score2;
+            console.log("u_01");
+            document.getElementById('score1').innerHTML = this.score1;
+            console.log("u_02");
+            document.getElementById('score2').innerHTML = this.score2;
+            console.log("u_03");
         } else {
+            console.log("u_04");
             this.gameOver = true;
+            console.log("u_05");
             this.winner = this.otherColour;
+            console.log("u_06");
         }
 
 
@@ -304,17 +302,27 @@ class Game {
 
              }
          }*/
-
+        console,
+        console.log("d_00");
         this.translateBoard();
+        console,
+        console.log("d_01");
         this.updateScore();
+        console,
+        console.log("d_02");
     }
 
     translateBoard() {
+        console.log("b_00");
         for (var i = 0; i < this.Board.length; i++) {
+            console.log("b_01");
             for (var j = 0; j < this.Board[i].length; j++) {
+                console.log("b_02");
                 if (this.Board[i][j] != "empty") {
+                    console.log("b_03");
                     var tmp = new Piece();
                     tmp.active = true;
+                    console.log(this.Board[i][j]);
                     tmp.colour = this.Board[i][j];
                     tmp.id = j;
                     tmp.x = offsetX - incX * parseInt(j / 5);
@@ -323,14 +331,16 @@ class Game {
                     tmp.line = parseInt(j / 5);
                     tmp.column = parseInt(j % 5);
                     this.pieces.push(tmp);
+                    console.log("b_04");
                 }
             }
         }
     }
 
     gameLoop() {
+        alert("loop");
         this.timeleft = TIME_LEFT;
-        this.markSelectables(current);
+        this.markSelectables(this.currentColour);
 
         while (!this.validReply) {
             if (this.pickedPiece) {
@@ -340,7 +350,7 @@ class Game {
         }
         this.pickedPiece = 0;
         this.resetError();
-        this.markSelectables(other);
+        this.markSelectables(this.otherColour);
 
         while (!this.validReply) {
             if (this.pickedPiece) {
@@ -354,8 +364,8 @@ class Game {
             this.timeleft = 0;
         } else {
             this.winner = this.otherColour;
-            document.getElementById('messages').innerText = 'YouTookTooMuchTime';
-            document.getElementById('info').innerText = this.winner;
+            document.getElementById('messages').innerHTML = 'YouTookTooMuchTime';
+            document.getElementById('info').innerHTML = this.winner;
         }
         this.resetError();
 
@@ -375,36 +385,32 @@ class Game {
 
 
     start() {
-        console.log("00");
-        // while (!this.validReply) {
-        console.log("01");
-        // this.InitialBoard(this.verifyTabReply); //this.InitialBoard(this.verifyTabReply.bind(this));
-        this.makeRequest();
-        console.log("02");
-        // }
-        console.log("03");
-        alert(this.answer);
-        this.resetError();
-        this.displayBoard();
+        this.makeRequest("initialBoard", this.verifyTabReply);
+
         while (!this.gameOver) {
             this.gameLoop();
         }
-        document.getElementById('info').innerText = this.winner;
+        document.getElementById('info').innerHTML = this.winner;
     }
 
 
     verifyTabReply(data) {
-        console.log(data);
-        let response = JSON.parse(data.target.response);
+        // this.answer = JSON.parse(data.target.response);
+        this.answer = data.target.response;
+        let response = this.answer;
         console.log("t_1");
-        if (response[0]) {
+        console.log(response);
+        if (response) {
             console.log("t_2");
-            this.Board = response[1];
-            console.log("t_3");
+            this.Board = response;
             this.validReply = true;
+            this.resetError();
+            this.displayBoard();
+            console.log("t_3");
+
         } else {
             console.log("t_4");
-            this.showError(response[0]);
+            this.showError(response);
             console.log("t_5");
             this.validReply = false;
         }
@@ -465,12 +471,12 @@ class Game {
 
         }
         //translate code into msg (de acordo com func  ou code independente?)
-        document.getElementById('messages').innerText = func + " : " + msg;
+        document.getElementById('messages').innerHTML = func + " : " + msg;
     }
 
     resetError() {
         this.validReply = false;
-        document.getElementById('messages').innerText = "";
+        document.getElementById('messages').innerHTML = "";
     }
 
     changeColours() {
@@ -485,46 +491,14 @@ class Game {
         //if(não alcancavel) desmarcar Selectable //se assim optarmos
     }
 
-    makeRequest() {
-        // Get Parameter Values
-
-        //  var requestString = document.querySelector("#query_field").value;
-
-        console.log("ini00");
-        let requestString = 'initialBoard';
-        console.log("ini01");
-
-
-        /**gets 
-         * -1 => not received
-         * 0 + tabuleiroFinal
-         *  */
-        // return callback;
-
-        // Make Request
-        console.log("m00");
-        this.getPrologRequest(requestString, this.handleReply);
-        console.log("m01");
+    //Make the request
+    makeRequest(requestString, callback) {
+        this.getPrologRequest(requestString, callback);
     }
 
     //Handle the Reply
     handleReply(data) {
-        console.log("t_0");
-        console.log(data);
         this.answer = data.target.response;
-        let response = this.answer;
-        console.log("t_1");
-        if (response[0]) {
-            console.log("t_2");
-            this.Board = response[1];
-            console.log("t_3");
-            this.validReply = true;
-        } else {
-            console.log("t_4");
-            this.showError(response[0]);
-            console.log("t_5");
-            this.validReply = false;
-        }
         this.validReply = true;
     }
 }
