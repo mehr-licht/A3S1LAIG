@@ -1,14 +1,7 @@
 //convert from degrees to rad
 var DEGREE_TO_RAD = Math.PI / 180;
 
-//position of the piece further away from the origin
-var offsetX = 0.73;
-var offsetY = 4.185;
-var offsetZ = 0.605;
 
-//distance from each board cell to its neighbours
-var incX = 0.292;
-var incZ = 0.3025;
 
 /**
  * XMLscene class, representing the scene that is to be rendered.
@@ -77,21 +70,22 @@ class XMLscene extends CGFscene {
         this.initCameras();
         this.piece = new CGFOBJModel(this, 'clobber.obj');
 
-        this.pieces = [];
-        this.piecesCoords = [];
-        for (var i = 0; i < 30; i++) {
-            this.pieces.push(this.piece);
-            var tmp = new Piece();
-            tmp.id = i;
-            tmp.colour = (i % 2 == 0 ? this.materialWhites : this.materialBlacks);
-            tmp.x = offsetX - incX * parseInt(i / 5);
-            tmp.y = offsetY;
-            tmp.z = offsetZ - incZ * parseInt(i % 5);
-            tmp.scale = 0.2;
-            tmp.active = true;
-            this.piecesCoords.push(tmp);
+        /*   this.pieces = [];
+           this.piecesCoords = [];
+           for (var i = 0; i < 30; i++) {
+               this.pieces.push(this.piece);
+               var tmp = new Piece();
+               tmp.id = i;
+               tmp.colour = (i % 2 == 0 ? this.materialWhites : this.materialBlacks);
+               tmp.x = offsetX - incX * parseInt(i / 5);
+               tmp.y = offsetY;
+               tmp.z = offsetZ - incZ * parseInt(i % 5);
+               tmp.scale = 0.2;
+               tmp.active = true;
+               this.piecesCoords.push(tmp);
 
-        }
+           }
+          */
         this.enableTextures(true);
 
         this.gl.clearDepth(100.0);
@@ -255,7 +249,7 @@ class XMLscene extends CGFscene {
      */
     display() {
 
-        this.logPicking();
+        // this.logPicking();
         this.handlePicking(); //Só 1 destes 2
 
         this.clearPickRegistration();
@@ -328,13 +322,20 @@ class XMLscene extends CGFscene {
                 this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
                 //    this.scale(this.piecesCoords[i].scale, this.piecesCoords[i].scale, this.piecesCoords[i].scale);
                 this.translate(this.newGame.pieces[i].x, this.newGame.pieces[i].y, this.newGame.pieces[i].z);
+
                 // this.translate(-0.73, 4.185, 0.605);
                 this.scale(0.10, 0.10, 0.10);
                 this.registerForPick(i + 1, this.newGame.pieces[i]);
 
-                this.newGame.pieces[i].colour.apply();
+                if (this.newGame.pieces[i].colour == "black") {
 
-                this.newGame.pieces[i].display();
+                    this.materialBlacks.apply();
+                } else if (this.newGame.pieces[i].colour == "white") {
+
+                    this.materialWhites.apply();
+                }
+
+                this.piece.display();
                 this.popMatrix();
             }
 
@@ -403,11 +404,13 @@ class XMLscene extends CGFscene {
                         if (obj) {
                             var customId = this.pickResults[i][1];
                             if (!this.newGame.gameOver)
-                                if (this.newGame.running) {
-                                    // obj.pickedShader = 1;
-                                    this.newGame.pickedPiece = customId;
-                                    //  this.newGame.picked(obj);
-                                }
+                                console.log("Picked object: " + obj + ", with pick id " + customId);
+                            // if (this.newGame.running) {
+                            // obj.pickedShader = 1;
+                            this.newGame.pickedPiece = customId;
+                            //  this.newGame.picked(obj);
+                            this.newGame.state == 1 ? this.newGame.state = 2 : this.newGame.state = 4;
+                            // }
                         }
                 }
                 this.pickResults.splice(0, this.pickResults.length);

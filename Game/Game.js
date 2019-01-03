@@ -1,4 +1,15 @@
 var SERVER_PORT = 8081;
+//position of the piece further away from the origin
+var offsetX = 0.73;
+var offsetY = 4.185;
+var offsetZ = 0.605;
+
+
+//distance from each board cell to its neighbours
+var incX = 0.292;
+var incZ = 0.3025;
+
+
 /*initial board*/
 var INITIAL_BOARD = [
     ['black', 'white', 'black', 'white', 'black'],
@@ -33,6 +44,16 @@ LEVELS = {
     HARD: 1
 };
 
+STATES = {
+    WAITING: 0,
+    READY_TO_PICK_PIECE: 1,
+    PIECE_CHOSEN: 2,
+    READY_TO_PICK_MOVE: 3,
+    MOVE_CHOSEN: 4,
+    MOVED: 5,
+    UPDATED: 6,
+
+}
 
 
 /**
@@ -63,8 +84,8 @@ class Game {
         this.winner = null;
         this.gameMode = DEFAULT_MODE || gameMode;
         this.gameLevel = DEFAULT_LEVEL || gameLevel;
-        this.piece2Move;
-
+        this.piece2Move = null;
+        this.state = STATES.WAITING;
         //this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
         this.pieces = []; //use coords from the piece(id) object
 
@@ -280,35 +301,14 @@ class Game {
             this.winner = this.otherColour;
             console.log("u_06");
         }
-
+        this.state = STATES.READY_TO_PICK;
 
     }
 
 
     displayBoard() {
-        /* COMO ESTAVA NO XMLscene */
-        /* if (this.board == INITIAL_BOARD) {
-
-             for (var i = 0; i < NUMBER_PIECES; i++) {
-                 // this.pieces.push(this.piece);
-                 var tmp = new Piece();
-                 tmp.id = i;
-                 tmp.colour = (i % 2 == 0 ? this.scene.materialWhites : this.scene.materialBlacks);
-                 tmp.x = offsetX - incX * parseInt(i / 5);
-                 tmp.y = offsetY;
-                 tmp.z = offsetZ - incZ * parseInt(i % 5);
-                 tmp.scale = 0.2;
-                 tmp.active = true;
-                 this.piecesCoords.push(tmp);
-
-             }
-         }*/
-
-
         this.translateBoard();
-
         this.updateScore();
-
     }
 
     translateBoard() {
@@ -320,12 +320,13 @@ class Game {
                 if (this.board[i][j] != "empty") {
 
                     var tmp = new Piece();
+
                     tmp.active = true;
                     tmp.colour = this.board[i][j];
                     tmp.id = j;
-                    tmp.x = offsetX - incX * parseInt(j / 5);
-                    // tmp.cell = j;
-                    tmp.y = offsetZ - incZ * parseInt(j % 5);
+                    tmp.x = offsetX - incX * parseInt(i);
+                    tmp.y = offsetY;
+                    tmp.z = offsetZ - incZ * parseInt(j % 5);
                     tmp.line = parseInt(j / 5);
                     tmp.column = parseInt(j % 5);
                     this.pieces.push(tmp);
@@ -336,57 +337,71 @@ class Game {
     }
 
     gameLoop() {
-        alert("loop");
+        console.log("loop");
         this.timeleft = TIME_LEFT;
-        this.markSelectables(this.currentColour);
+        if (this.state == STATES.READY_TO_PICK)
+            this.markSelectables(this.currentColour);
+        console.log("L_00");
 
-        //while (!this.validReply) {
-        if (this.pickedPiece) {
+        if (this.state == STATES.PIECE_CHOSEN) {
             this.piece2Move = this.pieces[this.pickedPiece - 1];
             this.validMoves(this.board, this.piece2Move.line, this.piece2Move.column, this.currentColour, this.verifyPieceReply.bind(this));
+            this.pickedPiece = 0;
+            this.resetError();
         }
-        //}
-        this.pickedPiece = 0;
-        this.resetError();
-        this.markSelectables(this.otherColour);
 
-        //  while (!this.validReply) {
-        if (this.pickedPiece) {
+        console.log("L_01");
+
+
+        if (this.state == STATES.READY_TO_PICK_MOVE)
+            this.markSelectables(this.otherColour);
+        console.log("L_02");
+
+        if (this.state == STATES.MOVE_CHOSEN) {
             moveWhere2 = this.pieces[this.pickedPiece - 1];
             this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply.bind(this));
-        }
-        // }
-        this.pickedPiece = 0;
-        /*VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0*/
-        if (this.timeleft) {
-            this.timeleft = 0;
-        } else {
-            this.winner = this.otherColour;
-            document.getElementById('messages').innerHTML = 'YouTookTooMuchTime';
-            document.getElementById('info').innerHTML = this.winner;
-        }
-        this.resetError();
+            console.log("L_03");
+            this.pickedPiece = 0;
 
-        // while (!this.validReply) {
-        this.move(this.board, this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
-        //  }
-        this.resetError();
-        this.changeColours();
-        this.displayBoard();
-        // while (!this.validReply) {
-        this.jogadasValidas(this.board, this.verifyScoreReply.bind(this));
-        // }
-        this.resetError();
-        this.updateScore();
+            /*VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0*/
+            if (this.timeleft) {
+                this.timeleft = 0;
+            } else {
+                this.winner = this.otherColour;
+                document.getElementById('messages').innerHTML = 'YouTookTooMuchTime';
+                document.getElementById('info').innerHTML = this.winner;
+            }
+            console.log("L_04");
+            this.resetError();
+
+            // while (!this.validReply) {
+            this.move(this.board, this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply.bind(this));
+            //  }
+            console.log("L_05");
+            this.resetError();
+        }
+        if (this.state == STATES.MOVED) {
+            this.changeColours();
+            this.displayBoard();
+            // while (!this.validReply) {
+            this.jogadasValidas(this.board, this.verifyScoreReply.bind(this));
+            // }
+            console.log("L_06");
+            this.resetError();
+        }
+        if (this.state == STATES.UPDATED) {
+            this.updateScore();
+        }
     }
 
 
 
     start() {
         this.makeRequest("initialBoard", this.verifyTabReply);
-
-        while (!this.gameOver) {
-            this.gameLoop();
+        if (this.state == STATES.READY_TO_PICK_PIECE) {
+            while (!this.gameOver) {
+                this.gameLoop();
+            }
         }
         document.getElementById('info').innerHTML = this.winner;
     }
@@ -418,16 +433,19 @@ class Game {
         let response = JSON.parse(data.target.response);
         if (response[0]) {
             this.validReply = true;
+            this.state = STATES.PIECE_CHOSEN;
         } else {
             this.showError(response[0]);
             this.validReply = false;
         }
+
     }
 
     verifyAttackReply(data) {
         let response = JSON.parse(data.target.response);
         if (response[0]) {
             this.validReply = true;
+            this.state = STATES.MOVE_CHOSEN;
         } else {
             this.showError(response[0]);
             this.validReply = false;
@@ -439,6 +457,7 @@ class Game {
         if (response[0]) {
             this.board = response[1];
             this.validReply = true;
+            this.state = STATES.MOVED;
         } else {
             this.showError(response[0]);
             this.validReply = false;
@@ -452,6 +471,7 @@ class Game {
             this.score1 = response[1];
             this.score2 = response[2];
             this.validReply = true;
+            this.state = STATES.UPDATED;
         } else {
             this.showError(response[0]);
             this.validReply = false;
