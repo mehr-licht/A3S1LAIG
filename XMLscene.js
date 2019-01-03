@@ -39,7 +39,7 @@ class XMLscene extends CGFscene {
         this.currScene = "FEUP";
 
         //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
-        this.newGame = new Game()
+        this.newGame = new Game(this);
         this.gameMode = "Player vs Player";
         this.gameLevel = "Easy";
     }
@@ -315,30 +315,7 @@ class XMLscene extends CGFscene {
             //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
 
             // draw objects
-
-            for (i = 0; i < this.newGame.pieces.length; i++) {
-                this.pushMatrix();
-                this.translate(7, 0, 7);
-                this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
-                //    this.scale(this.piecesCoords[i].scale, this.piecesCoords[i].scale, this.piecesCoords[i].scale);
-                this.translate(this.newGame.pieces[i].x, this.newGame.pieces[i].y, this.newGame.pieces[i].z);
-
-                // this.translate(-0.73, 4.185, 0.605);
-                this.scale(0.10, 0.10, 0.10);
-                this.registerForPick(i + 1, this.newGame.pieces[i]);
-
-                if (this.newGame.pieces[i].colour == "black") {
-
-                    this.materialBlacks.apply();
-                } else if (this.newGame.pieces[i].colour == "white") {
-
-                    this.materialWhites.apply();
-                }
-
-                this.piece.display();
-                this.popMatrix();
-            }
-
+            this.displayBoard();
 
         } else {
             // Draw axis
@@ -350,6 +327,34 @@ class XMLscene extends CGFscene {
         //  
         // ---- END Background, camera and axis setup
 
+    }
+
+    displayBoard() {
+
+        for (i = 0; i < this.newGame.pieces.length; i++) {
+            this.pushMatrix();
+            this.translate(7, 0, 7);
+            this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
+            //    this.scale(this.piecesCoords[i].scale, this.piecesCoords[i].scale, this.piecesCoords[i].scale);
+            this.translate(this.newGame.pieces[i].x, this.newGame.pieces[i].y, this.newGame.pieces[i].z);
+
+            // this.translate(-0.73, 4.185, 0.605);
+            this.scale(0.10, 0.10, 0.10);
+            if (this.newGame.pieces[i].selectable) {
+                alert(i + 1);
+                this.registerForPick(i + 1, this.newGame.pieces[i]);
+            }
+
+            if (this.newGame.pieces[i].colour == "black") {
+                this.materialBlacks.apply();
+            } else if (this.newGame.pieces[i].colour == "white") {
+                this.materialWhites.apply();
+            }
+
+            this.piece.display();
+            this.popMatrix();
+        }
+        this.newGame.state = 2;
     }
 
     setCameraUsed() {

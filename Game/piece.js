@@ -11,7 +11,7 @@ class Piece {
         this.x = x;
         this.y = y;
         this.z = z;
-
+        this.selectable = false;
         this.scale = scale;
         this.colour = colour;
         this.active = active;
