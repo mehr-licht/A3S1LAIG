@@ -133,20 +133,20 @@ class Game {
     /**
      * Update Score
      */
-    
+
     getScore(tabuleiro, callback) {
-            let Score;
-            let requestString = 'sendScore(' +
+        let Score;
+        let requestString = 'sendScore(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
-            //+ ',' + JSON.stringify(Score) + ')';
-            console.log("ini0123");
-             this.makeRequest(requestString, callback);
-            console.log("ini02");
-            /**gets 
-             * -1 => not received
-             * 0 + tabuleiroFinal
-            */
-     }
+        //+ ',' + JSON.stringify(Score) + ')';
+        console.log("ini0123");
+        this.makeRequest(requestString, callback);
+        console.log("ini02");
+        /**gets 
+         * -1 => not received
+         * 0 + tabuleiroFinal
+         */
+    }
 
 
     /**
@@ -175,9 +175,9 @@ class Game {
     validMoves(tabuleiro, line, column, colour, callback) {
         let requestString = 'validMoves(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
-            JSON.stringify(line).replace(/"/g, '')      + ',' +
-            JSON.stringify(column).replace(/"/g, '')    + ',' +
-            JSON.stringify(colour).replace(/"/g, '')    + ')';
+            JSON.stringify(line).replace(/"/g, '') + ',' +
+            JSON.stringify(column).replace(/"/g, '') + ',' +
+            JSON.stringify(colour).replace(/"/g, '') + ')';
 
         this.makeRequest(requestString, callback);
         /**gets 
@@ -320,8 +320,8 @@ class Game {
     displayBoard() {
 
         this.translateBoard();
-        if (this.states == STATES.DISPLAYED)
-            this.updateScore();
+        // if (this.states == STATES.DISPLAYED)
+        this.updateScore();
 
     }
 
@@ -349,22 +349,23 @@ class Game {
             }
         }
         //   this.scene.displayBoard();
-        this.state = STATES.DISPLAYED;
+        this.state = STATES.READY_TO_PICK_PIECE;
 
     }
 
     gameLoop() {
 
-        this.timeleft = TIME_LEFT;
+
         // alert("antes " + this.state);
         if (this.state == STATES.READY_TO_PICK_PIECE) {
+            this.timeleft = TIME_LEFT;
             console.log("gl_01");
             this.markSelectables(this.currentColour);
             console.log("gl_02");
             //  alert("apos " + this.state);
         }
-
-
+        //
+        // alert("01:" + this.state);
 
         if (this.state == STATES.PIECE_CHOSEN) {
             console.log("L_00");
@@ -375,12 +376,12 @@ class Game {
             console.log("L_01");
         }
 
-
+        // alert("02:" + this.state);
 
 
         if (this.state == STATES.READY_TO_PICK_MOVE)
             this.markSelectables(this.otherColour);
-
+        //   alert("03:" + this.state);
         if (this.state == STATES.MOVE_CHOSEN) {
             console.log("L_02");
 
@@ -406,6 +407,7 @@ class Game {
             console.log("L_05");
             this.resetError();
         }
+        //     alert("04:" + this.state);
         if (this.state == STATES.MOVED) {
             this.changeColours();
 
@@ -415,9 +417,10 @@ class Game {
             console.log("L_06");
             this.resetError();
         }
-        //   if (this.state == STATES.UPDATED) {
-        this.displayBoard();
-        // }
+        //   alert("05:" + this.state);
+        if (this.state == STATES.UPDATED) {
+            this.displayBoard();
+        }
 
     }
 
@@ -425,15 +428,13 @@ class Game {
 
     start() {
         this.makeRequest("initialBoard", this.verifyTabReply);
-        if (this.state == STATES.DISPLAYED) {
-            this.state = STATES.READY_TO_PICK_PIECE;
-            while (!this.gameover) {
-                //this.state = STATES.GAMEOVER
-                this.gameLoop();
-            }
-        }
+
+        // if (this.state == STATES.DISPLAYED) {
+        this.state = STATES.READY_TO_PICK_PIECE;
+
+        //}
         document.getElementById('info').innerHTML = this.winner;
-        */
+
     }
 
 
@@ -449,7 +450,7 @@ class Game {
             this.board = response;
             this.validReply = true;
             this.resetError();
-        //    this.displayBoard();
+            this.displayBoard();
             console.log("t_3");
 
         } else {
@@ -465,7 +466,7 @@ class Game {
         let response = JSON.parse(data.target.response);
         if (response[0]) {
             this.validReply = true;
-            this.state = STATES.PIECE_CHOSEN;
+            this.state = STATES.READY_TO_PICK_MOVE;
         } else {
             this.showError(response[0]);
             this.validReply = false;
@@ -497,7 +498,7 @@ class Game {
     }
 
     verifyScoreReply(data) {
- console.log("Teste subF 1");       
+        console.log("Teste subF 1");
 
         let response = JSON.parse(data.target.response);
         console.log("Teste subF 1");

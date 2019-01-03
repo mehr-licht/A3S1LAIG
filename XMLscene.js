@@ -310,6 +310,11 @@ class XMLscene extends CGFscene {
             //console.log(this.currScene);
 
 
+            if (this.newGame.state != 11) {
+                this.newGame.gameLoop();
+            }
+
+
             // registar para picking
             // por cada elemento que queiramos pickar (pecas)
             //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
@@ -332,7 +337,7 @@ class XMLscene extends CGFscene {
     displayBoard() {
 
         for (i = 0; i < this.newGame.pieces.length; i++) {
-            console.log("desenho " + i);
+
             this.pushMatrix();
             this.translate(7, 0, 7);
             this.rotate(55 * DEGREE_TO_RAD, 0, 1, 0);
@@ -418,8 +423,8 @@ class XMLscene extends CGFscene {
                             //  this.newGame.picked(obj);
                             if (this.newGame.state == 4) {
                                 this.newGame.state = 5;
-                            } else if (this.newGame.state == 6) {
-                                this.newGame.state = 7;
+                            } else if (this.newGame.state == 7) {
+                                this.newGame.state = 8;
                             }
 
                             // }
