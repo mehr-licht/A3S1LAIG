@@ -339,7 +339,6 @@ class XMLscene extends CGFscene {
                     if (!!this.newGame.moveWhere2) {
                         document.getElementById('whereline').innerHTML = 6 - (this.newGame.moveWhere2.line);
                         document.getElementById('wherecol').innerHTML = (String.fromCharCode(97 + this.newGame.moveWhere2.column)).toUpperCase();
-                        alert("");
                     }
 
 
