@@ -479,8 +479,6 @@ class Game {
             this.validReply = true;
             this.resetError();
             this.displayBoard();
-
-
         } else {
 
             this.showError(data.target.statusText);
