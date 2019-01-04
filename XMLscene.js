@@ -309,28 +309,27 @@ class XMLscene extends CGFscene {
             this.graph.displayScene();
             //console.log(this.currScene);
 
-            if (this.newGame.state != 0 && this.newGame.state != 12 && this.newGame.timeleft <= 0) {
-                this.newGame.state = 12;
+            if (this.newGame.state != STATES.WAITING && this.newGame.state != STATES.GAMEOVER && this.newGame.timeleft <= 0) {
+                console.log("xml:00");
+                //this.newGame.state = STATES.GAMEOVER;
                 document.getElementById('messages').innerHTML = "time out: " + this.newGame.currentColour + " lost";
                 this.newGame.winner = this.newGame.otherColour;
-            } else if (this.newGame.state != 12) {
-
+            } else if (this.newGame.state != STATES.GAMEOVER) {
+                console.log("xml:01");
                 this.newGame.gameLoop();
-                if (this.newGame.state != 0) {
+                if (this.newGame.state != STATES.WAITING) {
                     document.getElementById('turn').innerHTML = this.newGame.currentColour;
                     var d = new Date();
                     var t = d.getTime();
                     this.newGame.timeleft = TIME_LEFT - ((t - this.newGame.gameStart2) / 1000);
                     var fixedNum = parseFloat(this.newGame.timeleft).toFixed(2);
                     document.getElementById('time').innerHTML = fixedNum;
-                    var fixedNum = parseFloat(((t - this.newGame.gameStart) / 1000)).toFixed(2);
+                    fixedNum = parseFloat(((t - this.newGame.gameStart) / 1000)).toFixed(2);
                     document.getElementById('game_time').innerHTML = fixedNum;
                     document.getElementById('picked').innerHTML = this.newGame.pickedPiece;
 
 
-
-
-                    if (this.newGame.state > 4) {
+                    if (!!this.newGame.piece2Move) {
                         document.getElementById('pieceline').innerHTML = 6 - (this.newGame.piece2Move.line);
                         document.getElementById('piececol').innerHTML = (String.fromCharCode(97 + this.newGame.piece2Move.column)).toUpperCase();
 
@@ -342,20 +341,18 @@ class XMLscene extends CGFscene {
 
                     }
 
-
+                    if (!this.newGame.score1) this.newGame.state = STATES.GAMEOVER;
 
 
                 }
             } else {
+                console.log("xml:02");
                 document.getElementById('info').innerHTML = this.newGame.winner + " WON";
             }
 
 
-            // registar para picking
-            // por cada elemento que queiramos pickar (pecas)
-            //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
-            // draw objects
             if (this.newGame.state != 0) {
+                console.log("xml:03");
                 this.displayBoard();
             }
 
@@ -384,7 +381,7 @@ class XMLscene extends CGFscene {
             // this.translate(-0.73, 4.185, 0.605);
             this.scale(0.10, 0.10, 0.10);
             if (this.newGame.pieces[i].selectable) {
-                console.log(this.newGame.currentColour + " : selectable id = " + (i + 1));
+
                 this.registerForPick(i + 1, this.newGame.pieces[i]);
             }
 
