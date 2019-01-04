@@ -40,8 +40,8 @@ class XMLscene extends CGFscene {
 
         //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
         this.newGame = new Game(this);
-        this.gameMode = "Player vs Player";
-        this.gameLevel = "Easy";
+        this.gameMode = MODES.HUMANS;
+        this.gameLevel = LEVELS.EASY;
     }
 
     /**

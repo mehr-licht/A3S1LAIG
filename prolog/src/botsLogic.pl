@@ -136,8 +136,7 @@ escolha1(Tabuleiro,[[Line-Column]|T], [[Line-Column]-SizeLista|ListaFinal]):-
 
 % ( (ColorPlayer == black, ColorContraria = white); ColorPlayer == white, ColorContraria = black) )
                                                 %Nivel » 0
-choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel,
-    ):-
+choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel,LineFuture,ColumnFuture,LineNova,ColumnNova):-
     posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
     escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
         %write('Lista para Limpar: '), write(ListaParaLimpar), nl,
