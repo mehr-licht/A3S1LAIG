@@ -34,8 +34,8 @@ class XMLscene extends CGFscene {
 
         this.shaderObjects = [];
         this.lastTime = 0;
-        let currentDate = new Date();
-        this.initialTime = currentDate.getTime();
+        this.currentDate = new Date();
+        this.initialTime = this.currentDate.getTime();
         this.currScene = "FEUP";
 
         //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
@@ -311,7 +311,19 @@ class XMLscene extends CGFscene {
 
 
             if (this.newGame.state != 11) {
+
                 this.newGame.gameLoop();
+                if (this.newGame.state != 0) {
+                    document.getElementById('turn').innerHTML = this.newGame.currentColour;
+                    var d = new Date();
+                    var t = d.getTime();
+                    // alert("t: " + t + "\n" + "gameStart: " + this.newGame.gameStart + "\n" + ((t - this.newGame.gameStart) / 1000));
+                    this.newGame.timeleft = TIME_LEFT - ((t - this.newGame.gameStart) / 1000);
+                    var fixedNum = parseFloat(this.newGame.timeleft).toFixed(2)
+                    document.getElementById('time').innerHTML = fixedNum;
+                }
+            } else {
+                document.getElementById('info').innerHTML = this.newGame.winner;
             }
 
 

@@ -20,8 +20,8 @@ var INITIAL_BOARD = [
     ['white', 'black', 'white', 'black', 'white']
 ];
 /*score points at the beginning of a regular game*/
-var SCORE_1 = 99;
-var SCORE_2 = 99;
+var SCORE_1 = 49;
+var SCORE_2 = 49;
 /*time of each turn (seconds)*/
 var TIME_LEFT = 30;
 /*initial number of pieces on board*/
@@ -54,9 +54,10 @@ STATES = {
     READY_TO_PICK_MOVE: 6,
     SELECTABLES2: 7,
     MOVE_CHOSEN: 8,
-    MOVED: 9,
-    UPDATED: 10, //getUpdatedScores
-    GAMEOVER: 11,
+    READY_TO_MOVE: 9,
+    MOVED: 10,
+    UPDATED: 11, //getUpdatedScores
+    GAMEOVER: 12,
 }
 
 
@@ -76,7 +77,7 @@ class Game {
         this.init_board = init_board || INITIAL_BOARD;
         this.animationCounter = 0;
         this.board = [];
-        this.answer = "";
+        this.gameStart = 0;
         this.running = true;
         this.gameOver = false;
         this.computer_playing = false;
@@ -90,6 +91,7 @@ class Game {
         this.gameMode = DEFAULT_MODE || gameMode;
         this.gameLevel = DEFAULT_LEVEL || gameLevel;
         this.piece2Move = null;
+        this.moveWhere2 = null;
         this.state = STATES.WAITING;
         //this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
         this.pieces = []; //use coords from the piece(id) object
@@ -104,7 +106,7 @@ class Game {
                     mat4.translate(colour_node.transformMatrix, colour_node.transformMatrix, colour_node.position);
                     mat4.rotate(colour_node.transformMatrix, colour_node.transformMatrix, -Math.PI / 2, [1, 0, 0]);
                 }*/
-        document.getElementById('turn').innerHTML = 'Player 1';
+
 
     }
 
@@ -135,17 +137,17 @@ class Game {
      */
 
     getScore(tabuleiro, callback) {
-        let Score;
         let requestString = 'sendScore(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
         //+ ',' + JSON.stringify(Score) + ')';
         console.log("ini0123");
         this.makeRequest(requestString, callback);
-        console.log("ini02");
+
         /**gets 
          * -1 => not received
-         * 0 + tabuleiroFinal
-         */
+         * 0 => OK + number of valid Moves
+         *  */
+        // return callback;
     }
 
 
@@ -172,13 +174,11 @@ class Game {
     }
 
 
-    validMoves(tabuleiro, line, column, colour, callback) {
-        let requestString = 'validMoves(' +
+    selectedPiece(tabuleiro, line, column, callback) {
+        let requestString = 'selectedPiece(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
             JSON.stringify(line).replace(/"/g, '') + ',' +
-            JSON.stringify(column).replace(/"/g, '') + ',' +
-            JSON.stringify(colour).replace(/"/g, '') + ')';
-
+            JSON.stringify(column).replace(/"/g, '') + ')';
         this.makeRequest(requestString, callback);
         /**gets 
          * -3 => piece is isolated
@@ -206,16 +206,7 @@ class Game {
         // return callback;
     }
 
-    getScore(tabuleiro, callback) {
-        let requestString = 'sendScore(' +
-            JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
-        this.makeRequest(requestString, callback);
-        /**gets 
-         * -1 => not received
-         * 0 => OK + number of valid Moves
-         *  */
-        // return callback;
-    }
+
 
 
 
@@ -311,7 +302,10 @@ class Game {
             this.winner = this.otherColour;
             console.log("u_06");
         }
-
+        this.timeleft = TIME_LEFT;
+        var d = new Date();
+        var t = d.getTime();
+        this.gameStart = t;
         this.state = STATES.READY_TO_PICK_PIECE;
 
     }
@@ -326,27 +320,25 @@ class Game {
     }
 
     translateBoard() {
-
+        this.pieces = [];
         for (var i = 0; i < this.board.length; i++) {
 
             for (var j = 0; j < this.board[i].length; j++) {
 
                 if (this.board[i][j] != "empty") {
-
-                    var tmp = new Piece();
-
+                    var tmp = new Piece(this.scene);
                     tmp.active = true;
                     tmp.colour = this.board[i][j];
-                    tmp.id = j;
+                    tmp.id = i * this.board[j].length + j;
                     tmp.x = offsetX - incX * parseInt(i);
                     tmp.y = offsetY;
                     tmp.z = offsetZ - incZ * parseInt(j % 5);
-                    tmp.line = parseInt(j / 5);
+                    tmp.line = parseInt(i);
                     tmp.column = parseInt(j % 5);
                     this.pieces.push(tmp);
-
                 }
             }
+
         }
         //   this.scene.displayBoard();
         this.state = STATES.READY_TO_PICK_PIECE;
@@ -356,40 +348,36 @@ class Game {
     gameLoop() {
 
 
-        // alert("antes " + this.state);
+        console.log("antes " + this.state);
         if (this.state == STATES.READY_TO_PICK_PIECE) {
-            this.timeleft = TIME_LEFT;
+
             console.log("gl_01");
             this.markSelectables(this.currentColour);
             console.log("gl_02");
             //  alert("apos " + this.state);
         }
         //
-        // alert("01:" + this.state);
+        console.log("01:" + this.state);
 
         if (this.state == STATES.PIECE_CHOSEN) {
             console.log("L_00");
+            console.log(this.pickedPiece);
             this.piece2Move = this.pieces[this.pickedPiece - 1];
-            this.validMoves(this.board, this.piece2Move.line, this.piece2Move.column, this.currentColour, this.verifyPieceReply);
-            this.pickedPiece = 0;
-            this.resetError();
-            console.log("L_01");
+            this.selectedPiece(this.board, this.piece2Move.line, this.piece2Move.column, this.verifyPieceReply);
+
         }
 
-        // alert("02:" + this.state);
+        console.log("L_01");
+        console.log("02:" + this.state);
 
 
-        if (this.state == STATES.READY_TO_PICK_MOVE)
-            this.markSelectables(this.otherColour);
-        //   alert("03:" + this.state);
-        if (this.state == STATES.MOVE_CHOSEN) {
-            console.log("L_02");
-
-            moveWhere2 = this.pieces[this.pickedPiece - 1];
-            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyAttackReply);
-            console.log("L_03");
+        if (this.state == STATES.READY_TO_PICK_MOVE) {
             this.pickedPiece = 0;
-
+            this.resetError();
+            this.markSelectables(this.otherColour);
+        }
+        console.log("03:" + this.state);
+        if (this.state == STATES.MOVE_CHOSEN) {
             //VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0
             if (this.timeleft) {
                 this.timeleft = 0;
@@ -398,17 +386,27 @@ class Game {
                 document.getElementById('messages').innerHTML = 'YouTookTooMuchTime';
                 document.getElementById('info').innerHTML = this.winner;
             }
-            console.log("L_04");
-            this.resetError();
+            console.log("L_02");
 
-            // while (!this.validReply) {
-            this.move(this.board, this.piece2Move.line, this.piece2Move.column, moveWhere2.line, moveWhere2.column, this.verifyMoveReply);
+            this.moveWhere2 = this.pieces[this.pickedPiece - 1];
+            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);
+            console.log("L_03");
+        }
+        if (this.state == STATES.READY_TO_MOVE) {
+            this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
             //  }
             console.log("L_05");
-            this.resetError();
         }
-        //     alert("04:" + this.state);
+
+
+        console.log("04:" + this.state);
         if (this.state == STATES.MOVED) {
+            this.pickedPiece = 0;
+
+
+            console.log("L_04");
+
+            this.resetError();
             this.changeColours();
 
             // while (!this.validReply) {
@@ -417,7 +415,7 @@ class Game {
             console.log("L_06");
             this.resetError();
         }
-        //   alert("05:" + this.state);
+        console.log("05:" + this.state);
         if (this.state == STATES.UPDATED) {
             this.displayBoard();
         }
@@ -427,22 +425,21 @@ class Game {
 
 
     start() {
-        this.makeRequest("initialBoard", this.verifyTabReply);
-
-        // if (this.state == STATES.DISPLAYED) {
-        this.state = STATES.READY_TO_PICK_PIECE;
-
-        //}
-        document.getElementById('info').innerHTML = this.winner;
-
+        if (this.state == STATES.WAITING) {
+            var d = new Date();
+            var t = d.getTime();
+            this.gameStart = t;
+            this.makeRequest("initialBoard", this.verifyTabReply);
+            this.timeleft = TIME_LEFT;
+            // if (this.state == STATES.DISPLAYED) {
+            this.state = STATES.READY_TO_PICK_PIECE;
+            //}
+        }
     }
 
 
-    verifyTabReply(data) {
-
-        this.answer = JSON.parse(data.target.response);
-        // this.answer = data.target.response;
-        let response = this.answer;
+    verifyTabReply(data) {;
+        let response = JSON.parse(data.target.response);
         console.log("t_1");
         console.log(response);
         if (response) {
@@ -464,7 +461,7 @@ class Game {
 
     verifyPieceReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response[0]) {
+        if (response == this.currentColour) {
             this.validReply = true;
             this.state = STATES.READY_TO_PICK_MOVE;
         } else {
@@ -476,19 +473,21 @@ class Game {
 
     verifyAttackReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response[0]) {
+        if (!isNaN(response)) {
             this.validReply = true;
-            this.state = STATES.MOVE_CHOSEN;
+            if (response == 0) {
+                this.state = STATES.READY_TO_MOVE;
+            }
         } else {
-            this.showError(response[0]);
+            this.showError(response);
             this.validReply = false;
         }
     }
 
     verifyMoveReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response[0]) {
-            this.board = response[1];
+        if (response) {
+            this.board = response;
             this.validReply = true;
             this.state = STATES.MOVED;
         } else {
@@ -501,13 +500,14 @@ class Game {
         console.log("Teste subF 1");
 
         let response = JSON.parse(data.target.response);
-        console.log("Teste subF 1");
+        console.log(response);
+        // console.log("Teste subF 1");
         if (response[0]) {
             //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
             console.log("Teste subF 2");
-            this.score1 = response[1];
+            this.score1 = response[0];
             console.log("Teste subF 3");
-            this.score2 = response[2];
+            this.score2 = response[1];
             console.log("Teste subF 4");
             this.validReply = true;
             this.state = STATES.UPDATED;
@@ -539,7 +539,7 @@ class Game {
     changeColours() {
         let tmp = this.otherColour;
         this.otherColour = this.currentColour;
-        this.currentColour = temp;
+        this.currentColour = tmp;
     }
 
     markSelectables(which) {
@@ -562,9 +562,9 @@ class Game {
         this.getPrologRequest(requestString, callback);
     }
 
-    //Handle the Reply
-    handleReply(data) {
-        this.answer = data.target.response;
-        this.validReply = true;
-    }
+    /* //Handle the Reply
+     handleReply(data) {
+         this.answer = data.target.response;
+         this.validReply = true;
+     }*/
 }

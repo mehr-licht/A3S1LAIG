@@ -186,7 +186,7 @@ parse_input(sendScore(Tabuleiro),ScoresJSON):-
 
 /** BOT PLAY esta predefenido com a cor black
  * TESTE http://localhost:8081/choose_move([[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white],[black,white,black,white,black],[white,black,white,black,white]],TabuleiroFinal,black,1)
- * Devolve o novo tabuleiro em Board após jogada bot 
+ * Devolve o novo tabuleiro em Board após jogada bot
 */
 parse_input(choose_move(Tabuleiro),Board):-
 	choose_move(Tabuleiro, TabuleiroF,_Color, _Nivel),
@@ -197,9 +197,10 @@ parse_input(choose_move(Tabuleiro),Board):-
  * 
  * Devolve uma lista de jogadas para cada peca escolhida 
 */
-parse_input(validMoves(TabuleiroInicial,LineIndex,ColumnIndex,ColorContraria),ListjogJSON):-
-	validMoves(TabuleiroInicial, LineIndex, ColumnIndex, ColorContraria, ListasJogadas),
-	json(ListasJogadas,ListjogJSON).
+parse_input(selectedPiece(TabuleiroInicial,LineIndex,ColumnIndex),ValueJSON):-
+	%validMoves(TabuleiroInicial, LineIndex, ColumnIndex, Color, ListasJogadas),
+	getValueFromMatrixV2(TabuleiroInicial,LineIndex,ColumnIndex,Value),
+	json(Value,ValueJSON).
 
 
 
