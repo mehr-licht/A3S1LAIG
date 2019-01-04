@@ -454,21 +454,17 @@ class XMLscene extends CGFscene {
                             var customId = this.pickResults[i][1];
                             if (!this.newGame.gameOver)
                                 console.log("Picked object: " + obj + ", with pick id " + customId);
-                            // if (this.newGame.running) {
-                            // obj.pickedShader = 1;
+
                             this.newGame.pickedPiece = customId;
 
                             if (this.newGame.tmpPiece == this.newGame.pickedPiece) {
                                 this.newGame.resetPickedPiece();
-                            }
-                            //  this.newGame.picked(obj);
-                            if (this.newGame.state == 4) {
+                            } else if (this.newGame.state == 4) {
                                 this.newGame.state = 5;
                             } else if (this.newGame.state == 7) {
                                 this.newGame.state = 8;
                             }
 
-                            // }
                         }
                 }
                 this.pickResults.splice(0, this.pickResults.length);

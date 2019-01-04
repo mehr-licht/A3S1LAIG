@@ -387,15 +387,15 @@ class Game {
 
 
             if (this.state == STATES.READY_TO_PICK_MOVE) {
-                alert("00");
+
                 this.tmpPiece = this.pickedPiece;
-                alert("01");
+
                 this.pickedPiece = 0;
-                alert("02");
+
                 this.resetError();
-                alert("03");
+
                 this.markSelectables(this.otherColour);
-                alert("04");
+
             }
 
             if (this.state == STATES.MOVE_CHOSEN) {
@@ -439,6 +439,8 @@ class Game {
             var t = d.getTime();
             this.gameStart = t;
             this.gameStart2 = t;
+            this.gameMode = this.scene.gameMode;
+            this.gameLevel = this.scene.gameLevel;
             this.makeRequest("initialBoard", this.verifyTabReply);
             this.timeleft = TIME_LEFT;
             // if (this.state == STATES.DISPLAYED) {
@@ -448,15 +450,18 @@ class Game {
     }
 
     verifyBotReply(data) {;
-        let response = JSON.parse(data.target.response);
+
 
         if (data.target.status == 200) {
-
-            this.board = response;
+            let response = JSON.parse(data.target.response);
+            this.piece2Move.line = response[0];
+            this.piece2Move.column = response[1];
+            this.moveWhere2.line = response[2];
+            this.moveWhere2.column = response[3];
             this.validReply = true;
             this.resetError();
             this.displayBoard();
-
+            this.state = STATES.READY_TO_MOVE;
 
         } else {
 
@@ -470,10 +475,10 @@ class Game {
 
 
     verifyTabReply(data) {;
-        let response = JSON.parse(data.target.response);
+
 
         if (data.target.status == 200) {
-
+            let response = JSON.parse(data.target.response);
             this.board = response;
             this.validReply = true;
             this.resetError();
@@ -490,9 +495,9 @@ class Game {
     }
 
     verifyPieceReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
 
+        if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             if (response == this.currentColour) {
 
                 this.validReply = true;
@@ -510,8 +515,9 @@ class Game {
     }
 
     verifyAttackReply(data) {
-        let response = JSON.parse(data.target.response);
+
         if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             if (!isNaN(response)) {
                 this.validReply = true;
                 if (response == 0) {
@@ -527,8 +533,9 @@ class Game {
     }
 
     verifyMoveReply(data) {
-        let response = JSON.parse(data.target.response);
+
         if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             this.board = response;
             this.validReply = true;
             this.state = STATES.MOVED;
@@ -541,10 +548,8 @@ class Game {
     }
 
     verifyScoreReply(data) {
-
-        let response = JSON.parse(data.target.response);
-
         if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             if (response[0]) {
                 this.score1 = response[0];
 
@@ -579,7 +584,7 @@ class Game {
 
     markSelectables(which) {
         this.scene.setPickEnabled(true);
-        alert("mS:" + which);
+
         for (i = 0; i < this.pieces.length; i++) {
 
             if (this.pieces[i].colour == which) {
