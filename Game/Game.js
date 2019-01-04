@@ -106,7 +106,10 @@ class Game {
         //For undo and Film
         this.Undo = [];
         this.PastTabuleiros = [];
-
+        this.PastScore1 = [];
+        this.PastScore2 = [];
+        
+        
         var start = Date.now();
 
 
@@ -244,7 +247,25 @@ class Game {
      * display
      */
     undo() {
-
+        //Board
+        let sizeBoards = this.PastTabuleiros.length;
+        this.board = this.PastTabuleiros[sizeBoards-2];
+        //alert(this.board);
+        this.PastTabuleiros.pop();
+        //Indexes
+        let sizeIndexes = this.Undo.length;
+        this.Undo.pop();
+        //Score1
+        let scrIndex = this.PastScore1.length;    
+        this.score1 = this.PastScore1[scrIndex-1]; 
+        this.PastScore1.pop();    
+        //Score2
+        var scrIdx = this.PastScore2.length;    
+        this.score2 = this.PastScore2[scrIdx-1]; 
+        this.PastScore2.pop();
+        //Mudanca de estado
+        this.state = STATES.READY_TO_PICK_PIECE;
+        this.changeColours();
 
     }
 
@@ -311,11 +332,9 @@ class Game {
     updateScore() {
 
         if (this.score1) {
-
             document.getElementById('score1').innerHTML = this.score1;
-
+               
             document.getElementById('score2').innerHTML = this.score2;
-
         } else {
 
             this.state = STATES.GAMEOVER;
@@ -375,7 +394,11 @@ class Game {
         } else {
 
             if (this.state == STATES.READY_TO_PICK_PIECE) {
-
+                this.PastTabuleiros.push(this.board);
+                this.PastScore1.push(this.score1); 
+                this.PastScore2.push(this.score2);
+     
+    
                 this.markSelectables(this.currentColour);
 
             }
@@ -411,6 +434,8 @@ class Game {
         }
         if (this.state == STATES.READY_TO_MOVE) {
             this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
+            let varIndexes =[this.piece2Move.line,this.piece2Move.column,this.moveWhere2.line, this.moveWhere2.column];
+            this.Undo.push(varIndexes);
 
         }
 
@@ -418,8 +443,7 @@ class Game {
             this.pickedPiece = 0;
             this.tmpPiece = 0;
             //Guarda todos os tabuleiros
-            this.PastTabuleiros.push(this.board);
-
+            
             this.resetError();
             this.changeColours();
 
