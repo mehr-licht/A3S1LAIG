@@ -248,25 +248,27 @@ class Game {
      */
     undo() {
         //Board
-        let sizeBoards = this.PastTabuleiros.length;
-        this.board = this.PastTabuleiros[sizeBoards-2];
-        //alert(this.board);
-        this.PastTabuleiros.pop();
+        var i = 0;
+        //i++;
+        
+        let sizeBoards = this.PastTabuleiros.length -1;
+        
+        this.board = this.PastTabuleiros[sizeBoards-i];
+         //alert(this.board);
         //Indexes
         let sizeIndexes = this.Undo.length;
         this.Undo.pop();
         //Score1
-        let scrIndex = this.PastScore1.length;    
-        this.score1 = this.PastScore1[scrIndex-1]; 
-        this.PastScore1.pop();    
+        let scrIndex = this.PastScore1.length-1;    
+        this.score1 = this.PastScore1[scrIndex-i]; 
         //Score2
-        var scrIdx = this.PastScore2.length;    
-        this.score2 = this.PastScore2[scrIdx-1]; 
-        this.PastScore2.pop();
+        var scrIdx = this.PastScore2.length-1;    
+        this.score2 = this.PastScore2[scrIdx-i]; 
         //Mudanca de estado
         this.state = STATES.READY_TO_PICK_PIECE;
         this.changeColours();
-
+        this.displayBoard();
+        
     }
 
 
