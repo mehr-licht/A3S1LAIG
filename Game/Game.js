@@ -44,6 +44,13 @@ LEVELS = {
     HARD: 1
 };
 
+MODES = {
+    HUMANS: 0,
+    HUMAN_BOT: 1,
+    BOTS: 2,
+};
+
+
 STATES = {
     WAITING: 0,
     STARTED: 1,
@@ -150,6 +157,18 @@ class Game {
         // return callback;
     }
 
+
+    blackBotMove(tabuleiro, callback) {
+        let requestString = 'move(' +
+            JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
+
+        this.makeRequest(requestString, callback);
+        /**gets 
+         * -1 => not received   
+         * 0 + tabuleiroFinal
+         *  */
+        // return callback;
+    }
 
     /**
      * Move
@@ -345,63 +364,72 @@ class Game {
     }
 
     gameLoop() {
+        if (this.gameMode == MODES.HUMAN_BOT && this.currentColour == 'black') {
+            if (this.state == STATES.READY_TO_PICK_PIECE) {
+                this.blackBotMove(this.board, this.verifyBotReply);
+            }
+        } else {
+
+            if (this.state == STATES.READY_TO_PICK_PIECE) {
+
+                this.markSelectables(this.currentColour);
+
+            }
 
 
-        if (this.state == STATES.READY_TO_PICK_PIECE) {
+            if (this.state == STATES.PIECE_CHOSEN) {
+                this.scene.clearPickRegistration();
+                this.piece2Move = this.pieces[this.pickedPiece - 1];
+                this.selectedPiece(this.board, this.piece2Move.line, this.piece2Move.column, this.verifyPieceReply);
 
-            this.markSelectables(this.currentColour);
+            }
+
+
+
+            if (this.state == STATES.READY_TO_PICK_MOVE) {
+                alert("00");
+                this.tmpPiece = this.pickedPiece;
+                alert("01");
+                this.pickedPiece = 0;
+                alert("02");
+                this.resetError();
+                alert("03");
+                this.markSelectables(this.otherColour);
+                alert("04");
+            }
+
+            if (this.state == STATES.MOVE_CHOSEN) {
+                this.scene.clearPickRegistration();
+                this.moveWhere2 = this.pieces[this.pickedPiece - 1];
+                //  alert("line2: " + this.moveWhere2.line + "\ncol2: " + this.moveWhere2.column);
+                this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);;
+            }
+            if (this.state == STATES.READY_TO_MOVE) {
+                this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
+
+            }
+
+
+            if (this.state == STATES.MOVED) {
+                this.pickedPiece = 0;
+                this.tmpPiece = 0;
+
+
+
+                this.resetError();
+                this.changeColours();
+
+                this.getScore(this.board, this.verifyScoreReply);
+
+                this.resetError();
+            }
+
+            if (this.state == STATES.UPDATED) {
+                this.displayBoard();
+            }
 
         }
-
-
-        if (this.state == STATES.PIECE_CHOSEN) {
-
-            this.piece2Move = this.pieces[this.pickedPiece - 1];
-            this.selectedPiece(this.board, this.piece2Move.line, this.piece2Move.column, this.verifyPieceReply);
-
-        }
-
-
-
-        if (this.state == STATES.READY_TO_PICK_MOVE) {
-            this.tmpPiece = this.pickedPiece;
-            this.pickedPiece = 0;
-            this.resetError();
-            this.markSelectables(this.otherColour);
-        }
-
-        if (this.state == STATES.MOVE_CHOSEN) {
-
-            this.moveWhere2 = this.pieces[this.pickedPiece - 1];
-            //  alert("line2: " + this.moveWhere2.line + "\ncol2: " + this.moveWhere2.column);
-            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);;
-        }
-        if (this.state == STATES.READY_TO_MOVE) {
-            this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
-
-        }
-
-
-        if (this.state == STATES.MOVED) {
-            this.pickedPiece = 0;
-            this.tmpPiece = 0;
-
-
-
-            this.resetError();
-            this.changeColours();
-
-            this.getScore(this.board, this.verifyScoreReply);
-
-            this.resetError();
-        }
-
-        if (this.state == STATES.UPDATED) {
-            this.displayBoard();
-        }
-
     }
-
 
 
     start() {
@@ -419,11 +447,10 @@ class Game {
         }
     }
 
-
-    verifyTabReply(data) {;
+    verifyBotReply(data) {;
         let response = JSON.parse(data.target.response);
 
-        if (response) {
+        if (data.target.status == 200) {
 
             this.board = response;
             this.validReply = true;
@@ -433,7 +460,29 @@ class Game {
 
         } else {
 
-            this.showError(response);
+            this.showError(data.target.statusText);
+
+            this.validReply = false;
+        }
+        console.log("Bot reply received with value: " + response);
+    }
+
+
+
+    verifyTabReply(data) {;
+        let response = JSON.parse(data.target.response);
+
+        if (data.target.status == 200) {
+
+            this.board = response;
+            this.validReply = true;
+            this.resetError();
+            this.displayBoard();
+
+
+        } else {
+
+            this.showError(data.target.statusText);
 
             this.validReply = false;
         }
@@ -442,11 +491,19 @@ class Game {
 
     verifyPieceReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response == this.currentColour) {
-            this.validReply = true;
-            this.state = STATES.READY_TO_PICK_MOVE;
+        if (data.target.status == 200) {
+
+            if (response == this.currentColour) {
+
+                this.validReply = true;
+                this.state = STATES.READY_TO_PICK_MOVE;
+            } else {
+
+                this.showError("wrong colour");
+            }
         } else {
-            this.showError(response[0]);
+
+            this.showError(data.target.statusText);
             this.validReply = false;
         }
         console.log("Pick Piece reply received with value: " + response);
@@ -454,13 +511,16 @@ class Game {
 
     verifyAttackReply(data) {
         let response = JSON.parse(data.target.response);
-        if (!isNaN(response)) {
-            this.validReply = true;
-            if (response == 0) {
-                this.state = STATES.READY_TO_MOVE;
+        if (data.target.status == 200) {
+            if (!isNaN(response)) {
+                this.validReply = true;
+                if (response == 0) {
+                    this.state = STATES.READY_TO_MOVE;
+                }
             }
         } else {
-            this.showError(response);
+
+            this.showError(data.target.statusText);
             this.validReply = false;
         }
         console.log("Attack reply received with value: " + response);
@@ -468,12 +528,13 @@ class Game {
 
     verifyMoveReply(data) {
         let response = JSON.parse(data.target.response);
-        if (response) {
+        if (data.target.status == 200) {
             this.board = response;
             this.validReply = true;
             this.state = STATES.MOVED;
         } else {
-            this.showError(response[0]);
+
+            this.showError(data.target.statusText);
             this.validReply = false;
         }
         console.log("Move reply received with value: " + response);
@@ -483,33 +544,26 @@ class Game {
 
         let response = JSON.parse(data.target.response);
 
+        if (data.target.status == 200) {
+            if (response[0]) {
+                this.score1 = response[0];
 
-        if (response[0]) {
-            this.score1 = response[0];
+                this.score2 = response[1];
 
-            this.score2 = response[1];
-
-            this.validReply = true;
-            this.state = STATES.UPDATED;
+                this.validReply = true;
+                this.state = STATES.UPDATED;
+            }
         } else {
-            this.showError(response[0]);
+
+            this.showError(data.target.statusText);
             this.validReply = false;
         }
         console.log("Score reply received with value: " + response);
     }
 
-    showError(func, code) {
-        var msg = "";
-        switch (code) {
-            case (1):
-                msg = "wrong";
-                break;
-            default:
-                break;
+    showError(msg) {
 
-        }
-        //translate code into msg (de acordo com func  ou code independente?)
-        document.getElementById('messages').innerHTML = func + " : " + msg;
+        document.getElementById('messages').innerHTML = msg;
     }
 
     resetError() {
@@ -524,7 +578,8 @@ class Game {
     }
 
     markSelectables(which) {
-
+        this.scene.setPickEnabled(true);
+        alert("mS:" + which);
         for (i = 0; i < this.pieces.length; i++) {
 
             if (this.pieces[i].colour == which) {

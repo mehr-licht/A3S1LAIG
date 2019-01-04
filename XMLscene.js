@@ -339,7 +339,7 @@ class XMLscene extends CGFscene {
                     if (!!this.newGame.moveWhere2) {
                         document.getElementById('whereline').innerHTML = 6 - (this.newGame.moveWhere2.line);
                         document.getElementById('wherecol').innerHTML = (String.fromCharCode(97 + this.newGame.moveWhere2.column)).toUpperCase();
-                        alert("");
+
                     }
 
 
@@ -354,9 +354,10 @@ class XMLscene extends CGFscene {
             // registar para picking
             // por cada elemento que queiramos pickar (pecas)
             //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
-
             // draw objects
-            this.displayBoard();
+            if (this.newGame.state != 0) {
+                this.displayBoard();
+            }
 
         } else {
             // Draw axis
@@ -383,7 +384,7 @@ class XMLscene extends CGFscene {
             // this.translate(-0.73, 4.185, 0.605);
             this.scale(0.10, 0.10, 0.10);
             if (this.newGame.pieces[i].selectable) {
-                //  alert(i + 1);
+                console.log(this.newGame.currentColour + " : selectable id = " + (i + 1));
                 this.registerForPick(i + 1, this.newGame.pieces[i]);
             }
 
