@@ -93,26 +93,16 @@ posicaoPecasPretas([[1-1],[1-3],[2-2],[2-4],[3-3],[5-1]]).
 posicaoPecasBrancas([[1-2],[2-1],[3-0],[3-1],[4-1],[4-3]]).
 
 
-
 sendScore(Tabuleiro, [Score,ScoreW]):-
-    posicoesPecasNoTabuleiro(Tabuleiro, black,ListaDePecasNoTabuleiro1),
-    loop(Tabuleiro, white, ListaDePecasNoTabuleiro1, Score),
-   % posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
-   % length(ListaDePares, Score),
-   % escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
-   % cleanLista(ListaParaLimpar, NovaLista),
-   % length(NovaLista,Score),
-   % calcScore(NovaLista, ScoreInt),
-    posicoesPecasNoTabuleiro(Tabuleiro, white,ListaDePecasNoTabuleiro2),
-    loop(Tabuleiro, black, ListaDePecasNoTabuleiro2, ScoreW).
-   % posicoesPecasNoTabuleiro(Tabuleiro,white,ListaDeParesW),
-   % length(ListaDeParesW,ScoreW).
-   % escolha1(Tabuleiro, ListaDeParesW,ListaParaLimparW),
-   % cleanLista(ListaParaLimparW, NovaListaW),
-   % length(NovaListaW, ScoreW).
-   % calcScore(NovaListaW, ScoreWInt),
-   % Score is ScoreInt + SizeN1,
-   % ScoreW is ScoreWInt + SizeN2.
+    posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
+    escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
+    cleanLista(ListaParaLimpar, NovaLista),
+    calcScore(NovaLista, Score),
+
+    posicoesPecasNoTabuleiro(Tabuleiro,white,ListaDeParesW),
+    escolha1(Tabuleiro, ListaDeParesW,ListaParaLimparW),
+    cleanLista(ListaParaLimparW, NovaListaW),
+    calcScore(NovaListaW, ScoreW).
 
 calcScore([],0).
 calcScore([[_-_]-Z|T], Score):-

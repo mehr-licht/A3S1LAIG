@@ -331,11 +331,16 @@ class Game {
 
     updateScore() {
 
-        if (this.score1) {
-            document.getElementById('score1').innerHTML = this.score1;
-               
-            document.getElementById('score2').innerHTML = this.score2;
-        } else {
+        this.timeleft = TIME_LEFT;
+        var d = new Date();
+        var t = d.getTime();
+        this.gameStart2 = t;
+        this.state = STATES.READY_TO_PICK_PIECE;
+
+        document.getElementById('score1').innerHTML = this.score1;
+        document.getElementById('score2').innerHTML = this.score2;
+
+        if (!this.score1) {
 
             this.state = STATES.GAMEOVER;
             this.gameOver = true;
@@ -343,12 +348,6 @@ class Game {
             this.winner = this.otherColour;
 
         }
-        this.timeleft = TIME_LEFT;
-        var d = new Date();
-        var t = d.getTime();
-        this.gameStart2 = t;
-        this.state = STATES.READY_TO_PICK_PIECE;
-
     }
 
 
@@ -454,6 +453,7 @@ class Game {
         }
 
         if (this.state == STATES.UPDATED) {
+
             this.displayBoard();
         }
 
@@ -578,14 +578,14 @@ class Game {
         let response = JSON.parse(data.target.response);
         if (data.target.status == 200) {
 
-            if (response[0]) {
-                this.score1 = response[0];
 
-                this.score2 = response[1];
+            this.score1 = response[0];
 
-                this.validReply = true;
-                this.state = STATES.UPDATED;
-            }
+            this.score2 = response[1];
+
+            this.validReply = true;
+            this.state = STATES.UPDATED;
+
         } else {
 
             this.showError(data.target.statusText);
