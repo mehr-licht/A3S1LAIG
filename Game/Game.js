@@ -95,7 +95,10 @@ class Game {
         this.state = STATES.WAITING;
         //this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
         this.pieces = []; //use coords from the piece(id) object
-
+        //For undo and Film
+        this.Undo=[];
+        this.PastTabuleiros=[];
+        
         var start = Date.now();
 
 
@@ -233,6 +236,7 @@ class Game {
      * display
      */
     undo() {
+
 
     }
 
@@ -399,21 +403,23 @@ class Game {
                 //  alert("line2: " + this.moveWhere2.line + "\ncol2: " + this.moveWhere2.column);
                 this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);;
             }
-        }
-        if (this.state == STATES.READY_TO_MOVE) {
-            this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
-
-        }
-
-
-        if (this.state == STATES.MOVED) {
-            this.pickedPiece = 0;
-            this.tmpPiece = 0;
+            if (this.state == STATES.READY_TO_MOVE) {
+                this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
+                let varIndexes = [this.piece2Move.line,this.piece2Move.column,this.moveWhere2.line,this.moveWhere2.column];
+                //Guarda os indexes de todas as movimentacoes
+                this.Undo.push(varIndexes);
+                
+            }
 
 
-
-            this.resetError();
-            this.changeColours();
+            if (this.state == STATES.MOVED) {
+                this.pickedPiece = 0;
+                this.tmpPiece = 0;
+                //Guarda todos os tabuleiros
+                this.PastTabuleiros.push(this.board);
+               
+                this.resetError();
+                this.changeColours();
 
             this.getScore(this.board, this.verifyScoreReply);
 

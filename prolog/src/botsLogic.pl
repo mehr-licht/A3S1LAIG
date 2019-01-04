@@ -95,16 +95,21 @@ posicaoPecasBrancas([[1-2],[2-1],[3-0],[3-1],[4-1],[4-3]]).
 
 
 sendScore(Tabuleiro, [Score,ScoreW]):-
-    posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
-    escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
-    cleanLista(ListaParaLimpar, NovaLista),
-    length(NovaLista,Score),
+    posicoesPecasNoTabuleiro(Tabuleiro, black,ListaDePecasNoTabuleiro1),
+    loop(Tabuleiro, white, ListaDePecasNoTabuleiro1, Score),
+   % posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
+   % length(ListaDePares, Score),
+   % escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
+   % cleanLista(ListaParaLimpar, NovaLista),
+   % length(NovaLista,Score),
    % calcScore(NovaLista, ScoreInt),
-
-    posicoesPecasNoTabuleiro(Tabuleiro,white,ListaDeParesW),
-    escolha1(Tabuleiro, ListaDeParesW,ListaParaLimparW),
-    cleanLista(ListaParaLimparW, NovaListaW),
-    length(NovaListaW, ScoreW).
+    posicoesPecasNoTabuleiro(Tabuleiro, white,ListaDePecasNoTabuleiro2),
+    loop(Tabuleiro, black, ListaDePecasNoTabuleiro2, ScoreW).
+   % posicoesPecasNoTabuleiro(Tabuleiro,white,ListaDeParesW),
+   % length(ListaDeParesW,ScoreW).
+   % escolha1(Tabuleiro, ListaDeParesW,ListaParaLimparW),
+   % cleanLista(ListaParaLimparW, NovaListaW),
+   % length(NovaListaW, ScoreW).
    % calcScore(NovaListaW, ScoreWInt),
    % Score is ScoreInt + SizeN1,
    % ScoreW is ScoreWInt + SizeN2.
@@ -131,37 +136,38 @@ escolha1(Tabuleiro,[[Line-Column]|T], [[Line-Column]-SizeLista|ListaFinal]):-
 
 % ( (ColorPlayer == black, ColorContraria = white); ColorPlayer == white, ColorContraria = black) )
                                                 %Nivel » 0
-choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel,LineFuture,ColumnFuture,LineNova,ColumnNova):-
+choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel,
+    ):-
     posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
     escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
-    write('Lista para Limpar: '), write(ListaParaLimpar), nl,
+        %write('Lista para Limpar: '), write(ListaParaLimpar), nl,
     cleanLista(ListaParaLimpar, NovaLista), %Novalista formato [[1-1]-2,[1-3]-1,[2-2]-2,[3-3]-1,[5-1]-1]
     %escolha da peca a mover
-    write('Lista ja limpa: '), write(NovaLista), nl,   
+        %write('Lista ja limpa: '), write(NovaLista), nl,   
     length(NovaLista, SizeNovaLista),
     random(0,SizeNovaLista,IndexFuture),
-    write('Index escolhido: '), write(IndexFuture), nl,
+        %write('Index escolhido: '), write(IndexFuture), nl,
     nth0(IndexFuture, NovaLista, [LineFuture-ColumnFuture]-_),
     %fim da escolha da peca a mover
     validMoves(Tabuleiro, LineFuture, ColumnFuture, white, ListaJogadasVizinhas ),
     %escolha da direccao
     length(ListaJogadasVizinhas, SizeNew),    
     random(0,SizeNew,Index2),
-    write('ListaJogadasVizinhas: '), write(ListaJogadasVizinhas), nl,
-    write('index da jogada a fazer: '),write(Index2), nl,
+        %write('ListaJogadasVizinhas: '), write(ListaJogadasVizinhas), nl,
+        %write('index da jogada a fazer: '),write(Index2), nl,
     nth0(Index2, ListaJogadasVizinhas, [LineNova-ColumnNova]),    
   %  fim da escolha de direccao
     replaceInMatrix(Tabuleiro, LineNova, ColumnNova, black, TabuleiroNovo),
-    replaceInMatrix(TabuleiroNovo, LineFuture, ColumnFuture, empty, TabuleiroFinal),
-    write('Jogou de '),
-    write(LineFuture), 
-    write(' '),
-    write(ColumnFuture),
-    write(' para '),
-    write(LineNova),
-    write(' '),
-    write(ColumnNova),
-    write(' E acabou a jogada bot'). 
+    replaceInMatrix(TabuleiroNovo, LineFuture, ColumnFuture, empty, TabuleiroFinal).
+        %write('Jogou de '),
+        %write(LineFuture), 
+        %write(' '),
+        %write(ColumnFuture),
+        %write(' para '),
+        %write(LineNova),
+        %write(' '),
+        %write(ColumnNova),
+        %write(' E acabou a jogada bot'). 
 
 
 /**
