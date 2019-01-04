@@ -41,7 +41,8 @@
             font-family: Sans-Serif;
         }
         
-        #scoretitle {
+        #scoretitle,
+        #title {
             color: white;
             text-align: center;
         }
@@ -55,17 +56,14 @@
 
         <!-- hidden = "hidden" -->
 
-        <div style="margin-bottom:0.5em;">
-            <span style="font-size: 99%;">  #CLOBBER # </span>
+        <div style="margin-bottom:0.5em;" id="title">
+            <h1> # CLOBBER # </h1>
         </div>
-        <div style="margin-bottom:0.5em;">
-            <span style="font-size: 80%;"> just while implementing <br></span>
-            <span style="font-size: 80%;"> there will be a scoreboard </span>
-        </div>
+
 
 
         <div style="margin-bottom:0.5em;" id="scoretitle">
-            <h1> SCORE </h1>
+            <h2> SCORE </h2>
         </div>
 
         <div>
@@ -81,33 +79,51 @@
         <div style="margin-bottom:0.5em;">
             <span info="score"></span>
         </div>
-        <div>
-            <span style="font-size: 80%; font-weight:bold;"> Piece: </span><br>
-            <span id="picked" style="font-size: 80%;"></span><br>
-        </div>
+        <br>
         <div>
             <span style="font-size: 80%; font-weight:bold;"> Round Time </span>
             <span id="time" style="font-size: 80%;"></span><br>
         </div>
-        <!--
+
         <div>
-            <span style="font-size: 80%; font-weight:bold;"> Game Duration </span><br>
+            <span style="font-size: 80%; font-weight:bold;"> Game Duration </span>
             <span id="game_time" style="font-size: 80%;"></span><br>
         </div>
-    -->
+        <br>
         <div>
             <span style="font-size: 80%; "> turn: </span>
             <span id="turn" style=" font-size: 80%; font-weight:bold;"></span><br>
 
         </div>
         <div>
+            <span style="font-size: 80%;"> Piece: </span>
+            <span id="picked" style="font-size: 80%;"></span><br>
+        </div>
+        <div><span style="font-size: 80%; "></span><br>
             <span id="messages" style="font-size: 80%; font-weight:bold;"></span><br>
         </div>
 
-        <div>
+        <div><span style="font-size: 80%; "></span><br>
             <span id="info" style=" font-size: 80%; font-weight:bold;"></span>
         </div>
 
+
+
+
+
+
+        <div><span style="font-size: 80%; ">piece2Move.line: </span>
+            <span id="pieceline" style=" font-size: 80%; font-weight:bold;"></span>
+        </div>
+        <div><span style="font-size: 80%; ">piece2Move.column: </span>
+            <span id="piececol" style=" font-size: 80%; font-weight:bold;"></span>
+        </div>
+        <div><span style="font-size: 80%; ">move2where.line: </span>
+            <span id="whereline" style=" font-size: 80%; font-weight:bold;"></span>
+        </div>
+        <div><span style="font-size: 80%; ">piece2Move.column: </span>
+            <span id="wherecol" style=" font-size: 80%; font-weight:bold;"></span>
+        </div>
 
     </div>
 

@@ -309,20 +309,42 @@ class XMLscene extends CGFscene {
             this.graph.displayScene();
             //console.log(this.currScene);
 
-            if (this.newGame.state != 0 && this.newGame.state != 11 && this.newGame.timeleft <= 0) {
-                this.newGame.state = 11;
+            if (this.newGame.state != 0 && this.newGame.state != 12 && this.newGame.timeleft <= 0) {
+                this.newGame.state = 12;
                 document.getElementById('messages').innerHTML = "time out: " + this.newGame.currentColour + " lost";
-            } else if (this.newGame.state != 11) {
+                this.newGame.winner = this.newGame.otherColour;
+            } else if (this.newGame.state != 12) {
 
                 this.newGame.gameLoop();
                 if (this.newGame.state != 0) {
                     document.getElementById('turn').innerHTML = this.newGame.currentColour;
                     var d = new Date();
                     var t = d.getTime();
-                    // alert("t: " + t + "\n" + "gameStart: " + this.newGame.gameStart + "\n" + ((t - this.newGame.gameStart) / 1000));
-                    this.newGame.timeleft = TIME_LEFT - ((t - this.newGame.gameStart) / 1000);
+                    this.newGame.timeleft = TIME_LEFT - ((t - this.newGame.gameStart2) / 1000);
                     var fixedNum = parseFloat(this.newGame.timeleft).toFixed(2);
                     document.getElementById('time').innerHTML = fixedNum;
+                    var fixedNum = parseFloat(((t - this.newGame.gameStart) / 1000)).toFixed(2);
+                    document.getElementById('game_time').innerHTML = fixedNum;
+                    document.getElementById('picked').innerHTML = this.newGame.pickedPiece;
+
+
+
+
+                    if (this.newGame.state > 4) {
+                        document.getElementById('pieceline').innerHTML = 6 - (this.newGame.piece2Move.line);
+                        document.getElementById('piececol').innerHTML = (String.fromCharCode(97 + this.newGame.piece2Move.column)).toUpperCase();
+
+                    }
+
+                    if (!!this.newGame.moveWhere2) {
+                        document.getElementById('whereline').innerHTML = 6 - (this.newGame.moveWhere2.line);
+                        document.getElementById('wherecol').innerHTML = (String.fromCharCode(97 + this.newGame.moveWhere2.column)).toUpperCase();
+                        alert("");
+                    }
+
+
+
+
                 }
             } else {
                 document.getElementById('info').innerHTML = this.newGame.winner + " WON";
@@ -511,4 +533,10 @@ class XMLscene extends CGFscene {
         this.newGame.movie();
     }
 
+}
+
+function sleep(seconds) {
+    alert("waut");
+    var waitUntil = new Date().getTime() + seconds * 1000;
+    while (new Date().getTime() < waitUntil) true;
 }

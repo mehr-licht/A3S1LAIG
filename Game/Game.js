@@ -78,6 +78,7 @@ class Game {
         this.animationCounter = 0;
         this.board = [];
         this.gameStart = 0;
+        this.gameStart2 = 0;
         this.running = true;
         this.gameOver = false;
         this.computer_playing = false;
@@ -139,8 +140,7 @@ class Game {
     getScore(tabuleiro, callback) {
         let requestString = 'sendScore(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
-        //+ ',' + JSON.stringify(Score) + ')';
-        console.log("ini0123");
+
         this.makeRequest(requestString, callback);
 
         /**gets 
@@ -286,26 +286,25 @@ class Game {
 
 
     updateScore() {
-        //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
-        console.log("u_00");
+
         if (this.score1) {
-            console.log("u_01");
+
             document.getElementById('score1').innerHTML = this.score1;
-            console.log("u_02");
+
             document.getElementById('score2').innerHTML = this.score2;
-            console.log("u_03");
+
         } else {
-            console.log("u_04");
+
             this.state = STATES.GAMEOVER;
             this.gameOver = true;
-            console.log("u_05");
+
             this.winner = this.otherColour;
-            console.log("u_06");
+
         }
         this.timeleft = TIME_LEFT;
         var d = new Date();
         var t = d.getTime();
-        this.gameStart = t;
+        this.gameStart2 = t;
         this.state = STATES.READY_TO_PICK_PIECE;
 
     }
@@ -316,7 +315,7 @@ class Game {
         this.translateBoard();
         // if (this.states == STATES.DISPLAYED)
         this.updateScore();
-
+        //}
     }
 
     translateBoard() {
@@ -348,28 +347,20 @@ class Game {
     gameLoop() {
 
 
-        console.log("antes " + this.state);
         if (this.state == STATES.READY_TO_PICK_PIECE) {
 
-            console.log("gl_01");
             this.markSelectables(this.currentColour);
-            console.log("gl_02");
-            //  alert("apos " + this.state);
+
         }
-        //
-        console.log("01:" + this.state);
+
 
         if (this.state == STATES.PIECE_CHOSEN) {
-            console.log("L_00");
-            console.log(this.pickedPiece);
-            document.getElementById('picked').innerHTML = this.pickedPiece;
+
             this.piece2Move = this.pieces[this.pickedPiece - 1];
             this.selectedPiece(this.board, this.piece2Move.line, this.piece2Move.column, this.verifyPieceReply);
 
         }
 
-        console.log("L_01");
-        console.log("02:" + this.state);
 
 
         if (this.state == STATES.READY_TO_PICK_MOVE) {
@@ -378,37 +369,33 @@ class Game {
             this.resetError();
             this.markSelectables(this.otherColour);
         }
-        console.log("03:" + this.state);
+
         if (this.state == STATES.MOVE_CHOSEN) {
 
             this.moveWhere2 = this.pieces[this.pickedPiece - 1];
-            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);
-            console.log("L_03");
+            //  alert("line2: " + this.moveWhere2.line + "\ncol2: " + this.moveWhere2.column);
+            this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);;
         }
         if (this.state == STATES.READY_TO_MOVE) {
             this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
-            //  }
-            console.log("L_05");
+
         }
 
 
-        console.log("04:" + this.state);
         if (this.state == STATES.MOVED) {
             this.pickedPiece = 0;
             this.tmpPiece = 0;
 
-            console.log("L_04");
+
 
             this.resetError();
             this.changeColours();
 
-            // while (!this.validReply) {
             this.getScore(this.board, this.verifyScoreReply);
-            // }
-            console.log("L_06");
+
             this.resetError();
         }
-        console.log("05:" + this.state);
+
         if (this.state == STATES.UPDATED) {
             this.displayBoard();
         }
@@ -418,10 +405,12 @@ class Game {
 
 
     start() {
+
         if (this.state == STATES.WAITING || this.state == STATES.GAMEOVER) {
             var d = new Date();
             var t = d.getTime();
             this.gameStart = t;
+            this.gameStart2 = t;
             this.makeRequest("initialBoard", this.verifyTabReply);
             this.timeleft = TIME_LEFT;
             // if (this.state == STATES.DISPLAYED) {
@@ -433,23 +422,22 @@ class Game {
 
     verifyTabReply(data) {;
         let response = JSON.parse(data.target.response);
-        console.log("t_1");
-        console.log(response);
+
         if (response) {
-            console.log("t_2");
+
             this.board = response;
             this.validReply = true;
             this.resetError();
             this.displayBoard();
-            console.log("t_3");
+
 
         } else {
-            console.log("t_4");
+
             this.showError(response);
-            console.log("t_5");
+
             this.validReply = false;
         }
-
+        console.log("Initial Board reply received with value: " + response);
     }
 
     verifyPieceReply(data) {
@@ -461,7 +449,7 @@ class Game {
             this.showError(response[0]);
             this.validReply = false;
         }
-
+        console.log("Pick Piece reply received with value: " + response);
     }
 
     verifyAttackReply(data) {
@@ -475,6 +463,7 @@ class Game {
             this.showError(response);
             this.validReply = false;
         }
+        console.log("Attack reply received with value: " + response);
     }
 
     verifyMoveReply(data) {
@@ -487,27 +476,26 @@ class Game {
             this.showError(response[0]);
             this.validReply = false;
         }
+        console.log("Move reply received with value: " + response);
     }
 
     verifyScoreReply(data) {
-        console.log("Teste subF 1");
 
         let response = JSON.parse(data.target.response);
-        console.log(response);
-        // console.log("Teste subF 1");
+
+
         if (response[0]) {
-            //garantir que a resposta do prolog é que score1 é de quem está a jogar ou switchCase do lado de cá
-            console.log("Teste subF 2");
             this.score1 = response[0];
-            console.log("Teste subF 3");
+
             this.score2 = response[1];
-            console.log("Teste subF 4");
+
             this.validReply = true;
             this.state = STATES.UPDATED;
         } else {
             this.showError(response[0]);
             this.validReply = false;
         }
+        console.log("Score reply received with value: " + response);
     }
 
     showError(func, code) {
