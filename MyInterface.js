@@ -78,8 +78,8 @@ class MyInterface extends CGFinterface {
         var group = this.gui.addFolder("Settings");
         group.open();
 
-        group.add(this.scene, "gameMode", ["Player vs Player", "Player vs Bot", "Bot vs Bot"]).name("Game Mode");
-        group.add(this.scene, "gameLevel", ["Easy", "Hard"]).name("Game Level");
+        group.add(this.scene, "gameMode", [MODES.HUMANS, MODES.HUMAN_BOT]).name("Game Mode");
+        group.add(this.scene, "gameLevel", [LEVELS.EASY, LEVELS.HARD]).name("Game Level");
         //var controller = group.add(this.scene, "rotationCamera").name("Camera Rotation");
 
         /*  controller.onChange(function() {
