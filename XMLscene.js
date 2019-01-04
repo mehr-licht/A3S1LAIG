@@ -325,7 +325,7 @@ class XMLscene extends CGFscene {
                     document.getElementById('time').innerHTML = fixedNum;
                 }
             } else {
-                document.getElementById('info').innerHTML = this.newGame.winner;
+                document.getElementById('info').innerHTML = this.newGame.winner + " WON";
             }
 
 
@@ -404,21 +404,21 @@ class XMLscene extends CGFscene {
     }
 
     //apagar - serve de teste para saber se estamos a seleccionar os objectos
-    logPicking() {
-        if (this.pickMode == false) {
-            if (this.pickResults != null && this.pickResults.length > 0) {
-                for (var i = 0; i < this.pickResults.length; i++) {
-                    var obj = this.pickResults[i][0];
-                    if (obj) {
-                        var customId = this.pickResults[i][1];
-                        this.newGame.pickedPiece = customId;
-                        console.log("Picked object: " + obj + ", with pick id " + customId);
-                    }
-                }
-                this.pickResults.splice(0, this.pickResults.length);
-            }
-        }
-    }
+    /* logPicking() {
+         if (this.pickMode == false) {
+             if (this.pickResults != null && this.pickResults.length > 0) {
+                 for (var i = 0; i < this.pickResults.length; i++) {
+                     var obj = this.pickResults[i][0];
+                     if (obj) {
+                         var customId = this.pickResults[i][1];
+                         this.newGame.pickedPiece = customId;
+                         console.log("Picked object: " + obj + ", with pick id " + customId);
+                     }
+                 }
+                 this.pickResults.splice(0, this.pickResults.length);
+             }
+         }
+     }*/
 
 
     handlePicking() {
@@ -434,6 +434,10 @@ class XMLscene extends CGFscene {
                             // if (this.newGame.running) {
                             // obj.pickedShader = 1;
                             this.newGame.pickedPiece = customId;
+
+                            if (this.newGame.tmpPiece == this.newGame.pickedPiece) {
+                                this.newGame.resetPickedPiece();
+                            }
                             //  this.newGame.picked(obj);
                             if (this.newGame.state == 4) {
                                 this.newGame.state = 5;

@@ -71,7 +71,7 @@ class Game {
 
     constructor(scene, init_board, init_turn, score1, score2, gameMode, gameLevel) {
         this.scene = scene;
-
+        this.tmpPiece = 0;
         this.pickedPiece = 0;
         this.colours = ['white', 'black'];
         this.init_board = init_board || INITIAL_BOARD;
@@ -362,6 +362,7 @@ class Game {
         if (this.state == STATES.PIECE_CHOSEN) {
             console.log("L_00");
             console.log(this.pickedPiece);
+            document.getElementById('picked').innerHTML = this.pickedPiece;
             this.piece2Move = this.pieces[this.pickedPiece - 1];
             this.selectedPiece(this.board, this.piece2Move.line, this.piece2Move.column, this.verifyPieceReply);
 
@@ -372,12 +373,14 @@ class Game {
 
 
         if (this.state == STATES.READY_TO_PICK_MOVE) {
+            this.tmpPiece = this.pickedPiece;
             this.pickedPiece = 0;
             this.resetError();
             this.markSelectables(this.otherColour);
         }
         console.log("03:" + this.state);
         if (this.state == STATES.MOVE_CHOSEN) {
+
             this.moveWhere2 = this.pieces[this.pickedPiece - 1];
             this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);
             console.log("L_03");
@@ -392,7 +395,7 @@ class Game {
         console.log("04:" + this.state);
         if (this.state == STATES.MOVED) {
             this.pickedPiece = 0;
-
+            this.tmpPiece = 0;
 
             console.log("L_04");
 
@@ -554,6 +557,7 @@ class Game {
 
     resetPickedPiece() {
         this.pickedPiece = 0;
+        this.tmpPiece = 0;
         this.piece2Move = null;
         this.state = this.STATES.READY_TO_PICK_PIECE;
     }
