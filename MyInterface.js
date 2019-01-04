@@ -92,9 +92,12 @@ class MyInterface extends CGFinterface {
         group.open();
 
         group.add(this.scene, "startGame").name("Start Game");
+        group.add(this.scene, "restart").name("Restart Game");
         group.add(this.scene, "undo").name("Undo");
-        group.add(this.scene, "quitGame").name("Quit Game");
+        group.add(this.scene, "save").name("Save Game");
+        group.add(this.scene, "load").name("Load Game");
         group.add(this.scene, "movie").name("Movie");
+        group.add(this.scene, "quitGame").name("Quit Game");
     };
 
 

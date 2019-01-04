@@ -46,6 +46,7 @@ MODES = {
     HUMAN_BOT: 1,
 };
 
+FACTOR = 10;
 
 /*default game config*/
 var DEFAULT_MODE = MODES.HUMANS;
@@ -77,6 +78,8 @@ class Game {
 
 
     constructor(scene, init_board, init_turn, score1, score2, gameMode, gameLevel) {
+        this.reset();
+        /*
         this.scene = scene;
         this.tmpPiece = 0;
         this.pickedPiece = 0;
@@ -106,9 +109,12 @@ class Game {
         //For undo and Film
         this.Undo = [];
         this.PastTabuleiros = [];
-
+        this.save = this.board;
+        this.movie=false;
+        this.movieIndex=0;
+        this.movieArray = [];
         var start = Date.now();
-
+*/
 
         /*
                 for (let i = 0; i < this.colours.length; i++) {
@@ -254,8 +260,47 @@ class Game {
      * recalcula score e turns 
      * display
      */
-    reset() {
+    restart() {
+        reset();
+    }
 
+
+    reset() {
+        this.scene = scene;
+        this.tmpPiece = 0;
+        this.pickedPiece = 0;
+        this.colours = ['white', 'black'];
+        this.init_board = init_board || INITIAL_BOARD;
+        this.animationCounter = 0;
+        this.board = [];
+        this.gameStart = 0;
+        this.gameStart2 = 0;
+        this.running = true;
+        this.gameOver = false;
+        this.computer_playing = false;
+        this.currentColour = init_turn || this.colours[0];
+        this.otherColour = (this.currentColour == this.colours[0] ? this.colours[1] : this.colours[0]) || this.colours[1];
+        this.timeleft = 0;
+        this.score1 = score1 || SCORE_1;
+        this.score2 = score2 || SCORE_2;
+        this.validReply = false;
+        this.winner = null;
+        this.gameMode = DEFAULT_MODE || gameMode;
+        this.gameLevel = DEFAULT_LEVEL || gameLevel;
+        this.piece2Move = null;
+        this.moveWhere2 = null;
+        this.state = STATES.WAITING;
+        //this.pieces = Array.from({ length: this.init_board.length }, (v, k) => k + 1);
+        this.pieces = []; //use coords from the piece(id) object
+        //For undo and Film
+        this.Undo = [];
+        this.PastTabuleiros = [];
+        this.save = this.board;
+        this.movie = false;
+        this.movieIndex = 0;
+        this.movieArray = [];
+        start = Date.now();
+        this.start(this.gameMode, this.gameLevel);
     }
 
 
@@ -268,8 +313,18 @@ class Game {
      * mov(guardado)
      * display}
      */
-    film() {
+    movie() {
+        this.reset();
+        this.movie = true;
+        this.movieIndex = 0;
+        this.states = STATES.READY_TO_PICK_PIECE;
+    }
 
+    SaveForMovie() {
+        var d = new Date();
+        var t = d.getTime();
+        var tmp = [this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.otherColour, t];
+        this.movieArray.push(tmp);
     }
 
     //uncalled for
@@ -280,13 +335,7 @@ class Game {
      * ->jogo
      */
     save() {
-
-        var now = new Date();
-        var newG = new Game(scene, this.init_board, this.init_turn, this.score1, this.score2, this.pieces, this.piecesCoords, this.gameMode, this.gameLevel);
-        this.save = {
-            now,
-            newG
-        };
+        this.save = [this.board, this.currentColour];
     }
 
 
@@ -296,9 +345,11 @@ class Game {
      * setBoard(this.save)
      * ->jogo
      */
-    load(which) {
-        //   new Date().toLocaleString()
-        //  this.Game = new Game(scene,which.newG.board,which.newG.turn);
+    load() {
+        this.board = this.save[0];
+        this.currentColour = this.save[1];
+        this.currentColour == 'white' ? this.otherColour = 'black' : this.otherColour = 'white';
+        this.state = STATES.READY_TO_PICK_PIECE;
     }
 
 
@@ -365,49 +416,57 @@ class Game {
     }
 
     gameLoop() {
-        if (this.gameMode == MODES.HUMAN_BOT && this.currentColour == 'black') {
+        if (this.movie && this.movieIndex <= this.movieArray.length) {
+            this.currentColour = this.movie[this.movieIndex][4];
+            this.otherColour = this.movie[this.movieIndex][5];
+        } else if (this.movie) {
+            this.state = STATES.GAMEOVER;
+            this.movie = false;
+        }
+
+        if (this.gameMode == MODES.HUMAN_BOT && this.currentColour == 'black' && !this.movie) {
             if (this.state == STATES.READY_TO_PICK_PIECE) {
                 this.blackBotMove(this.board, this.verifyBotReply);
             }
         } else {
-
             if (this.state == STATES.READY_TO_PICK_PIECE) {
-
                 this.markSelectables(this.currentColour);
-
             }
 
-
-            if (this.state == STATES.PIECE_CHOSEN) {
-                this.scene.clearPickRegistration();
-                this.piece2Move = this.pieces[this.pickedPiece - 1];
-                this.selectedPiece(this.board, this.piece2Move.line, this.piece2Move.column, this.verifyPieceReply);
-
-            }
-
-
-
-            if (this.state == STATES.READY_TO_PICK_MOVE) {
-
-                this.tmpPiece = this.pickedPiece;
-
-                this.pickedPiece = 0;
-
-                this.resetError();
-
+            if (this.movie) {
+                this.piece2Move.line = this.movie[this.movieIndex][0];
+                this.piece2Move.column = this.movie[this.movieIndex][1];
                 this.markSelectables(this.otherColour);
+            } else {
+                if (this.state == STATES.PIECE_CHOSEN) {
+                    this.scene.clearPickRegistration();
+                    this.piece2Move = this.pieces[this.pickedPiece - 1];
+                    this.selectedPiece(this.board, this.piece2Move.line, this.piece2Move.column, this.verifyPieceReply);
+                }
 
+                if (this.state == STATES.READY_TO_PICK_MOVE) {
+                    this.tmpPiece = this.pickedPiece;
+                    this.pickedPiece = 0;
+                    this.resetError();
+                    this.markSelectables(this.otherColour);
+                }
             }
-
-            if (this.state == STATES.MOVE_CHOSEN) {
-                this.scene.clearPickRegistration();
-                this.moveWhere2 = this.pieces[this.pickedPiece - 1];
-                //  alert("line2: " + this.moveWhere2.line + "\ncol2: " + this.moveWhere2.column);
-                this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);;
+            if (this.movie) {
+                this.moveWhere2.line = this.movie[this.movieIndex][2];
+                this.moveWhere2.column = this.movie[this.movieIndex][3];
+                this.markSelectables(this.otherColour);
+            } else {
+                if (this.state == STATES.MOVE_CHOSEN) {
+                    this.scene.clearPickRegistration();
+                    this.moveWhere2 = this.pieces[this.pickedPiece - 1];
+                    //  alert("line2: " + this.moveWhere2.line + "\ncol2: " + this.moveWhere2.column);
+                    this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);;
+                }
             }
         }
         if (this.state == STATES.READY_TO_MOVE) {
             this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
+
             //  this.displayBoard();
         }
 
@@ -416,7 +475,9 @@ class Game {
             this.tmpPiece = 0;
             //Guarda todos os tabuleiros
             this.PastTabuleiros.push(this.board);
-
+            if (!this.movie) {
+                SaveForMovie();
+            }
             this.resetError();
             this.changeColours();
 
@@ -427,10 +488,12 @@ class Game {
         }
 
         if (this.state == STATES.UPDATED) {
-
             this.displayBoard();
         }
 
+        if (this.movie) {
+            this.movieIndex++;
+        }
     }
 
 

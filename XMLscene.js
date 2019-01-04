@@ -317,6 +317,7 @@ class XMLscene extends CGFscene {
             } else if (this.newGame.state != STATES.GAMEOVER) {
                 console.log("xml:01");
                 this.newGame.gameLoop();
+
                 if (this.newGame.state != STATES.WAITING) {
                     document.getElementById('turn').innerHTML = this.newGame.currentColour;
                     var d = new Date();
@@ -509,22 +510,35 @@ class XMLscene extends CGFscene {
 
         this.camera = new CGFcamera(currCamera.fov, currCamera.near, currCamera.far,
             positionPosition, targetPosition);
-    };
+    }
 
     startGame() {
         this.newGame.start(this.newGame.gameMode, this.newGame.gameLevel);
     }
 
-    quitGame() {
-        this.newGame.quit();
+    restart() {
+        this.newGame.restart();
     }
 
     undo() {
         this.newGame.undo();
     }
 
+    save() {
+        this.newGame.save();
+    }
+
+    load() {
+        this.newGame.load();
+    }
+
+
     movie() {
         this.newGame.movie();
+    }
+
+    quitGame() {
+        this.newGame.quit();
     }
 
 }
