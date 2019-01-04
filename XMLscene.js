@@ -339,6 +339,7 @@ class XMLscene extends CGFscene {
                     if (!!this.newGame.moveWhere2) {
                         document.getElementById('whereline').innerHTML = 6 - (this.newGame.moveWhere2.line);
                         document.getElementById('wherecol').innerHTML = (String.fromCharCode(97 + this.newGame.moveWhere2.column)).toUpperCase();
+
                     }
 
 
@@ -353,9 +354,10 @@ class XMLscene extends CGFscene {
             // registar para picking
             // por cada elemento que queiramos pickar (pecas)
             //depois sempre que uma for comida deixa de ser pickable => clearPickRegistration(id)
-
             // draw objects
-            this.displayBoard();
+            if (this.newGame.state != 0) {
+                this.displayBoard();
+            }
 
         } else {
             // Draw axis
@@ -382,7 +384,7 @@ class XMLscene extends CGFscene {
             // this.translate(-0.73, 4.185, 0.605);
             this.scale(0.10, 0.10, 0.10);
             if (this.newGame.pieces[i].selectable) {
-                //  alert(i + 1);
+                console.log(this.newGame.currentColour + " : selectable id = " + (i + 1));
                 this.registerForPick(i + 1, this.newGame.pieces[i]);
             }
 
@@ -452,21 +454,17 @@ class XMLscene extends CGFscene {
                             var customId = this.pickResults[i][1];
                             if (!this.newGame.gameOver)
                                 console.log("Picked object: " + obj + ", with pick id " + customId);
-                            // if (this.newGame.running) {
-                            // obj.pickedShader = 1;
+
                             this.newGame.pickedPiece = customId;
 
                             if (this.newGame.tmpPiece == this.newGame.pickedPiece) {
                                 this.newGame.resetPickedPiece();
-                            }
-                            //  this.newGame.picked(obj);
-                            if (this.newGame.state == 4) {
+                            } else if (this.newGame.state == 4) {
                                 this.newGame.state = 5;
                             } else if (this.newGame.state == 7) {
                                 this.newGame.state = 8;
                             }
 
-                            // }
                         }
                 }
                 this.pickResults.splice(0, this.pickResults.length);
