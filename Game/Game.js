@@ -27,7 +27,17 @@ var TIME_LEFT = 30;
 /*initial number of pieces on board*/
 var NUMBER_PIECES = 30;
 
+/*default game config*/
+var DEFAULT_MODE = "Player vs Player";
+var DEFAULT_LEVEL = "Easy";
 
+ERRORS = {
+    ISOLATED: -3,
+    WRONG_COLOR: -2,
+    NOT_RECEIVED: -1,
+    OK: 0,
+
+};
 
 LEVELS = {
     EASY: 0,
@@ -37,6 +47,7 @@ LEVELS = {
 MODES = {
     HUMANS: 0,
     HUMAN_BOT: 1,
+    BOTS: 2,
 };
 
 
@@ -57,9 +68,6 @@ STATES = {
 }
 
 
-/*default game config*/
-var DEFAULT_MODE = MODES.HUMANS;
-var DEFAULT_LEVEL = LEVELS.EASY;
 /**
  * Game
  * @param gl {WebGLRenderingContext}
@@ -154,7 +162,7 @@ class Game {
 
 
     blackBotMove(tabuleiro, callback) {
-        let requestString = 'choose_move(' +
+        let requestString = 'move(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
 
         this.makeRequest(requestString, callback);
@@ -360,11 +368,8 @@ class Game {
     }
 
     gameLoop() {
-
         if (this.gameMode == MODES.HUMAN_BOT && this.currentColour == 'black') {
-
             if (this.state == STATES.READY_TO_PICK_PIECE) {
-
                 this.blackBotMove(this.board, this.verifyBotReply);
             }
         } else {
@@ -405,12 +410,8 @@ class Game {
             }
             if (this.state == STATES.READY_TO_MOVE) {
                 this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
-                let varIndexes = [this.piece2Move.line,this.piece2Move.column,this.moveWhere2.line,this.moveWhere2.column];
-                //Guarda os indexes de todas as movimentacoes
-                this.Undo.push(varIndexes);
-                
-            }
 
+            }
 
             if (this.state == STATES.MOVED) {
                 this.pickedPiece = 0;
@@ -421,17 +422,26 @@ class Game {
                 this.resetError();
                 this.changeColours();
 
-            this.getScore(this.board, this.verifyScoreReply);
+            if (this.state == STATES.MOVED) {
+                this.pickedPiece = 0;
+                this.tmpPiece = 0;
 
-            this.resetError();
+
+
+                this.resetError();
+                this.changeColours();
+
+                this.getScore(this.board, this.verifyScoreReply);
+
+                this.resetError();
+            }
+
+            if (this.state == STATES.UPDATED) {
+                this.displayBoard();
+            }
+
         }
-
-        if (this.state == STATES.UPDATED) {
-            this.displayBoard();
-        }
-
     }
-
 
 
     start() {
@@ -453,16 +463,16 @@ class Game {
 
     verifyBotReply(data) {;
 
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
 
+        if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             this.piece2Move.line = response[0];
             this.piece2Move.column = response[1];
             this.moveWhere2.line = response[2];
             this.moveWhere2.column = response[3];
             this.validReply = true;
             this.resetError();
-            // this.displayBoard();
+            this.displayBoard();
             this.state = STATES.READY_TO_MOVE;
 
         } else {
@@ -478,9 +488,9 @@ class Game {
 
     verifyTabReply(data) {;
 
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
 
+        if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             this.board = response;
             this.validReply = true;
             this.resetError();
@@ -495,9 +505,9 @@ class Game {
     }
 
     verifyPieceReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
 
+        if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             if (response == this.currentColour) {
 
                 this.validReply = true;
@@ -515,9 +525,9 @@ class Game {
     }
 
     verifyAttackReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
 
+        if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             if (!isNaN(response)) {
                 this.validReply = true;
                 if (response == 0) {
@@ -533,9 +543,9 @@ class Game {
     }
 
     verifyMoveReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
 
+        if (data.target.status == 200) {
+            let response = JSON.parse(data.target.response);
             this.board = response;
             this.validReply = true;
             this.state = STATES.MOVED;
@@ -548,9 +558,8 @@ class Game {
     }
 
     verifyScoreReply(data) {
-        let response = JSON.parse(data.target.response);
         if (data.target.status == 200) {
-
+            let response = JSON.parse(data.target.response);
             if (response[0]) {
                 this.score1 = response[0];
 

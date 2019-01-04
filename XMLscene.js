@@ -40,8 +40,8 @@ class XMLscene extends CGFscene {
 
         //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
         this.newGame = new Game(this);
-        this.gameMode = MODES.HUMANS;
-        this.gameLevel = LEVELS.EASY;
+        this.gameMode = "Player vs Player";
+        this.gameLevel = "Easy";
     }
 
     /**
@@ -384,7 +384,7 @@ class XMLscene extends CGFscene {
             // this.translate(-0.73, 4.185, 0.605);
             this.scale(0.10, 0.10, 0.10);
             if (this.newGame.pieces[i].selectable) {
-                //  console.log(this.newGame.currentColour + " : selectable id = " + (i + 1));
+                console.log(this.newGame.currentColour + " : selectable id = " + (i + 1));
                 this.registerForPick(i + 1, this.newGame.pieces[i]);
             }
 
