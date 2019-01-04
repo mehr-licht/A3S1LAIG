@@ -309,8 +309,10 @@ class XMLscene extends CGFscene {
             this.graph.displayScene();
             //console.log(this.currScene);
 
-
-            if (this.newGame.state != 11) {
+            if (this.newGame.state != 0 && this.newGame.state != 11 && this.newGame.timeleft <= 0) {
+                this.newGame.state = 11;
+                document.getElementById('messages').innerHTML = "time out: " + this.newGame.currentColour + " lost";
+            } else if (this.newGame.state != 11) {
 
                 this.newGame.gameLoop();
                 if (this.newGame.state != 0) {
@@ -319,7 +321,7 @@ class XMLscene extends CGFscene {
                     var t = d.getTime();
                     // alert("t: " + t + "\n" + "gameStart: " + this.newGame.gameStart + "\n" + ((t - this.newGame.gameStart) / 1000));
                     this.newGame.timeleft = TIME_LEFT - ((t - this.newGame.gameStart) / 1000);
-                    var fixedNum = parseFloat(this.newGame.timeleft).toFixed(2)
+                    var fixedNum = parseFloat(this.newGame.timeleft).toFixed(2);
                     document.getElementById('time').innerHTML = fixedNum;
                 }
             } else {

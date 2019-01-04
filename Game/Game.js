@@ -378,16 +378,6 @@ class Game {
         }
         console.log("03:" + this.state);
         if (this.state == STATES.MOVE_CHOSEN) {
-            //VERIFICACAO JOGADA DENTRO DO TEMPO - MUDAR PARA INTERRUPCAO QUANDO timeleft atinge 0
-            if (this.timeleft) {
-                this.timeleft = 0;
-            } else {
-                this.winner = this.otherColour;
-                document.getElementById('messages').innerHTML = 'YouTookTooMuchTime';
-                document.getElementById('info').innerHTML = this.winner;
-            }
-            console.log("L_02");
-
             this.moveWhere2 = this.pieces[this.pickedPiece - 1];
             this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);
             console.log("L_03");
@@ -425,7 +415,7 @@ class Game {
 
 
     start() {
-        if (this.state == STATES.WAITING) {
+        if (this.state == STATES.WAITING || this.state == STATES.GAMEOVER) {
             var d = new Date();
             var t = d.getTime();
             this.gameStart = t;
@@ -562,9 +552,9 @@ class Game {
         this.getPrologRequest(requestString, callback);
     }
 
-    /* //Handle the Reply
-     handleReply(data) {
-         this.answer = data.target.response;
-         this.validReply = true;
-     }*/
+    resetPickedPiece() {
+        this.pickedPiece = 0;
+        this.piece2Move = null;
+        this.state = this.STATES.READY_TO_PICK_PIECE;
+    }
 }
