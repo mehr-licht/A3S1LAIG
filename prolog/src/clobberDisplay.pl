@@ -15,12 +15,12 @@ initialBoard([
  * @brief tabuleiro de teste num determinado momento do jogo
  */
 testeBoard([
-        [empty,empty,empty,empty,empty],
-        [empty,black,white,black,empty],
-        [empty,white,black,empty,black],
-        [white,white,empty,black,empty],
-        [empty,white,empty,white,empty],
-        [empty,black,empty,empty,empty]
+        [white,black,white,black,white],
+        [black,white,black,white,black],
+        [empty,empty,black,white,empty],
+        [empty,black,black,white,white],
+        [white,empty,empty,black,empty],
+        [white,empty,empty,empty,empty]
     ]).
 
 /**

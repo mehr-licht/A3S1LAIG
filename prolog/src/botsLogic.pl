@@ -76,6 +76,8 @@ escolha(Tabuleiro,[[Line-Column]|T], [[Line-Column]-SizeLista|ListaFinal]):-
     validMoves(Tabuleiro, Line, Column, white, ListasJogadas),
     length(ListasJogadas, SizeLista).
 
+
+
 %NovaLista formato [[1-1]-2,[1-3]-1,[2-2]-2,[3-3]-1,[5-1]-1]
 /**
  * cleanLista(+ListaIndexes,+ListaDePares, -NovaLista) 
@@ -91,16 +93,21 @@ posicaoPecasPretas([[1-1],[1-3],[2-2],[2-4],[3-3],[5-1]]).
 posicaoPecasBrancas([[1-2],[2-1],[3-0],[3-1],[4-1],[4-3]]).
 
 
+
 sendScore(Tabuleiro, [Score,ScoreW]):-
     posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
     escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
     cleanLista(ListaParaLimpar, NovaLista),
-    calcScore(NovaLista, Score),
+    length(NovaLista,Score),
+   % calcScore(NovaLista, ScoreInt),
 
     posicoesPecasNoTabuleiro(Tabuleiro,white,ListaDeParesW),
     escolha1(Tabuleiro, ListaDeParesW,ListaParaLimparW),
     cleanLista(ListaParaLimparW, NovaListaW),
-    calcScore(NovaListaW, ScoreW).
+    length(NovaListaW, ScoreW).
+   % calcScore(NovaListaW, ScoreWInt),
+   % Score is ScoreInt + SizeN1,
+   % ScoreW is ScoreWInt + SizeN2.
 
 calcScore([],0).
 calcScore([[_-_]-Z|T], Score):-
@@ -124,7 +131,7 @@ escolha1(Tabuleiro,[[Line-Column]|T], [[Line-Column]-SizeLista|ListaFinal]):-
 
 % ( (ColorPlayer == black, ColorContraria = white); ColorPlayer == white, ColorContraria = black) )
                                                 %Nivel » 0
-choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel):-
+choose_move(Tabuleiro, TabuleiroFinal,_Color, _Nivel,LineFuture,ColumnFuture,LineNova,ColumnNova):-
     posicoesPecasNoTabuleiro(Tabuleiro,black,ListaDePares),
     escolha(Tabuleiro, ListaDePares,ListaParaLimpar),
     write('Lista para Limpar: '), write(ListaParaLimpar), nl,

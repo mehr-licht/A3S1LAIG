@@ -98,6 +98,8 @@ selecionarPeca(TabuleiroInicial, NewRow,NewColumn,RowIndex,ColumnIndex, ColorPla
         selecionarPeca(TabuleiroInicial, NewRow,NewColumn,RowIndex,ColumnIndex, ColorPlayer).
 
 
+
+
 %##########################################################################################################################
 %##########################################################################################################################        
 /**
