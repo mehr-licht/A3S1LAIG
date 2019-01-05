@@ -83,7 +83,8 @@ serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
         // myScene.currScene = filename.substring(0, filename.indexOf(".xml"));
         // var reader = new CGFXMLreader();
         // var stranded = reader.open('scenes/' + "stranded.xml", myScene.graph);
-
+        myScene.scenes['FEUP'] = new MySceneGraph("FEUP.xml", myScene);
+        myScene.scenes['stranded'] = new MySceneGraph("stranded.xml", myScene);
 
         // start
         app.run();

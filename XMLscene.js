@@ -25,13 +25,13 @@ class XMLscene extends CGFscene {
         this.scenesList = [];
         this.scenes = [];
 
-        //   var FEUP = new MySceneGraph("FEUP.xml", this);
-        // var stranded = new MySceneGraph("stranded.xml", this);
-        // this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
+        //var FEUP = { "FEUP": new MySceneGraph("FEUP.xml", this) };
+        //var stranded = { "stranded": new MySceneGraph("stranded.xml", this) };
+        //this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
         //this.scenes['stranded'] = new MySceneGraph("stranded.xml", this);
         //  this.scenes.push(FEUP);
-        //      this.scenes.push(stranded);
-
+        //this.scenes.push(stranded);
+        console.log(this.scenes);
         this.shaderObjects = [];
         this.lastTime = 0;
         this.currentDate = new Date();
@@ -302,12 +302,12 @@ class XMLscene extends CGFscene {
             }
 
             this.setCameraUsed();
-            // console.log(this.currScene); //TIRAR ISTO - isto FAZ COm que funcione (mesmo assim repete guis - meter flag?)
-            // this.graph = this.scenes[this.currScene];
+
+            this.graph = this.scenes[this.currScene];
 
 
             this.graph.displayScene();
-            //console.log(this.currScene);
+
             var dd = new Date();
             var tt = dd.getTime();
 
