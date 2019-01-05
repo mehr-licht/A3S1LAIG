@@ -308,17 +308,25 @@ class XMLscene extends CGFscene {
 
             this.graph.displayScene();
             //console.log(this.currScene);
+            var dd = new Date();
+            var tt = dd.getTime();
 
             if (this.newGame.state != STATES.WAITING && this.newGame.state != STATES.GAMEOVER && this.newGame.timeleft <= 0) {
-                console.log("xml:00");
+
                 //this.newGame.state = STATES.GAMEOVER;
                 document.getElementById('messages').innerHTML = "time out: " + this.newGame.currentColour + " lost";
                 this.newGame.winner = this.newGame.otherColour;
             } else if (this.newGame.state != STATES.GAMEOVER) {
-                console.log("xml:01");
-                this.newGame.gameLoop();
 
+                if (this.newGame.movie && (tt - this.newGame.lastMovie) > MOVIE_RATIO) {
+                    if (this.newGame.lastMovie)
+                        this.newGame.displayMovie = true;
+
+                    this.newGame.lastMovie = tt;
+                }
                 if (this.newGame.state != STATES.WAITING) {
+
+                    this.newGame.gameLoop();
                     document.getElementById('turn').innerHTML = this.newGame.currentColour;
                     var d = new Date();
                     var t = d.getTime();
@@ -347,13 +355,13 @@ class XMLscene extends CGFscene {
 
                 }
             } else {
-                console.log("xml:02");
+
                 document.getElementById('info').innerHTML = this.newGame.winner + " WON";
             }
 
 
             if (this.newGame.state != 0) {
-                console.log("xml:03");
+
                 this.displayBoard();
             }
 
@@ -525,7 +533,7 @@ class XMLscene extends CGFscene {
     }
 
     save() {
-        this.newGame.save();
+        this.newGame.save2();
     }
 
     load() {
@@ -534,17 +542,19 @@ class XMLscene extends CGFscene {
 
 
     movie() {
-        this.newGame.movie();
+        // if (this.newGame.state == STATES.GAMEOVER)
+        this.newGame.playMovie();
     }
 
     quitGame() {
-        this.newGame.quit();
+        this.newGame.state = STATES.WAITING;
+        //CLEAR SCOREBOARD?
     }
 
 }
 
 function sleep(seconds) {
-    alert("waut");
+    alert("wait");
     var waitUntil = new Date().getTime() + seconds * 1000;
     while (new Date().getTime() < waitUntil) true;
 }

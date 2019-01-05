@@ -4,6 +4,17 @@ var offsetX = 0.73;
 var offsetY = 4.185;
 var offsetZ = 0.605;
 
+//each movie move is showed at every x ms
+var MOVIE_RATIO = 1000;
+
+//time (ms) between each animation increment recalculation
+var ANIMATION_RATIO = 10;
+
+//time (ms) that each move animation takes
+var MOVE_TIME = 500;
+
+//time (ms) that each dead piece move animation takes
+var DEAD_TIME = 1000;
 
 //distance from each board cell to its neighbours
 var incX = 0.292;
@@ -78,9 +89,10 @@ class Game {
 
 
     constructor(scene, init_board, init_turn, score1, score2, gameMode, gameLevel) {
-        this.reset();
-        /*
         this.scene = scene;
+        //  this.reset();
+
+
         this.tmpPiece = 0;
         this.pickedPiece = 0;
         this.colours = ['white', 'black'];
@@ -99,8 +111,8 @@ class Game {
         this.score2 = score2 || SCORE_2;
         this.validReply = false;
         this.winner = null;
-        this.gameMode = DEFAULT_MODE || gameMode;
-        this.gameLevel = DEFAULT_LEVEL || gameLevel;
+        this.gameMode = gameMode || DEFAULT_MODE;
+        this.gameLevel = gameLevel || DEFAULT_LEVEL;
         this.piece2Move = null;
         this.moveWhere2 = null;
         this.state = STATES.WAITING;
@@ -109,12 +121,15 @@ class Game {
         //For undo and Film
         this.Undo = [];
         this.PastTabuleiros = [];
-        this.save = this.board;
-        this.movie=false;
-        this.movieIndex=0;
+        this.PastScore1 = [];
+        this.PastScore2 = [];
+
+        this.saveArray = [this.board, this.currentColour];
+        this.movie = false;
+        this.movieIndex = 0;
         this.movieArray = [];
-        var start = Date.now();
-*/
+        this.displayMovie = false;
+        this.lastMovie = 0;
 
         /*
                 for (let i = 0; i < this.colours.length; i++) {
@@ -250,9 +265,29 @@ class Game {
      * display
      */
     undo() {
+        //Board
+        var i = 0;
+        //i++;
 
+        let sizeBoards = this.PastTabuleiros.length - 1;
 
+        this.board = this.PastTabuleiros[sizeBoards - i];
+        //alert(this.board);
+        //Indexes
+        let sizeIndexes = this.Undo.length;
+        this.Undo.pop();
+        //Score1
+        let scrIndex = this.PastScore1.length - 1;
+        this.score1 = this.PastScore1[scrIndex - i];
+        //Score2
+        var scrIdx = this.PastScore2.length - 1;
+        this.score2 = this.PastScore2[scrIdx - i];
+        //Mudanca de estado
+        this.state = STATES.READY_TO_PICK_PIECE;
+        this.changeColours();
+        this.displayBoard();
     }
+
 
 
     /*
@@ -261,16 +296,20 @@ class Game {
      * display
      */
     restart() {
-        reset();
+        this.reset();
+        this.movie = false;
+        this.displayMovie = false;
+        this.movieArray = [];
+        this.lastMovie = 0;
     }
 
 
     reset() {
-        this.scene = scene;
+        // this.scene = scene;
         this.tmpPiece = 0;
         this.pickedPiece = 0;
         this.colours = ['white', 'black'];
-        this.init_board = init_board || INITIAL_BOARD;
+        this.init_board = INITIAL_BOARD;
         this.animationCounter = 0;
         this.board = [];
         this.gameStart = 0;
@@ -278,15 +317,15 @@ class Game {
         this.running = true;
         this.gameOver = false;
         this.computer_playing = false;
-        this.currentColour = init_turn || this.colours[0];
+        this.currentColour = this.colours[0];
         this.otherColour = (this.currentColour == this.colours[0] ? this.colours[1] : this.colours[0]) || this.colours[1];
         this.timeleft = 0;
-        this.score1 = score1 || SCORE_1;
-        this.score2 = score2 || SCORE_2;
+        this.score1 = SCORE_1;
+        this.score2 = SCORE_2;
         this.validReply = false;
         this.winner = null;
-        this.gameMode = DEFAULT_MODE || gameMode;
-        this.gameLevel = DEFAULT_LEVEL || gameLevel;
+        this.gameMode = DEFAULT_MODE;
+        this.gameLevel = DEFAULT_LEVEL;;
         this.piece2Move = null;
         this.moveWhere2 = null;
         this.state = STATES.WAITING;
@@ -295,11 +334,15 @@ class Game {
         //For undo and Film
         this.Undo = [];
         this.PastTabuleiros = [];
-        this.save = this.board;
-        this.movie = false;
+        this.PastScore1 = [];
+        this.PastScore2 = [];
+
+        this.saveArray = [this.board, this.currentColour];
+        // this.movie = false;
         this.movieIndex = 0;
-        this.movieArray = [];
-        start = Date.now();
+        //  this.movieArray = [];
+        this.lastMovie = 0;
+        this.displayMovie = false;
         this.start(this.gameMode, this.gameLevel);
     }
 
@@ -313,7 +356,8 @@ class Game {
      * mov(guardado)
      * display}
      */
-    movie() {
+    playMovie() {
+        console.log("begin playing movie");
         this.reset();
         this.movie = true;
         this.movieIndex = 0;
@@ -323,8 +367,9 @@ class Game {
     SaveForMovie() {
         var d = new Date();
         var t = d.getTime();
-        var tmp = [this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.otherColour, t];
+        var tmp = [this.currentColour, this.otherColour, this.pieces, this.pickedPiece];
         this.movieArray.push(tmp);
+        console.log("saved for movie, frame " + this.movieArray.length + 1);
     }
 
     //uncalled for
@@ -334,8 +379,9 @@ class Game {
      * this.save = new Game(scene,)
      * ->jogo
      */
-    save() {
-        this.save = [this.board, this.currentColour];
+    save2() {
+        this.saveArray = [this.board, this.currentColour];
+        console.log("game saved");
     }
 
 
@@ -346,10 +392,13 @@ class Game {
      * ->jogo
      */
     load() {
-        this.board = this.save[0];
-        this.currentColour = this.save[1];
-        this.currentColour == 'white' ? this.otherColour = 'black' : this.otherColour = 'white';
-        this.state = STATES.READY_TO_PICK_PIECE;
+        if (!!this.saveArray) {
+            this.board = this.saveArray[0];
+            this.currentColour = this.saveArray[1];
+            this.currentColour == 'white' ? this.otherColour = 'black' : this.otherColour = 'white';
+            this.displayBoard();
+            console.log("game loaded");
+        }
     }
 
 
@@ -416,12 +465,11 @@ class Game {
     }
 
     gameLoop() {
-        if (this.movie && this.movieIndex <= this.movieArray.length) {
-            this.currentColour = this.movie[this.movieIndex][4];
-            this.otherColour = this.movie[this.movieIndex][5];
-        } else if (this.movie) {
-            this.state = STATES.GAMEOVER;
-            this.movie = false;
+
+        if (this.movie && this.state != STATES.GAMEOVER) {
+            this.pieces = this.movieArray[this.movieIndex][2];
+            this.currentColour = this.movieArray[this.movieIndex][0];
+            this.otherColour = this.movieArray[this.movieIndex][1];
         }
 
         if (this.gameMode == MODES.HUMAN_BOT && this.currentColour == 'black' && !this.movie) {
@@ -433,9 +481,9 @@ class Game {
                 this.markSelectables(this.currentColour);
             }
 
-            if (this.movie) {
-                this.piece2Move.line = this.movie[this.movieIndex][0];
-                this.piece2Move.column = this.movie[this.movieIndex][1];
+            if (this.movie && this.displayMovie) {
+                this.piece2Move = this.pieces[this.movieArray[this.movieIndex][3] - 1];
+
                 this.markSelectables(this.otherColour);
             } else {
                 if (this.state == STATES.PIECE_CHOSEN) {
@@ -451,9 +499,9 @@ class Game {
                     this.markSelectables(this.otherColour);
                 }
             }
-            if (this.movie) {
-                this.moveWhere2.line = this.movie[this.movieIndex][2];
-                this.moveWhere2.column = this.movie[this.movieIndex][3];
+            if (this.movie && this.displayMovie) {
+                this.moveWhere2 = this.pieces[this.movieArray[this.movieIndex][3] - 1];
+
                 this.markSelectables(this.otherColour);
             } else {
                 if (this.state == STATES.MOVE_CHOSEN) {
@@ -476,7 +524,7 @@ class Game {
             //Guarda todos os tabuleiros
             this.PastTabuleiros.push(this.board);
             if (!this.movie) {
-                SaveForMovie();
+                this.SaveForMovie();
             }
             this.resetError();
             this.changeColours();
@@ -491,8 +539,18 @@ class Game {
             this.displayBoard();
         }
 
-        if (this.movie) {
+        if (this.movie && this.displayMovie) {
+            console.log("showed movie frame " + (this.movieIndex + 1));
             this.movieIndex++;
+            this.displayMovie = false;
+            if (this.movieIndex >= this.movieArray.length) {
+                this.displayBoard();
+                this.state = STATES.GAMEOVER;
+                alert(this.state);
+                this.movie = false;
+
+                console.log("movie finished");
+            }
         }
     }
 
@@ -672,6 +730,6 @@ class Game {
         this.pickedPiece = 0;
         this.tmpPiece = 0;
         this.piece2Move = null;
-        this.state = this.STATES.READY_TO_PICK_PIECE;
+        this.state = STATES.READY_TO_PICK_PIECE;
     }
 }
