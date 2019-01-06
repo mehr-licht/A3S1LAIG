@@ -8,13 +8,15 @@ var offsetZ = 0.605;
 var MOVIE_RATIO = 1000;
 
 //time (ms) between each animation increment recalculation
-var ANIMATION_RATIO = 10;
+var ANIM_RATIO = 10;
 
 //time (ms) that each move animation takes
 var MOVE_TIME = 500;
 
 //time (ms) that each dead piece move animation takes
 var DEAD_TIME = 1000;
+var DEAD_X = 0;
+var DEAD_Z = 0;
 
 //distance from each board cell to its neighbours
 var incX = 0.292;
@@ -61,7 +63,7 @@ FACTOR = 10;
 
 /*default game config*/
 var DEFAULT_MODE = MODES.HUMANS;
-var DEFAULT_LEVEL = LEVELS.EASY;
+var DEFAULT_LEVEL = LEVELS.HARD;
 
 STATES = {
     WAITING: 0,
@@ -70,13 +72,14 @@ STATES = {
     READY_TO_PICK_PIECE: 3,
     SELECTABLES1: 4,
     PIECE_CHOSEN: 5,
-    READY_TO_PICK_MOVE: 6,
-    SELECTABLES2: 7,
-    MOVE_CHOSEN: 8,
-    READY_TO_MOVE: 9,
-    MOVED: 10,
-    UPDATED: 11, //getUpdatedScores
-    GAMEOVER: 12,
+    ANIMATION: 6,
+    READY_TO_PICK_MOVE: 7,
+    SELECTABLES2: 8,
+    MOVE_CHOSEN: 9,
+    READY_TO_MOVE: 10,
+    MOVED: 11,
+    UPDATED: 12, //getUpdatedScores
+    GAMEOVER: 13,
 }
 
 
@@ -374,7 +377,6 @@ class Game {
         var t = d.getTime();
         var tmp = [this.currentColour, this.otherColour, this.pieces, this.pickedPiece];
         this.movieArray.push(tmp);
-        console.log(this.movieArray[this.movieArray.length - 1]);
         console.log("saved for movie, frame " + (this.movieArray.length));
     }
 
@@ -523,6 +525,10 @@ class Game {
                     this.checkDifferenceIndexs(this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.verifyAttackReply);;
                 }
             }
+        }
+
+        if (this.state == STATES.ANIMATION) {
+            this.animatePieces(this.piece2Move.id, this.moveWhere2.id);
         }
         if (this.state == STATES.READY_TO_MOVE) {
             this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
@@ -728,7 +734,7 @@ class Game {
                 this.pieces[i].selectable = false; //se assim optarmos
             }
         }
-        this.state == 3 ? this.state = 4 : this.state = 7;
+        this.state == STATES.READY_TO_PICK_PIECE ? this.state = STATES.SELECTABLES1 : this.state = STATES.SELECTABLES2;
     }
 
     //Make the request
@@ -741,5 +747,63 @@ class Game {
         this.tmpPiece = 0;
         this.piece2Move = null;
         this.state = STATES.READY_TO_PICK_PIECE;
+    }
+
+    animatePieces(alivePiece, deadPiece) {
+        var d = new Date();
+        var t = d.getTime();
+        this.pieceAnimationCalc(deadPiece, t);
+        d = new Date();
+        t = d.getTime();
+
+        this.pieceAnimationCalc(alivePiece, t, "alive", deadPiece);
+
+        if ((t - this.lastAnim) > ANIM_RATIO) { //ou atingir distancias
+            this.state = STATES.READY_TO_MOVE;
+        }
+        this.lastAnim = t;
+    }
+
+
+    pieceAnimationCalc(id1, t1, typeIn, id2) {
+
+        var t2 = t1;
+        var type = typeIn || "dead";
+        var x1 = this.pieces[id1].x;
+        var z1 = this.pieces[id1].z;
+        var x2 = x1;
+        var z2 = z1;
+        if (!!id2) {
+            x2 = this.pieces[id2].x;
+            z2 = this.pieces[id2].z;
+        } else {
+            x2 = DEAD_X;
+            z2 = DEAD_Z;
+        }
+        var distTotal = Math.sqrt((x2 - x1) * (x2 - x1) + (z2 - z1) * (z2 - z1));
+        var halfDist = distTotal / 2;
+        //  while (t2 < (t1 + DEAD_TIME)) { // || (x==finalX  && y==finalY && z==finalZ)
+        var distActual = Math.sqrt((this.pieces[id1].x - x1) * (this.pieces[id1].x - x1) + (this.pieces[id1].z - z1) * (this.pieces[id1].z - z1));
+        var d = new Date();
+        t2 = d.getTime();
+        console.log("delta:" + delta);
+        var delta = t2 - t1; //SERA DISTO!?
+        var incX = ((x2 - x1) / DEAD_TIME) * delta;
+        var incZ = ((z2 - z1) / DEAD_TIME) * delta;
+        this.pieces[id1].x += incX;
+        console.log("inc:" + this.pieces[id1].x);
+        this.pieces[id1].z += incZ;
+        if (type == "dead") {
+            var away = Math.min(Math.abs(halfDist - distActual), Math.abs(distTotal - distActual));
+            this.pieces[id1].y += 5 / (away * away);
+        }
+        console.log("t2:" + t2);
+        console.log("T:" + (t1 + DEAD_TIME));
+        if (t2 >= (t1 + DEAD_TIME)) {
+            this.animEnd = true;
+            this.lastAnim = 0;
+        }
+        //  }
+
     }
 }

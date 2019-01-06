@@ -25,14 +25,11 @@ class XMLscene extends CGFscene {
         this.scenesList = [];
         this.scenes = [];
 
-        //   var FEUP = new MySceneGraph("FEUP.xml", this);
-        // var stranded = new MySceneGraph("stranded.xml", this);
-        // this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
-        //this.scenes['stranded'] = new MySceneGraph("stranded.xml", this);
-        //  this.scenes.push(FEUP);
-        //      this.scenes.push(stranded);
+        this.shaders = [];
+        this.easyShader = "greenThrob";
+        this.currentShader = "throbRed";
 
-        this.shaderObjects = [];
+        // this.shaderObjects = [];
         this.lastTime = 0;
         this.currentDate = new Date();
         this.initialTime = this.currentDate.getTime();
@@ -41,7 +38,7 @@ class XMLscene extends CGFscene {
         //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
         this.newGame = new Game(this);
         this.gameMode = MODES.HUMANS;
-        this.gameLevel = LEVELS.EASY;
+        this.gameLevel = LEVELS.HARD;
     }
 
     /**
@@ -65,27 +62,19 @@ class XMLscene extends CGFscene {
 
         this.materialDefault = new CGFappearance(this);
 
+        this.shaders["throbRed"] = new CGFshader(this.gl, "shaders/shader.vert", "shaders/shader.frag");
+        this.shaders["throbRed"].setUniformsValues({ selectedRed: 1.0, selectedGreen: 0.0, selectedBlue: 0.0 });
+
+        this.shaders["greenThrob"] = new CGFshader(this.gl, "shaders/greenShader.vert", "shaders/greenShader.frag");
+        this.shaders["greenThrob"].setUniformsValues({ selectedRed: 0.0, selectedGreen: 0.8, selectedBlue: 0.0 });
+
+
         this.sceneInited = false;
         this.keysPressed = false;
         this.initCameras();
         this.piece = new CGFOBJModel(this, 'clobber.obj');
 
-        /*   this.pieces = [];
-           this.piecesCoords = [];
-           for (var i = 0; i < 30; i++) {
-               this.pieces.push(this.piece);
-               var tmp = new Piece();
-               tmp.id = i;
-               tmp.colour = (i % 2 == 0 ? this.materialWhites : this.materialBlacks);
-               tmp.x = offsetX - incX * parseInt(i / 5);
-               tmp.y = offsetY;
-               tmp.z = offsetZ - incZ * parseInt(i % 5);
-               tmp.scale = 0.2;
-               tmp.active = true;
-               this.piecesCoords.push(tmp);
 
-           }
-          */
         this.enableTextures(true);
 
         this.gl.clearDepth(100.0);
@@ -96,10 +85,6 @@ class XMLscene extends CGFscene {
         this.axis = new CGFaxis(this);
 
         this.setUpdatePeriod(100);
-        //msecs
-        //this.scenes.push(new MySceneGraph('stranded.xml', this));
-        //this.scenes.push(new MySceneGraph('FEUP.xml', this));
-
 
 
         this.setPickEnabled(true);
@@ -107,7 +92,7 @@ class XMLscene extends CGFscene {
     }
 
     update(currTime) {
-        // this.updateScaleFactor(currTime);
+        this.updateScaleFactor(currTime);
 
         if (this.prevTime == -1) {
             this.animateCamera(0);
@@ -145,6 +130,9 @@ class XMLscene extends CGFscene {
 
         this.prevTime = currTime;
     }
+    updateScaleFactor(date) {
+        this.shaders[this.currentShader].setUniformsValues({ timeFactor: date % 100 });
+    };
 
     setDefaultAppearance() {
             this.setAmbient(0.2, 0.4, 0.8, 1.0);
@@ -382,7 +370,7 @@ class XMLscene extends CGFscene {
 
         //  
         // ---- END Background, camera and axis setup
-
+        this.setActiveShader(this.defaultShader);
     }
 
     displayBoard() {
@@ -398,6 +386,10 @@ class XMLscene extends CGFscene {
             // this.translate(-0.73, 4.185, 0.605);
             this.scale(0.10, 0.10, 0.10);
             if (this.newGame.pieces[i].selectable) {
+                if (this.newGame.gameLevel == LEVELS.EASY) {
+                    this.currentShader = this.easyShader;
+                    this.setActiveShader(this.shaders[this.currentShader]);
+                }
 
                 this.registerForPick(i + 1, this.newGame.pieces[i]);
             }
@@ -409,10 +401,10 @@ class XMLscene extends CGFscene {
             }
 
             this.piece.display();
+            this.setActiveShader(this.defaultShader)
             this.popMatrix();
         }
-        //   if (this.newGame.state == 0 || this.newGame.state == 1 || this.newGame.state == 10)
-        //     this.newGame.state = 2;
+
     }
 
     setCameraUsed() {
@@ -458,12 +450,11 @@ class XMLscene extends CGFscene {
 
                             if (this.newGame.tmpPiece == this.newGame.pickedPiece) {
                                 this.newGame.resetPickedPiece();
-                            } else if (this.newGame.state == 4) {
-                                this.newGame.state = 5;
-                            } else if (this.newGame.state == 7) {
-                                this.newGame.state = 8;
+                            } else if (this.newGame.state == STATES.SELECTABLES1) {
+                                this.newGame.state = STATES.PIECE_CHOSEN;
+                            } else if (this.newGame.state == STATES.SELECTABLES2) {
+                                this.newGame.state = STATES.MOVE_CHOSEN;
                             }
-
                         }
                 }
                 this.pickResults.splice(0, this.pickResults.length);
