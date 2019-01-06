@@ -363,6 +363,7 @@ class Game {
     playMovie() {
         console.log("begin playing movie");
         this.reset();
+        this.movieArray.splice(-1, 1);
         this.movie = true;
         this.movieIndex = 0;
         this.states = STATES.READY_TO_PICK_PIECE;
@@ -373,7 +374,8 @@ class Game {
         var t = d.getTime();
         var tmp = [this.currentColour, this.otherColour, this.pieces, this.pickedPiece];
         this.movieArray.push(tmp);
-        console.log("saved for movie, frame " + (this.movieArray.length + 1));
+        console.log(this.movieArray[this.movieArray.length - 1]);
+        console.log("saved for movie, frame " + (this.movieArray.length));
     }
 
     //uncalled for
@@ -476,6 +478,7 @@ class Game {
             this.pieces = this.movieArray[this.movieIndex][2];
             this.currentColour = this.movieArray[this.movieIndex][0];
             this.otherColour = this.movieArray[this.movieIndex][1];
+
         }
 
         if (this.gameMode == MODES.HUMAN_BOT && this.currentColour == 'black' && !this.movie) {
@@ -534,9 +537,7 @@ class Game {
             this.tmpPiece = 0;
             //Guarda todos os tabuleiros
 
-            if (!this.movie) {
-                this.SaveForMovie();
-            }
+
             this.resetError();
             this.changeColours();
             this.getScore(this.board, this.verifyScoreReply);
@@ -544,17 +545,17 @@ class Game {
 
         if (this.state == STATES.UPDATED) {
             this.displayBoard();
+            if (!this.movie) {
+                this.SaveForMovie();
+            }
         }
 
         if (this.movie && this.displayMovie) {
             console.log("showed movie frame " + (this.movieIndex + 1));
+            this.displayMovie = false; //flag that is true from time to time 
             this.movieIndex++;
-            this.displayMovie = false;
-
             if (this.movieIndex >= this.movieArray.length) {
-                // this.displayBoard();
                 this.state = STATES.GAMEOVER;
-
                 this.movie = false;
                 console.log("movie finished");
             }
@@ -575,6 +576,7 @@ class Game {
             this.gameLevel = this.scene.gameLevel;
             this.makeRequest("initialBoard", this.verifyTabReply);
             this.timeleft = TIME_LEFT;
+            this.SaveForMovie();
             // if (this.state == STATES.DISPLAYED) {
             this.state = STATES.READY_TO_PICK_PIECE;
             //}

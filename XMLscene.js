@@ -319,12 +319,12 @@ class XMLscene extends CGFscene {
                 if (this.newGame.movie && (tt - this.newGame.lastMovie) > MOVIE_RATIO) {
                     if (this.newGame.lastMovie)
                         this.newGame.displayMovie = true;
-
                     this.newGame.lastMovie = tt;
                 }
                 if (this.newGame.state != STATES.WAITING) {
 
                     this.newGame.gameLoop();
+
                     document.getElementById('turn').innerHTML = this.newGame.currentColour;
                     var d = new Date();
                     var t = d.getTime();
@@ -335,17 +335,14 @@ class XMLscene extends CGFscene {
                     document.getElementById('game_time').innerHTML = fixedNum;
                     document.getElementById('picked').innerHTML = this.newGame.pickedPiece;
 
-
                     if (!!this.newGame.piece2Move) {
                         document.getElementById('pieceline').innerHTML = 6 - (this.newGame.piece2Move.line);
                         document.getElementById('piececol').innerHTML = (String.fromCharCode(97 + this.newGame.piece2Move.column)).toUpperCase();
-
                     }
 
                     if (!!this.newGame.moveWhere2) {
                         document.getElementById('whereline').innerHTML = 6 - (this.newGame.moveWhere2.line);
                         document.getElementById('wherecol').innerHTML = (String.fromCharCode(97 + this.newGame.moveWhere2.column)).toUpperCase();
-
                     }
 
                     if (!this.newGame.score1) this.newGame.state = STATES.GAMEOVER;
