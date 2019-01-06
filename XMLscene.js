@@ -25,13 +25,13 @@ class XMLscene extends CGFscene {
         this.scenesList = [];
         this.scenes = [];
 
-        //var FEUP = { "FEUP": new MySceneGraph("FEUP.xml", this) };
-        //var stranded = { "stranded": new MySceneGraph("stranded.xml", this) };
-        //this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
+        //   var FEUP = new MySceneGraph("FEUP.xml", this);
+        // var stranded = new MySceneGraph("stranded.xml", this);
+        // this.scenes['FEUP'] = new MySceneGraph("FEUP.xml", this);
         //this.scenes['stranded'] = new MySceneGraph("stranded.xml", this);
         //  this.scenes.push(FEUP);
-        //this.scenes.push(stranded);
-        console.log(this.scenes);
+        //      this.scenes.push(stranded);
+
         this.shaderObjects = [];
         this.lastTime = 0;
         this.currentDate = new Date();
@@ -108,14 +108,14 @@ class XMLscene extends CGFscene {
 
     update(currTime) {
         // this.updateScaleFactor(currTime);
-        /*
-                if (this.prevTime == -1) {
-                    //this.animateCamera(0);
-                    this.graph.update(0);
-                } else {
-                    //this.animateCamera(currTime - this.prevTime);
-                    this.graph.update(currTime - this.prevTime);
-                }*/
+
+        if (this.prevTime == -1) {
+            this.animateCamera(0);
+            //  this.graph.update(0);
+        } else {
+            this.animateCamera(currTime - this.prevTime);
+            //this.graph.update(currTime - this.prevTime);
+        }
 
 
         if (this.startTime == 0 || this.startTime == null)
@@ -249,8 +249,7 @@ class XMLscene extends CGFscene {
      */
     display() {
 
-        // this.logPicking();
-        this.handlePicking(); //Só 1 destes 2
+        this.handlePicking();
 
         this.clearPickRegistration();
         // ---- BEGIN Background, camera and axis setup
@@ -304,7 +303,6 @@ class XMLscene extends CGFscene {
             this.setCameraUsed();
 
             this.graph = this.scenes[this.currScene];
-
 
             this.graph.displayScene();
 
@@ -363,6 +361,19 @@ class XMLscene extends CGFscene {
             if (this.newGame.state != 0) {
 
                 this.displayBoard();
+            } else {
+                document.getElementById('messages').innerHTML = "";
+                document.getElementById('info').innerHTML = "";
+                document.getElementById('score1').innerHTML = "";
+                document.getElementById('score2').innerHTML = "";
+                document.getElementById('turn').innerHTML = "";
+                document.getElementById('time').innerHTML = "";
+                document.getElementById('game_time').innerHTML = "";
+                document.getElementById('picked').innerHTML = "";
+                document.getElementById('pieceline').innerHTML = "";
+                document.getElementById('piececol').innerHTML = "";
+                document.getElementById('whereline').innerHTML = "";
+                document.getElementById('wherecol').innerHTML = "";
             }
 
         } else {
@@ -432,22 +443,7 @@ class XMLscene extends CGFscene {
         }
     }
 
-    //apagar - serve de teste para saber se estamos a seleccionar os objectos
-    /* logPicking() {
-         if (this.pickMode == false) {
-             if (this.pickResults != null && this.pickResults.length > 0) {
-                 for (var i = 0; i < this.pickResults.length; i++) {
-                     var obj = this.pickResults[i][0];
-                     if (obj) {
-                         var customId = this.pickResults[i][1];
-                         this.newGame.pickedPiece = customId;
-                         console.log("Picked object: " + obj + ", with pick id " + customId);
-                     }
-                 }
-                 this.pickResults.splice(0, this.pickResults.length);
-             }
-         }
-     }*/
+
 
 
     handlePicking() {
@@ -548,7 +544,6 @@ class XMLscene extends CGFscene {
 
     quitGame() {
         this.newGame.state = STATES.WAITING;
-        //CLEAR SCOREBOARD?
     }
 
 }

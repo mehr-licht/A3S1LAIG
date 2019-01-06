@@ -265,28 +265,30 @@ class Game {
      * display
      */
     undo() {
+
         //Board
-        var i = 0;
+        var i = 1;
         //i++;
-        
-        let sizeBoards = this.PastTabuleiros.length -1;
-        
-        this.board = this.PastTabuleiros[sizeBoards-i];
-         //alert(this.board);
+
+        let sizeBoards = this.PastTabuleiros.length - 1;
+
+        this.board = this.PastTabuleiros[sizeBoards - i];
+        //alert(this.board);
         //Indexes
         let sizeIndexes = this.Undo.length;
         this.Undo.pop();
         //Score1
-        let scrIndex = this.PastScore1.length-1;    
-        this.score1 = this.PastScore1[scrIndex-i]; 
+        let scrIndex = this.PastScore1.length - 1;
+        this.score1 = this.PastScore1[scrIndex - i];
+
         //Score2
-        var scrIdx = this.PastScore2.length-1;    
-        this.score2 = this.PastScore2[scrIdx-i]; 
+        var scrIdx = this.PastScore2.length - 1;
+        this.score2 = this.PastScore2[scrIdx - i];
         //Mudanca de estado
         this.state = STATES.READY_TO_PICK_PIECE;
         this.changeColours();
         this.displayBoard();
-        
+
     }
 
 
@@ -370,7 +372,7 @@ class Game {
         var t = d.getTime();
         var tmp = [this.currentColour, this.otherColour, this.pieces, this.pickedPiece];
         this.movieArray.push(tmp);
-        console.log("saved for movie, frame " + this.movieArray.length + 1);
+        console.log("saved for movie, frame " + (this.movieArray.length + 1));
     }
 
     //uncalled for
@@ -440,6 +442,7 @@ class Game {
     }
 
     translateBoard() {
+        console.log(this.board);
         this.pieces = [];
         for (var i = 0; i < this.board.length; i++) {
 
@@ -468,6 +471,7 @@ class Game {
     gameLoop() {
 
         if (this.movie && this.state != STATES.GAMEOVER) {
+            console.log("beginning to show frame " + (this.movieIndex + 1));
             this.pieces = this.movieArray[this.movieIndex][2];
             this.currentColour = this.movieArray[this.movieIndex][0];
             this.otherColour = this.movieArray[this.movieIndex][1];
@@ -480,10 +484,8 @@ class Game {
         } else {
             if (this.state == STATES.READY_TO_PICK_PIECE) {
                 this.PastTabuleiros.push(this.board);
-                this.PastScore1.push(this.score1); 
+                this.PastScore1.push(this.score1);
                 this.PastScore2.push(this.score2);
-     
-    
                 this.markSelectables(this.currentColour);
             }
 
@@ -520,23 +522,23 @@ class Game {
         }
         if (this.state == STATES.READY_TO_MOVE) {
             this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
-            let varIndexes =[this.piece2Move.line,this.piece2Move.column,this.moveWhere2.line, this.moveWhere2.column];
-            this.Undo.push(varIndexes);
 
+            let varIndexes = [this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column];
+            this.Undo.push(varIndexes);
+            //  this.displayBoard();
         }
 
         if (this.state == STATES.MOVED) {
             this.pickedPiece = 0;
             this.tmpPiece = 0;
             //Guarda todos os tabuleiros
-            
+
+            if (!this.movie) {
+                this.SaveForMovie();
+            }
             this.resetError();
             this.changeColours();
-
-
             this.getScore(this.board, this.verifyScoreReply);
-
-            this.resetError();
         }
 
         if (this.state == STATES.UPDATED) {
@@ -547,14 +549,15 @@ class Game {
             console.log("showed movie frame " + (this.movieIndex + 1));
             this.movieIndex++;
             this.displayMovie = false;
-            if (this.movieIndex >= this.movieArray.length) {
-                this.displayBoard();
-                this.state = STATES.GAMEOVER;
-                alert(this.state);
-                this.movie = false;
 
+            if (this.movieIndex >= this.movieArray.length) {
+                // this.displayBoard();
+                this.state = STATES.GAMEOVER;
+
+                this.movie = false;
                 console.log("movie finished");
             }
+
         }
     }
 
