@@ -265,30 +265,31 @@ class Game {
      * display
      */
     undo() {
+        if (this.Undo.length) {
+            //Board
+            var i = 1;
+            //i++;
 
-        //Board
-        var i = 1;
-        //i++;
+            let sizeBoards = this.PastTabuleiros.length - 1;
 
-        let sizeBoards = this.PastTabuleiros.length - 1;
+            this.board = this.PastTabuleiros[sizeBoards - i];
+            //alert(this.board);
+            //Indexes
+            let sizeIndexes = this.Undo.length;
+            this.Undo.pop();
+            //Score1
+            let scrIndex = this.PastScore1.length - 1;
+            this.score1 = this.PastScore1[scrIndex - i];
 
-        this.board = this.PastTabuleiros[sizeBoards - i];
-        //alert(this.board);
-        //Indexes
-        let sizeIndexes = this.Undo.length;
-        this.Undo.pop();
-        //Score1
-        let scrIndex = this.PastScore1.length - 1;
-        this.score1 = this.PastScore1[scrIndex - i];
-
-        //Score2
-        var scrIdx = this.PastScore2.length - 1;
-        this.score2 = this.PastScore2[scrIdx - i];
-        //Mudanca de estado
-        this.state = STATES.READY_TO_PICK_PIECE;
-        this.changeColours();
-        this.displayBoard();
-
+            //Score2
+            var scrIdx = this.PastScore2.length - 1;
+            this.score2 = this.PastScore2[scrIdx - i];
+            //Mudanca de estado
+            this.state = STATES.READY_TO_PICK_PIECE;
+            this.changeColours();
+            this.displayBoard();
+            console.log("last move undone");
+        }
     }
 
 
@@ -442,7 +443,7 @@ class Game {
     }
 
     translateBoard() {
-        console.log(this.board);
+
         this.pieces = [];
         for (var i = 0; i < this.board.length; i++) {
 
