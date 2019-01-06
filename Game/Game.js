@@ -1,4 +1,5 @@
 var SERVER_PORT = 8081;
+
 //position of the piece further away from the origin
 var offsetX = 0.73;
 var offsetY = 4.185;
@@ -15,15 +16,18 @@ var MOVE_TIME = 500;
 
 //time (ms) that each dead piece move animation takes
 var DEAD_TIME = 1000;
-var DEAD_X = 0;
-var DEAD_Z = 0;
+
+//piece graveyard coords
+var DEAD_X = 8.2;
+var DEAD_Y = 3.5;
+var DEAD_Z = 7.8;
 
 //distance from each board cell to its neighbours
 var incX = 0.292;
 var incZ = 0.3025;
 
 
-/*initial board*/
+//initial board: used in tests
 var INITIAL_BOARD = [
     ['black', 'white', 'black', 'white', 'black'],
     ['white', 'black', 'white', 'black', 'white'],
@@ -32,39 +36,34 @@ var INITIAL_BOARD = [
     ['black', 'white', 'black', 'white', 'black'],
     ['white', 'black', 'white', 'black', 'white']
 ];
+
 /*score points at the beginning of a regular game*/
 var SCORE_1 = 49;
 var SCORE_2 = 49;
+
 /*time of each turn (seconds)*/
 var TIME_LEFT = 30;
+
 /*initial number of pieces on board*/
 var NUMBER_PIECES = 30;
 
-
-ERRORS = {
-    ISOLATED: -3,
-    WRONG_COLOR: -2,
-    NOT_RECEIVED: -1,
-    OK: 0,
-
-};
-
+//game levels
 LEVELS = {
     EASY: 0,
     HARD: 1
 };
 
+//game modes
 MODES = {
     HUMANS: 0,
     HUMAN_BOT: 1,
 };
 
-FACTOR = 10;
-
 /*default game config*/
 var DEFAULT_MODE = MODES.HUMANS;
 var DEFAULT_LEVEL = LEVELS.HARD;
 
+//game states
 STATES = {
     WAITING: 0,
     STARTED: 1,
@@ -82,6 +81,7 @@ STATES = {
     GAMEOVER: 13,
 }
 
+FACTOR = 10;
 
 /**
  * Game
@@ -89,12 +89,9 @@ STATES = {
  * @constructor
  */
 class Game {
-
-
     constructor(scene, init_board, init_turn, score1, score2, gameMode, gameLevel) {
         this.scene = scene;
         //  this.reset();
-
 
         this.tmpPiece = 0;
         this.pickedPiece = 0;
@@ -133,23 +130,13 @@ class Game {
         this.movieArray = [];
         this.displayMovie = false;
         this.lastMovie = 0;
-
-        /*
-                for (let i = 0; i < this.colours.length; i++) {
-                    let colour_node = this.scene.graph.nodes[this.colours[i]];
-                    mat4.identity(colour_node.transformMatrix);
-                    mat4.translate(colour_node.transformMatrix, colour_node.transformMatrix, colour_node.position);
-                    mat4.rotate(colour_node.transformMatrix, colour_node.transformMatrix, -Math.PI / 2, [1, 0, 0]);
-                }*/
-
-
     }
 
     //*************************************************************************************************
     //                             PROLOG COMMUNICATION FUNCTIONS                                    //
     //***********************************************************************************************//
     getPrologRequest(requestString, onSuccess, onError, port) {
-        let requestPort = 8081;
+        let requestPort = port || SERVER_PORT;
         let request = new XMLHttpRequest();
         request.open('GET', 'http://localhost:' + requestPort + '/' + requestString, false); //( reqType,address, asyncProc) 
         request.onload = onSuccess.bind(this) || function(data) { console.log("Request successful. Reply: " + data.target.response); };
@@ -167,29 +154,42 @@ class Game {
     //                        FUNCTIONS TO SEND COMMANDS TO PROLOG AND GET RESPONSES                 //
     //***********************************************************************************************//
 
-    /**
-     * Update Score
-     */
 
+    /**
+     * Gets the scores
+     * @param {*} tabuleiro 
+     * @param {*} callback 
+     * @returns the current scores in an array of two elements
+     */
     getScore(tabuleiro, callback) {
         let requestString = 'sendScore(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
-
         this.makeRequest(requestString, callback);
     }
 
 
+    /**
+     * Bot move (always black pieces)
+     * @param {*} tabuleiro current board
+     * @param {*} callback function to handle the callback
+     * @returns the new board after the move
+     */
     blackBotMove(tabuleiro, callback) {
         let requestString = 'choose_move(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
-
         this.makeRequest(requestString, callback);
     }
 
     /**
-     * Move
-     * order of the elements PROLOG:
-     * move(InitialBoard,RowIndex,ColumnIndex,PP_RowIndex,PP_ColumnIndex,Colour)
+     * Human Move
+     * @param {*} tabuleiro current board
+     * @param {*} pecaX line of the picked piece
+     * @param {*} pecaY column of the picked piece
+     * @param {*} destX line of the selected destination
+     * @param {*} destY columnn of the selected destination
+     * @param {*} color current turn colour
+     * @param {*} callback function to handle the callback
+     * @returns the new board after the move
      */
     move(tabuleiro, pecaX, pecaY, destX, destY, color, callback) {
         let requestString = 'move(' +
@@ -199,11 +199,17 @@ class Game {
             JSON.stringify(destX).replace(/"/g, '') + ',' +
             JSON.stringify(destY).replace(/"/g, '') + ',' +
             JSON.stringify(color).replace(/"/g, '') + ')';
-
         this.makeRequest(requestString, callback);
     }
 
-
+    /**
+     * Checks if the selected piece has valid moves
+     * @param {*} tabuleiro the current board
+     * @param {*} line line of the picked piece
+     * @param {*} column column ofthe picked piece
+     * @param {*} callback function to handle the callback
+     * @returns true or false
+     */
     selectedPiece(tabuleiro, line, column, callback) {
         let requestString = 'selectedPiece(' +
             JSON.stringify(tabuleiro).replace(/"/g, '') + ',' +
@@ -212,48 +218,54 @@ class Game {
         this.makeRequest(requestString, callback);
     }
 
+    /**
+     * Checks if the chosen move is valid (range and direction)
+     * @param {*} pecaX line of the picked piece
+     * @param {*} pecaY column of the picked piece
+     * @param {*} destX line of the selected destination
+     * @param {*} destY column of the selected destination
+     * @param {*} callback function to handle the callback
+     * @returns true or false
+     */
     checkDifferenceIndexs(pecaX, pecaY, destX, destY, callback) {
         let requestString = 'checkDifferenceIndexs(' +
             JSON.stringify(pecaX).replace(/"/g, '') + ',' +
             JSON.stringify(pecaY).replace(/"/g, '') + ',' +
             JSON.stringify(destX).replace(/"/g, '') + ',' +
             JSON.stringify(destY).replace(/"/g, '') + ')';
-
         this.makeRequest(requestString, callback);
     }
 
-
-
-
+    /**
+     * sends a request string to the prolog server and calls the handler for the response to that specific request
+     * @param {*} requestString 
+     * @param {*} callback 
+     */
+    makeRequest(requestString, callback) {
+        this.getPrologRequest(requestString, callback);
+    }
 
 
     //*************************************************************************************************
-    //                             PROLOG COMMUNICATION FUNCTIONS                                    //
+    //                                       GAME FUNCTIONS                                          //
     //***********************************************************************************************//
 
-
-    /*
-     * clickando no botao, faz um setBoard(initialBoard)
-     * recalcula score e turns 
-     * display
+    /**
+     * called upon click on gui element
+     * undos last move
      */
     undo() {
         if (this.Undo.length) {
-            //Board
+            //board
             var i = 1;
-            //i++;
-
             let sizeBoards = this.PastTabuleiros.length - 1;
-
             this.board = this.PastTabuleiros[sizeBoards - i];
-            //alert(this.board);
             //Indexes
             let sizeIndexes = this.Undo.length;
             this.Undo.pop();
             //Score1
             let scrIndex = this.PastScore1.length - 1;
             this.score1 = this.PastScore1[scrIndex - i];
-
             //Score2
             var scrIdx = this.PastScore2.length - 1;
             this.score2 = this.PastScore2[scrIdx - i];
@@ -265,12 +277,9 @@ class Game {
         }
     }
 
-
-
-    /*
-     * clickando no botao, faz um setBoard(tabuleiroInicial)
-     * recalcula score e turns 
-     * display
+    /**
+     * called upon click on gui element
+     * restarts the game
      */
     restart() {
         this.reset();
@@ -280,7 +289,9 @@ class Game {
         this.lastMovie = 0;
     }
 
-
+    /**
+     * default values for beginning of game
+     */
     reset() {
         // this.scene = scene;
         this.tmpPiece = 0;
@@ -325,13 +336,9 @@ class Game {
 
 
 
-    /*
-     * clickando no botao,
-     * se nao houver jogo a decorrer e se tiver coisas nos arrays: 
-     * setBoard
-     * loop{
-     * mov(guardado)
-     * display}
+    /**
+     * called upon click on gui element
+     * plays back the entire game
      */
     playMovie() {
         console.log("begin playing movie");
@@ -342,6 +349,9 @@ class Game {
         this.states = STATES.READY_TO_PICK_PIECE;
     }
 
+    /**
+     * saves current infos for posterior retrieval when playing the game movie
+     */
     SaveForMovie() {
         var d = new Date();
         var t = d.getTime();
@@ -350,12 +360,9 @@ class Game {
         console.log("saved for movie, frame " + (this.movieArray.length));
     }
 
-    //uncalled for
-    /*
-     * clickando no botao,
-     * fica com this.save=tabuleiro,turn
-     * this.save = new Game(scene,)
-     * ->jogo
+    /**
+     * called upon click on gui element
+     * saves current state of the game
      */
     save2() {
         this.saveArray = [this.board, this.currentColour];
@@ -363,11 +370,9 @@ class Game {
     }
 
 
-    //uncalled for
-    /*
-     * clickando no botao,
-     * setBoard(this.save)
-     * ->jogo
+    /**
+     * called upon click on gui element
+     * loads an earlier state of the game
      */
     load() {
         if (!!this.saveArray) {
@@ -385,39 +390,41 @@ class Game {
     //                                          GAME UTILITIES                                       //
     //***********************************************************************************************/
 
-
+    /**
+     * checks scores to verify if the game is over
+     * updates the state-machine
+     */
     updateScore() {
-
         this.timeleft = TIME_LEFT;
         var d = new Date();
         var t = d.getTime();
         this.gameStart2 = t;
         this.state = STATES.READY_TO_PICK_PIECE;
-
-        document.getElementById('score1').innerHTML = this.score1;
-        document.getElementById('score2').innerHTML = this.score2;
-
+        /*
+                document.getElementById('score1').innerHTML = this.score1;
+                document.getElementById('score2').innerHTML = this.score2;
+        */
         if (!this.score1) {
-
             this.state = STATES.GAMEOVER;
             this.gameOver = true;
-
             this.winner = this.otherColour;
-
         }
     }
 
-
+    /**
+     * calls functions to handle the board
+     */
     displayBoard() {
-
         this.translateBoard();
         // if (this.states == STATES.DISPLAYED)
         this.updateScore();
         //}
     }
 
+    /**
+     * translates the board matrix into coordinates, colours, etc of the pieces
+     */
     translateBoard() {
-
         this.pieces = [];
         for (var i = 0; i < this.board.length; i++) {
 
@@ -443,6 +450,9 @@ class Game {
 
     }
 
+    /**
+     * the game loop from waiting to pick a piece to move to the move is done and round again
+     */
     gameLoop() {
 
         if (this.movie && this.state != STATES.GAMEOVER) {
@@ -541,9 +551,11 @@ class Game {
     }
 
 
-
+    /**
+     * called upon click on gui element
+     * starts a new game
+     */
     start() {
-
         if (this.state == STATES.WAITING || this.state == STATES.GAMEOVER) {
             var d = new Date();
             var t = d.getTime();
@@ -560,133 +572,25 @@ class Game {
         }
     }
 
-    verifyBotReply(data) {;
-        let response = JSON.parse(data.target.response);
-
-        if (data.target.status == 200) {
-
-            this.piece2Move.line = response[0];
-            this.piece2Move.column = response[1];
-            this.moveWhere2.line = response[2];
-            this.moveWhere2.column = response[3];
-            this.validReply = true;
-            this.resetError();
-            this.displayBoard();
-            //this.state = STATES.READY_TO_MOVE;
-            this.state = STATES.ANIMATION;
-        } else {
-
-            this.showError(data.target.statusText);
-
-            this.validReply = false;
-        }
-        console.log("Bot reply received with value: " + response);
-    }
-
-
-
-    verifyTabReply(data) {;
-        let response = JSON.parse(data.target.response);
-
-        if (data.target.status == 200) {
-
-            this.board = response;
-            this.validReply = true;
-            this.resetError();
-            this.displayBoard();
-        } else {
-
-            this.showError(data.target.statusText);
-
-            this.validReply = false;
-        }
-        console.log("Initial Board reply received with value: " + response);
-    }
-
-    verifyPieceReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
-
-            if (response == this.currentColour) {
-
-                this.validReply = true;
-                this.state = STATES.READY_TO_PICK_MOVE;
-            } else {
-
-                this.showError("wrong colour");
-            }
-        } else {
-
-            this.showError(data.target.statusText);
-            this.validReply = false;
-        }
-        console.log("Pick Piece reply received with value: " + response);
-    }
-
-    verifyAttackReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
-
-            if (!isNaN(response)) {
-                this.validReply = true;
-                if (response == 0) {
-                    // this.state = STATES.READY_TO_MOVE;
-                    this.state = STATES.ANIMATION;
-                }
-            }
-        } else {
-
-            this.showError(data.target.statusText);
-            this.validReply = false;
-        }
-        console.log("Attack reply received with value: " + response);
-    }
-
-    verifyMoveReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
-
-            this.board = response;
-            this.validReply = true;
-            this.state = STATES.MOVED;
-        } else {
-
-            this.showError(data.target.statusText);
-            this.validReply = false;
-        }
-        console.log("Move reply received with value: " + response);
-    }
-
-    verifyScoreReply(data) {
-        let response = JSON.parse(data.target.response);
-        if (data.target.status == 200) {
-
-
-            this.score1 = response[0];
-
-            this.score2 = response[1];
-
-            this.validReply = true;
-            this.state = STATES.UPDATED;
-
-        } else {
-
-            this.showError(data.target.statusText);
-            this.validReply = false;
-        }
-        console.log("Score reply received with value: " + response);
-    }
-
+    /**
+     * shows the error message on the scoreboard
+     * @param {*} msg message to be displayed
+     */
     showError(msg) {
-
         document.getElementById('messages').innerHTML = msg;
     }
 
+    /**
+     * cleans the error messages on the scoreboard
+     */
     resetError() {
         this.validReply = false;
         document.getElementById('messages').innerHTML = "";
     }
 
+    /**
+     * toggles the colours(turns)
+     */
     changeColours() {
         let tmp = this.otherColour;
         this.otherColour = this.currentColour;
@@ -694,27 +598,28 @@ class Game {
         this.scene.animateCameraBool = true;
     }
 
+    /**
+     * tags pieces as selectable or not
+     * @param {*} which colour to be tagged as selectable
+     */
     markSelectables(which) {
         this.scene.setPickEnabled(true);
-
         for (i = 0; i < this.pieces.length; i++) {
 
             if (this.pieces[i].colour == which) {
-
                 this.pieces[i].selectable = true;
             } else {
-
                 this.pieces[i].selectable = false; //se assim optarmos
             }
         }
         this.state == STATES.READY_TO_PICK_PIECE ? this.state = STATES.SELECTABLES1 : this.state = STATES.SELECTABLES2;
     }
 
-    //Make the request
-    makeRequest(requestString, callback) {
-        this.getPrologRequest(requestString, callback);
-    }
 
+    /**
+     * called when a piece is picked twice, denoting that the first time was an error
+     * unpicks the former picked piece
+     */
     resetPickedPiece() {
         this.pickedPiece = 0;
         this.tmpPiece = 0;
@@ -722,6 +627,12 @@ class Game {
         this.state = STATES.READY_TO_PICK_PIECE;
     }
 
+
+    /**
+     * does the complete animation of a move (dead piece and attacking piece)
+     * @param {*} alivePiece the attacking piece id
+     * @param {*} deadPiece the dead piece id
+     */
     animatePieces(alivePiece, deadPiece) {
         var d = new Date();
         var t = d.getTime();
@@ -737,9 +648,14 @@ class Game {
         this.lastAnim = t;
     }
 
-
+    /**
+     * animates either the dead piece or the attacking piece in a move
+     * @param {*} id1 id of the piece to animate
+     * @param {*} t1 time when called
+     * @param {*} typeIn dead or alive
+     * @param {*} id2 id of the piece in the destination of the move
+     */
     pieceAnimationCalc(id1, t1, typeIn, id2) {
-
         var t2 = t1;
         var type = typeIn || "dead";
         var x1 = this.pieces[id1].x;
@@ -779,4 +695,129 @@ class Game {
         //  }
 
     }
+
+
+    //*************************************************************************************************
+    //                           HANDLERS OF THE CALLBACKS FROM PROLOG                               //
+    //***********************************************************************************************//
+
+    /**
+     * handles the info returned when the bot moves
+     * @param {*} data info returned by the prolog server
+     */
+    verifyBotReply(data) {;
+        let response = JSON.parse(data.target.response);
+        if (data.target.status == 200) {
+            this.piece2Move.line = response[0];
+            this.piece2Move.column = response[1];
+            this.moveWhere2.line = response[2];
+            this.moveWhere2.column = response[3];
+            this.validReply = true;
+            this.resetError();
+            this.displayBoard();
+            //this.state = STATES.READY_TO_MOVE;
+            this.state = STATES.ANIMATION;
+        } else {
+            this.showError(data.target.statusText);
+            this.validReply = false;
+        }
+        console.log("Bot reply received with value: " + response);
+    }
+
+
+    /**
+     * handles the info returned when the initial board is asked when the game starts
+     * @param {*} data info returned by the prolog server
+     */
+    verifyTabReply(data) {;
+        let response = JSON.parse(data.target.response);
+        if (data.target.status == 200) {
+            this.board = response;
+            this.validReply = true;
+            this.resetError();
+            this.displayBoard();
+        } else {
+            this.showError(data.target.statusText);
+            this.validReply = false;
+        }
+        console.log("Initial Board reply received with value: " + response);
+    }
+
+    /**
+     * handles the info returned when a piece is selected to be moved
+     * @param {*} data info returned by the prolog server
+     */
+    verifyPieceReply(data) {
+        let response = JSON.parse(data.target.response);
+        if (data.target.status == 200) {
+            if (response == this.currentColour) {
+                this.validReply = true;
+                this.state = STATES.READY_TO_PICK_MOVE;
+            } else {
+                this.showError("wrong colour");
+            }
+        } else {
+            this.showError(data.target.statusText);
+            this.validReply = false;
+        }
+        console.log("Pick Piece reply received with value: " + response);
+    }
+
+    /**
+     * handles the info returned when the destination of the move is chosen
+     * @param {*} data info returned by the prolog server
+     */
+    verifyAttackReply(data) {
+        let response = JSON.parse(data.target.response);
+        if (data.target.status == 200) {
+            if (!isNaN(response)) {
+                this.validReply = true;
+                if (response == 0) {
+                    // this.state = STATES.READY_TO_MOVE;
+                    this.state = STATES.ANIMATION;
+                }
+            }
+        } else {
+            this.showError(data.target.statusText);
+            this.validReply = false;
+        }
+        console.log("Attack reply received with value: " + response);
+    }
+
+    /**
+     * handles the info returned when the move is done
+     * @param {*} data info returned by the prolog server
+     */
+    verifyMoveReply(data) {
+        let response = JSON.parse(data.target.response);
+        if (data.target.status == 200) {
+            this.board = response;
+            this.validReply = true;
+            this.state = STATES.MOVED;
+        } else {
+
+            this.showError(data.target.statusText);
+            this.validReply = false;
+        }
+        console.log("Move reply received with value: " + response);
+    }
+
+    /**
+     * handles the info returned when the scores are asked
+     * @param {*} data info returned by the prolog server
+     */
+    verifyScoreReply(data) {
+        let response = JSON.parse(data.target.response);
+        if (data.target.status == 200) {
+            this.score1 = response[0];
+            this.score2 = response[1];
+            this.validReply = true;
+            this.state = STATES.UPDATED;
+        } else {
+            this.showError(data.target.statusText);
+            this.validReply = false;
+        }
+        console.log("Score reply received with value: " + response);
+    }
+
 }

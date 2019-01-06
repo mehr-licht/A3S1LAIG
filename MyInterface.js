@@ -43,10 +43,10 @@ class MyInterface extends CGFinterface {
     }
     processKeyDown(event) {
         this.activeKeys[event.code] = true;
-    };
+    }
     processKeyUp(event) {
         this.activeKeys[event.code] = false;
-    };
+    }
     isKeyPressed(keyCode) {
         return this.activeKeys[keyCode] || false;
     }
@@ -70,10 +70,16 @@ class MyInterface extends CGFinterface {
         }
     }
 
+    /**
+     * dropdown to choose the scene
+     */
     addScenePicker() {
         this.gui.add(this.scene, "currScene", ["FEUP", "stranded"]).name("Scene");
-    };
+    }
 
+    /**
+     * group of all the game settings
+     */
     addSettingsGroup(game) {
         var group = this.gui.addFolder("Settings");
         group.open();
@@ -87,17 +93,14 @@ class MyInterface extends CGFinterface {
         }
         group.add(this.scene, "gameMode", ModeOptions).name("Game Mode");
         group.add(this.scene, "gameLevel", LevelOptions).name("Game Level");
-        //var controller = group.add(this.scene, "rotationCamera").name("Camera Rotation");
+    }
 
-        /*  controller.onChange(function() {
-              game.setCamera();
-          });*/
-    };
-
+    /**
+     * group of all the options about the game
+     */
     addOptionsGroup() {
         var group = this.gui.addFolder("Options");
         group.open();
-
         group.add(this.scene, "startGame").name("Start Game");
         group.add(this.scene, "restart").name("Restart Game");
         group.add(this.scene, "undo").name("Undo");
@@ -105,7 +108,7 @@ class MyInterface extends CGFinterface {
         group.add(this.scene, "load").name("Load Game");
         group.add(this.scene, "movie").name("Movie");
         group.add(this.scene, "quitGame").name("Quit Game");
-    };
+    }
 
 
 }

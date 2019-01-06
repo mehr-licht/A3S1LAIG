@@ -59,6 +59,14 @@ class XMLscene extends CGFscene {
         this.materialBlacks.setSpecular(0.5, 0.5, 0.5, 1);
         this.materialBlacks.setShininess(120);
 
+        this.materialHole = new CGFappearance(this);
+        this.materialHole.setAmbient(0.0, 0.0, 0.0, 1);
+        this.materialHole.setDiffuse(0.0, 0.0, 0.0, 1);
+        this.materialHole.setSpecular(0.5, 0.5, 0.5, 1);
+        this.materialHole.setShininess(120);
+
+        this.hole = new MyCilinder(this, 0.5, 0.5, 2, 50, 50);
+
         this.materialDefault = new CGFappearance(this);
 
         this.shaders["throbRed"] = new CGFshader(this.gl, "shaders/shader.vert", "shaders/shader.frag");
@@ -97,14 +105,15 @@ class XMLscene extends CGFscene {
 
     update(currTime) {
         this.updateScaleFactor(currTime);
-        if (this.animateCameraBool) {
-            this.nextCamera();
-            if (this.prevTime == -1) {
-                this.animateCamera(0);
-            } else {
-                this.animateCamera(currTime - this.prevTime);
-            }
-        }
+        //CAMERA ANIMATION
+        /* if (this.animateCameraBool) {
+             this.nextCamera();
+             if (this.prevTime == -1) {
+                 this.animateCamera(0);
+             } else {
+                 this.animateCamera(currTime - this.prevTime);
+             }
+         }*/
 
         if (this.startTime == 0 || this.startTime == null)
             this.startTime = currTime;
@@ -130,19 +139,21 @@ class XMLscene extends CGFscene {
 
         this.prevTime = currTime;
     }
+
     updateScaleFactor(date) {
         this.shaders[this.currentShader].setUniformsValues({ timeFactor: date % 100 });
     };
 
     setDefaultAppearance() {
-            this.setAmbient(0.2, 0.4, 0.8, 1.0);
-            this.setDiffuse(0.2, 0.4, 0.8, 1.0);
-            this.setSpecular(0.2, 0.4, 0.8, 1.0);
-            this.setShininess(10.0);
-        }
-        /**
-         * Initializes the scene cameras.
-         */
+        this.setAmbient(0.2, 0.4, 0.8, 1.0);
+        this.setDiffuse(0.2, 0.4, 0.8, 1.0);
+        this.setSpecular(0.2, 0.4, 0.8, 1.0);
+        this.setShininess(10.0);
+    }
+
+    /**
+     * Initializes the scene cameras.
+     */
     initCameras() {
         //  this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
         this.cameras[0] = new CGFcamera(DEGREE_TO_RAD * 20, 0.1, 150, vec3.fromValues(12, 22, 2), vec3.fromValues(9, 3.5, 6));
@@ -259,21 +270,19 @@ class XMLscene extends CGFscene {
         // Apply transformations corresponding to the camera position relative to the origin
         this.applyViewMatrix();
 
-        //  
+        //piece graveyard hole
+        this.pushMatrix();
 
-        /*
-                this.pushMatrix();
+        this.translate(8.2, 3.8, 7.8);
+        this.rotate(DEGREE_TO_RAD * 90, 1, 0, 0);
+        this.scale(0.5, 0.5, 0.5);
+        this.materialHole.apply();
 
-                // this.materialBlacks.apply();
-                this.materialDefault.apply();
-                this.testPiece.display();
-
-                this.popMatrix();*/
+        this.hole.display();
+        this.popMatrix();
 
 
         this.pushMatrix();
-
-
 
         // Draw axis
         if (this.graph.loadedOk) {
@@ -325,7 +334,8 @@ class XMLscene extends CGFscene {
                 if (this.newGame.state != STATES.WAITING) {
 
                     this.newGame.gameLoop();
-
+                    document.getElementById('score1').innerHTML = this.newGame.score1;
+                    document.getElementById('score2').innerHTML = this.newGame.score2;
                     document.getElementById('turn').innerHTML = this.newGame.currentColour;
                     var d = new Date();
                     var t = d.getTime();
@@ -533,49 +543,86 @@ class XMLscene extends CGFscene {
             positionPosition, vec3.fromValues(5, 3.5, 8));
     }
 
+
+    //***********************************************************************************************
+    //***                                     Game gui functions                                ***//
+    //******************************************************************************************** */
+
+    /**
+     * starts a new game
+     */
     startGame() {
         this.newGame.start(this.newGame.gameMode, this.newGame.gameLevel);
     }
 
+    /**
+     * restarts the current game
+     */
     restart() {
         this.newGame.restart();
     }
 
+    /**
+     * undoes the last move
+     */
     undo() {
         this.newGame.undo();
     }
 
+    /**
+     * saves the current state of the game to be loaded later
+     */
     save() {
         this.newGame.save2();
     }
 
+    /**
+     * loads an earlier saved state of the game
+     */
     load() {
         this.newGame.load();
     }
 
-
+    /**
+     * replays the movie of the game that has ended
+     */
     movie() {
         // if (this.newGame.state == STATES.GAMEOVER)
         this.newGame.playMovie();
     }
 
+    /**
+     * exits the current game
+     */
     quitGame() {
         this.newGame.state = STATES.WAITING;
     }
 
 
 
-
+    /**
+     * prepares for the camera animation
+     */
     nextCamera() {
         this.changingCamera = true;
         this.timeElapsed = 0;
     }
 }
 
+/**
+ * calcculates the middle point between two points
+ * @param {*} point1 self-explanatory
+ * @param {*} point2 self-explanatory
+ */
 function midPoint(point1, point2) {
     return [(point1[0] + point2[0]) / 1.5, (point1[1] + point2[1]) / 1.5, (point1[2] + point2[2]) / 1.5, (point1[3] + point2[3]) / 1.5];
 }
 
+/**
+ * calculates the distance between two points
+ * @param {*} point1 self-explanatory
+ * @param {*} point2 self-explanatory
+ */
 function distance(point1, point2) {
     return Math.sqrt(Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2) + Math.pow(point1[2] - point2[2], 2));
 }
