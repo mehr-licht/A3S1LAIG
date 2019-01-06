@@ -55,7 +55,7 @@ serialInclude(['../lib/CGF.js', 'CGFResourceReader.js',
     'primitives/MyCilinder.js', 'primitives/MyCircle.js', 'primitives/MyTriangle.js',
     'MyComponentNode.js', 'MyPrimitiveNode.js', 'Animation.js', 'CircularAnimation.js', 'LinearAnimation.js', 'newLinearAnimation.js',
     'primitives/MyPlane.js', 'primitives/MyPatch.js', 'primitives/MyCylinder2.js',
-    'primitives/MyTerrain.js', 'primitives/MyWater.js', 'primitives/MyVehicle.js', 'Game/Game.js', 'Game/piece.js',
+    'primitives/MyTerrain.js', 'primitives/MyWater.js', 'primitives/MyVehicle.js', 'Game/Game.js', 'Game/piece.js', 'cameraAnimation.js',
 
     main = function() {
         // Standard application, scene and interface setup

@@ -1,8 +1,6 @@
 //convert from degrees to rad
 var DEGREE_TO_RAD = Math.PI / 180;
 
-
-
 /**
  * XMLscene class, representing the scene that is to be rendered.
  */
@@ -29,13 +27,14 @@ class XMLscene extends CGFscene {
         this.easyShader = "greenThrob";
         this.currentShader = "throbRed";
 
-        // this.shaderObjects = [];
+        this.CAMERA_ANIMATION_TIME = 1;
+
         this.lastTime = 0;
         this.currentDate = new Date();
         this.initialTime = this.currentDate.getTime();
         this.currScene = "FEUP";
 
-        //CRIAR OBJECTO QUANDO escolhido o START GAME, por ora feito aqui
+        //CRIAR OBJECTO QUANDO escolhido o START GAME
         this.newGame = new Game(this);
         this.gameMode = MODES.HUMANS;
         this.gameLevel = LEVELS.HARD;
@@ -68,12 +67,17 @@ class XMLscene extends CGFscene {
         this.shaders["greenThrob"] = new CGFshader(this.gl, "shaders/greenShader.vert", "shaders/greenShader.frag");
         this.shaders["greenThrob"].setUniformsValues({ selectedRed: 0.0, selectedGreen: 0.8, selectedBlue: 0.0 });
 
+        this.animateCameraBool = false;
+        this.cameras = [];
+        this.gameCameraAnimation = null;
+        this.currentScene = 1;
+        this.currentCamera = 0;
+        this.initCameras();
 
         this.sceneInited = false;
         this.keysPressed = false;
-        this.initCameras();
-        this.piece = new CGFOBJModel(this, 'clobber.obj');
 
+        this.piece = new CGFOBJModel(this, 'clobber.obj');
 
         this.enableTextures(true);
 
@@ -93,15 +97,14 @@ class XMLscene extends CGFscene {
 
     update(currTime) {
         this.updateScaleFactor(currTime);
-
-        if (this.prevTime == -1) {
-            this.animateCamera(0);
-            //  this.graph.update(0);
-        } else {
-            this.animateCamera(currTime - this.prevTime);
-            //this.graph.update(currTime - this.prevTime);
+        if (this.animateCameraBool) {
+            this.nextCamera();
+            if (this.prevTime == -1) {
+                this.animateCamera(0);
+            } else {
+                this.animateCamera(currTime - this.prevTime);
+            }
         }
-
 
         if (this.startTime == 0 || this.startTime == null)
             this.startTime = currTime;
@@ -125,9 +128,6 @@ class XMLscene extends CGFscene {
 
         this.shader.setUniformsValues({ timeFactor: this.time });
 
-        /*  if (typeof this.newGame != "undefined" && !this.newGame.gameOver)
-              this.updateTime(currTime);*/
-
         this.prevTime = currTime;
     }
     updateScaleFactor(date) {
@@ -144,8 +144,14 @@ class XMLscene extends CGFscene {
          * Initializes the scene cameras.
          */
     initCameras() {
-        this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
+        //  this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
+        this.cameras[0] = new CGFcamera(DEGREE_TO_RAD * 20, 0.1, 150, vec3.fromValues(12, 22, 2), vec3.fromValues(9, 3.5, 6));
+        this.cameras[1] = new CGFcamera(DEGREE_TO_RAD * 20, 0.1, 150, vec3.fromValues(2.3, 22, 12), vec3.fromValues(5, 3.5, 8));
+
+        this.camera = this.cameras[0];
     }
+
+
 
     /**
      * Initializes the scene lights with the values read from the XML file.
@@ -303,6 +309,13 @@ class XMLscene extends CGFscene {
                 document.getElementById('messages').innerHTML = "time out: " + this.newGame.currentColour + " lost";
                 this.newGame.winner = this.newGame.otherColour;
             } else if (this.newGame.state != STATES.GAMEOVER) {
+
+                if (this.newGame.state == STATES.ANIMATION) {
+                    this.newGame.animatePieces(this.newGame.piece2Move.id, this.newGame.moveWhere2.id);
+                    /*  if () {
+                          this.newGame.state = STATES.READY_TO_MOVE;
+                      }*/
+                }
 
                 if (this.newGame.movie && (tt - this.newGame.lastMovie) > MOVIE_RATIO) {
                     if (this.newGame.lastMovie)
@@ -462,12 +475,32 @@ class XMLscene extends CGFscene {
         }
     }
 
-    animateCamera(deltaTime) {
-        if (!this.changingCamera)
-            return;
 
-        // *0.95 is to avoid flickering when the animation surpasses the expected camera position
-        if (this.timeElapsed > this.CAMERA_ANIMATION_TIME * 0.7) {
+
+    /* animateCamera(deltaTime) {
+    if (!this.changingCamera)
+        return;
+
+            let boardCenter = vec3.fromValues(7, 3.5, 7);
+          this.timeElapsed += deltaTime / 2000;
+          let rotAngle = Math.PI * this.timeElapsed / this.CAMERA_ANIMATION_TIME;
+          let nextCamera = this.cameras[this.currentCamera].rotate(boardCenter, rotAngle);
+          console.log(nextCamera);
+          this.camera = nextCamera;  }*/
+
+    /* animateCamera(deltaTime) {
+    if (!this.changingCamera)
+        return;
+            var animation = new CircularAnimation(this.scene, "cameraAnimation", this.CAMERA_ANIMATION_TIME, boardCenter, 5, 0, Math.PI);
+            animation.update(this, dt); //este chama o "circular"/"linear"
+            animation.apply(this); 
+        }
+
+    */
+
+    animateCamera(deltaTime) {
+
+        if (this.timeElapsed > this.CAMERA_ANIMATION_TIME) {
             this.changingCamera = false;
             this.currentCamera = (this.currentCamera + 1) % this.cameras.length;
             return;
@@ -476,22 +509,18 @@ class XMLscene extends CGFscene {
         let currCamera = this.cameras[this.currentCamera];
         let nextCamera = this.cameras[(this.currentCamera + 1) % this.cameras.length];
 
-        let targetCenter = midPoint(currCamera.target, nextCamera.target);
+        //   let targetCenter = midPoint(currCamera.target, nextCamera.target);
+        // let newX = ;
+        // let newZ = ;
+        // let newPoint = vec3.fromValues(newX, Y, newZ);
         let positionCenter = midPoint(currCamera.position, nextCamera.position);
 
-        let targetRadius = distance(targetCenter, nextCamera.target);
-        let positionRadius = distance(positionCenter, nextCamera.position);
+        // let targetRadius = distance(targetCenter, nextCamera.target);
+        let positionRadius = distance(currCamera.position, nextCamera.position);
 
         this.timeElapsed += deltaTime / 2000;
         let cameraAngle = Math.PI * this.timeElapsed / this.CAMERA_ANIMATION_TIME;
         let multiplier = this.currentCamera ? 1 : -1;
-
-        let targetPosition = [
-            targetCenter[0] + multiplier * targetRadius * Math.sin(cameraAngle),
-            targetCenter[1],
-            targetCenter[2] + multiplier * targetRadius * Math.cos(cameraAngle),
-            1
-        ];
 
         let positionPosition = [
             positionCenter[0] + multiplier * positionRadius * Math.sin(cameraAngle),
@@ -500,8 +529,8 @@ class XMLscene extends CGFscene {
             1
         ];
 
-        this.camera = new CGFcamera(currCamera.fov, currCamera.near, currCamera.far,
-            positionPosition, targetPosition);
+        this.camera = new CGFcamera(DEGREE_TO_RAD * 20, 0.1, 150,
+            positionPosition, vec3.fromValues(5, 3.5, 8));
     }
 
     startGame() {
@@ -534,10 +563,19 @@ class XMLscene extends CGFscene {
         this.newGame.state = STATES.WAITING;
     }
 
+
+
+
+    nextCamera() {
+        this.changingCamera = true;
+        this.timeElapsed = 0;
+    }
 }
 
-function sleep(seconds) {
-    alert("wait");
-    var waitUntil = new Date().getTime() + seconds * 1000;
-    while (new Date().getTime() < waitUntil) true;
+function midPoint(point1, point2) {
+    return [(point1[0] + point2[0]) / 1.5, (point1[1] + point2[1]) / 1.5, (point1[2] + point2[2]) / 1.5, (point1[3] + point2[3]) / 1.5];
+}
+
+function distance(point1, point2) {
+    return Math.sqrt(Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2) + Math.pow(point1[2] - point2[2], 2));
 }

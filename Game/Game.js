@@ -176,12 +176,6 @@ class Game {
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
 
         this.makeRequest(requestString, callback);
-
-        /**gets 
-         * -1 => not received
-         * 0 => OK + number of valid Moves
-         *  */
-        // return callback;
     }
 
 
@@ -190,11 +184,6 @@ class Game {
             JSON.stringify(tabuleiro).replace(/"/g, '') + ')';
 
         this.makeRequest(requestString, callback);
-        /**gets 
-         * -1 => not received   
-         * 0 + tabuleiroFinal
-         *  */
-        // return callback;
     }
 
     /**
@@ -212,11 +201,6 @@ class Game {
             JSON.stringify(color).replace(/"/g, '') + ')';
 
         this.makeRequest(requestString, callback);
-        /**gets 
-         * -1 => not received   
-         * 0 + tabuleiroFinal
-         *  */
-        // return callback;
     }
 
 
@@ -226,13 +210,6 @@ class Game {
             JSON.stringify(line).replace(/"/g, '') + ',' +
             JSON.stringify(column).replace(/"/g, '') + ')';
         this.makeRequest(requestString, callback);
-        /**gets 
-         * -3 => piece is isolated
-         * -2 => wrong colour chosen
-         * -1 => not received
-         * 0 => OK
-         *  */
-        //return callback
     }
 
     checkDifferenceIndexs(pecaX, pecaY, destX, destY, callback) {
@@ -243,13 +220,6 @@ class Game {
             JSON.stringify(destY).replace(/"/g, '') + ')';
 
         this.makeRequest(requestString, callback);
-        /**gets 
-         * -3 => empty space
-         * -2 => to wrong colour
-         * -1 => not received
-         * 0 => OK
-         *  */
-        // return callback;
     }
 
 
@@ -526,10 +496,10 @@ class Game {
                 }
             }
         }
-
-        if (this.state == STATES.ANIMATION) {
-            this.animatePieces(this.piece2Move.id, this.moveWhere2.id);
-        }
+        /*
+                if (this.state == STATES.ANIMATION) {
+                    this.animatePieces(this.piece2Move.id, this.moveWhere2.id);
+                }*/
         if (this.state == STATES.READY_TO_MOVE) {
             this.move(this.board, this.piece2Move.line, this.piece2Move.column, this.moveWhere2.line, this.moveWhere2.column, this.currentColour, this.verifyMoveReply);
 
@@ -546,6 +516,7 @@ class Game {
 
             this.resetError();
             this.changeColours();
+
             this.getScore(this.board, this.verifyScoreReply);
         }
 
@@ -601,8 +572,8 @@ class Game {
             this.validReply = true;
             this.resetError();
             this.displayBoard();
-            this.state = STATES.READY_TO_MOVE;
-
+            //this.state = STATES.READY_TO_MOVE;
+            this.state = STATES.ANIMATION;
         } else {
 
             this.showError(data.target.statusText);
@@ -659,7 +630,8 @@ class Game {
             if (!isNaN(response)) {
                 this.validReply = true;
                 if (response == 0) {
-                    this.state = STATES.READY_TO_MOVE;
+                    // this.state = STATES.READY_TO_MOVE;
+                    this.state = STATES.ANIMATION;
                 }
             }
         } else {
@@ -719,6 +691,7 @@ class Game {
         let tmp = this.otherColour;
         this.otherColour = this.currentColour;
         this.currentColour = tmp;
+        this.scene.animateCameraBool = true;
     }
 
     markSelectables(which) {
