@@ -423,11 +423,12 @@ class Game {
 
     /**
      * translates the board matrix into coordinates, colours, etc of the pieces
+     * Mapear as posicoes x,y,x das pecas para mostrar no tabuleioro
      */
     translateBoard() {
         this.pieces = [];
         for (var i = 0; i < this.board.length; i++) {
-
+ 
             for (var j = 0; j < this.board[i].length; j++) {
 
                 if (this.board[i][j] != "empty") {
@@ -636,12 +637,14 @@ class Game {
     animatePieces(alivePiece, deadPiece) {
         var d = new Date();
         var t = d.getTime();
+        //animacao para a comida com o tempo
         this.pieceAnimationCalc(deadPiece, t);
         d = new Date();
         t = d.getTime();
-
+           // animacao para a que vai comer com o tempo que vai comer 
         this.pieceAnimationCalc(alivePiece, t, "alive", deadPiece);
-
+        
+        //condicao de terminacao da animacao
         if ((t - this.lastAnim) > ANIM_RATIO) { //ou atingir distancias
             this.state = STATES.READY_TO_MOVE;
         }
@@ -658,36 +661,49 @@ class Game {
     pieceAnimationCalc(id1, t1, typeIn, id2) {
         var t2 = t1;
         var type = typeIn || "dead";
+        //so mudancas no eixo x e z
         var x1 = this.pieces[id1].x;
         var z1 = this.pieces[id1].z;
         var x2 = x1;
         var z2 = z1;
+        
+        //se existir a dois que eh viva e que vai mexer para o sitio da 2
         if (!!id2) {
             x2 = this.pieces[id2].x;
             z2 = this.pieces[id2].z;
+        //vai para o cemiterio
         } else {
             x2 = DEAD_X;
             z2 = DEAD_Z;
         }
+        
+        //calculo das distancias entre pontos de origem e destino
+        //calcular o potno mais alto a meio do caminho
         var distTotal = Math.sqrt((x2 - x1) * (x2 - x1) + (z2 - z1) * (z2 - z1));
         var halfDist = distTotal / 2;
         //  while (t2 < (t1 + DEAD_TIME)) { // || (x==finalX  && y==finalY && z==finalZ)
         var distActual = Math.sqrt((this.pieces[id1].x - x1) * (this.pieces[id1].x - x1) + (this.pieces[id1].z - z1) * (this.pieces[id1].z - z1));
+        
         var d = new Date();
         t2 = d.getTime();
-        console.log("delta:" + delta);
-        var delta = t2 - t1; //SERA DISTO!?
+        console.log("delta:"    + delta);
+        
+        var delta = t2 - t1; 
         var incX = ((x2 - x1) / DEAD_TIME) * delta;
         var incZ = ((z2 - z1) / DEAD_TIME) * delta;
         this.pieces[id1].x += incX;
         console.log("inc:" + this.pieces[id1].x);
         this.pieces[id1].z += incZ;
+        
         if (type == "dead") {
             var away = Math.min(Math.abs(halfDist - distActual), Math.abs(distTotal - distActual));
+            //a coordenad y no half point
             this.pieces[id1].y += 5 / (away * away);
         }
+        
         console.log("t2:" + t2);
         console.log("T:" + (t1 + DEAD_TIME));
+        
         if (t2 >= (t1 + DEAD_TIME)) {
             this.animEnd = true;
             this.lastAnim = 0;
