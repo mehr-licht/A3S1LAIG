@@ -1,4 +1,25 @@
-# **LAIG**
+## *LAIG* ##
+
+project developed in the Laboratory of Graphical Applications and Interfaces course unit
+
+
+### Project Infos
+* **Date:** 3rd Year - 1st Semester - 2018/2019 (Jan 2019)
+* **Topic:** Project
+* **Course:** Laboratory of Graphical Applications and Interfaces
+* **Course Link:** [link](https://sigarra.up.pt/feup/pt/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=399895)
+* **Project done with:** [Ricardo Silva](https://github.com/TejInaco)
+
+
+### Disclaimer
+This repository, and every other course unit repos on GitHub correspond to school projects from the respective course. The code on this repo is intended for educational purposes. I do not take any responsibility, liability or whateverity over any code faults, inconsistency or anything else. If you intend on copying most or parts of the code for your school projects, keep in mind that this repo is public, and that your professor might search the web for similar project solutions or whatnot and choose to fail you for copying. 
+
+Template adapted from [zettca](https://github.com/zettca)
+
+
+
+
+
 
 [![video](https://i.imgur.com/dxewJDX.jpg)](https://streamable.com/s/1cc3h/mcytzg)
 ![patch is spaceEgg](https://i.imgur.com/14LqKNH.jpg)
